@@ -6,7 +6,8 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <style>
-body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+@import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 .w3-quarter img{margin-bottom: -6px; cursor: pointer}
 .w3-quarter img:hover{opacity: 0.6; transition: 0.3s}
 
@@ -34,18 +35,6 @@ body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 
 <!-- !PAGE CONTENT! -->
 <div class="w3-main w3-content" style="max-width:1600px;margin-top:100px">
-
-  <!-- Pagination -->
-  <!-- <div class="w3-center w3-padding-32">
-    <div class="w3-bar">
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">&laquo;</a>
-      <a href="#" class="w3-bar-item w3-black w3-button">1</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">2</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">3</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">4</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">&raquo;</a>
-    </div>
-  </div> -->
   
   <div class="w3-container w3-light-grey w3-padding-32 w3-padding-large" id="contact">
     <div class="w3-content" style="max-width:600px">
@@ -53,20 +42,24 @@ body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
       <form action="/action_page.php" target="_blank">
         <div class="w3-section">
           <label>姓名</label>
-          <input class="w3-input w3-border" type="text" name="Name" required>
+          <input class="w3-input w3-border" type="text" name="name" required>
         </div>
         <div class="w3-section">
           <label>電話</label>
-          <input class="w3-input w3-border" type="text" name="Email" required>
+          <input class="w3-input w3-border" type="number" name="phone number" required>
         </div>
         <div class="w3-section">
           <label>帳號</label>
-          <input class="w3-input w3-border" type="text" name="Message" required>
+          <input class="w3-input w3-border" type="text" name="account number" required>
         </div>
         <div class="w3-section">
             <label>密碼</label>
-            <input class="w3-input w3-border" type="text" name="Message" required>
+            <input class="w3-input w3-border" type="password" name="password" required>
           </div>
+          <div class="w3-section">
+              <label>email</label>
+              <input class="w3-input w3-border" type="email" name="email" required>
+            </div>
         <button type="submit" class="w3-button w3-block w3-black w3-margin-bottom">確認</button>
       </form>
     </div>
