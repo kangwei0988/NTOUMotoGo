@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>海大共乘go</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <link rel="stylesheet" href="static/assets/css/main.css" />
+  <link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
+</head>
+
+<style>
+  @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+
+  body {
+    font-family: "Noto Sans TC", "Raleway", sans-serif
+  }
+
+  .w3-quarter img {
+    margin-bottom: -6px;
+    cursor: pointer
+  }
+
+  .w3-quarter img:hover {
+    opacity: 0.6;
+    transition: 0.3s
+  }
+</style>
+
+<body id="top">
+  <header class="w3-container w3-top w3-xlarge w3-padding-16">
+    <a href="javascript:void(0)" class="w3-right w3-button w3-border" onclick="w3_open()">&#9776;</a>
+  </header>
+
+  <!-- Sidebar/menu -->
+  <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
+    style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
+    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a>
+    <a href="#inform" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a>
+    <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
+    <a href="http://122.116.67.75:5000/" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
+    <a href="#history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
+    <a href="#set" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">設置</a>
+  </nav>
+
+  <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+  <!-- Main -->
+  <div id="main">
+    <div class="inner">
+
+      <!-- Boxes -->
+      <div class="thumbnails">
+
+        <div class="box">
+          <a href="https://youtu.be/s6zR2T9vn2c" class="image fit"><img src="static/images/pic01.jpg" alt="" /></a>
+          <div class="inner">
+            <a href="https://youtu.be/s6zR2T9vn2c" class="button fit">車主刊登</a>
+          </div>
+        </div>
+
+        <div class="box">
+          <a href="https://youtu.be/s6zR2T9vn2c" class="image fit"><img src="static/images/pic02.jpg" alt="" /></a>
+          <div class="inner">
+            <a href="https://youtu.be/s6zR2T9vn2c" class="button style2 fit">乘客刊登</a>
+          </div>
+        </div>
+
+        <div class="box">
+          <a href="https://youtu.be/s6zR2T9vn2c" class="image fit"><img src="static/images/pic02.jpg" alt="" /></a>
+          <div class="inner">
+            <h3>放刊登資料</h3>
+            <a href="https://youtu.be/s6zR2T9vn2c" class="button style2 fit">發送請求</a>
+          </div>
+        </div>
+
+        <a href="https://youtu.be/s6zR2T9vn2c" class="button style3 fit">重新整理</a>
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Script to open and close sidebar
+    function w3_open() {
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("myOverlay").style.display = "block";
+    }
+
+    function w3_close() {
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("myOverlay").style.display = "none";
+    }
+
+    // Modal Image Gallery
+    function onClick(element) {
+      document.getElementById("img01").src = element.src;
+      document.getElementById("modal01").style.display = "block";
+      var captionText = document.getElementById("caption");
+      captionText.innerHTML = element.alt;
+    }
+
+  </script>
+  <script src="static/assets/js/jquery.min.js"></script>
+  <script src="static/assets/js/jquery.scrolly.min.js"></script>
+  <script src="static/assets/js/skel.min.js"></script>
+  <script src="static/assets/js/util.js"></script>
+  <script src="static/assets/js/main.js"></script>
+
+  <!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
+</body>
+
+</html>
