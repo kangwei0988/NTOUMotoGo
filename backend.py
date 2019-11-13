@@ -35,6 +35,30 @@ print(activity_data)
 @app.route('/')
 def login():
     return render_template('3-index.html')
+#跳轉頁面到7-passengerSearch.html
+@app.route('/passengerSearch')
+def passengerSearch():
+    return render_template('7-passengerSearch.html')
+#跳轉頁面到8-driverSearch.html
+@app.route('/driverSearch')
+def driverSearch():
+    return render_template('8-driverSearch.html')
+#跳轉頁面到9-passengerPost.html
+@app.route('/passengerPost')
+def passengerPost():
+    return render_template('9-passengerPost.html')
+#跳轉頁面到10-driverPost.html
+@app.route('/driverPost')
+def driverPost():
+    return render_template('10-driverPost.html')
+#跳轉頁面到13-passengerRespond.html
+@app.route('/passengerRespond')
+def passengerRespond():
+    return render_template('13-passengerRespond.html')
+#跳轉頁面到15-checkRequestt.html
+@app.route('checkRequestt')
+def checkRequestt():
+    return render_template('13-15-checkRequestt.html')
 
 
 app.run(host ='0.0.0.0',port = '5000')
