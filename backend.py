@@ -1,11 +1,12 @@
 import os
 import flask
+from _init_ import app
 from flask import render_template, request, jsonify, redirect, url_for
 from flask_security import Security, MongoEngineUserDatastore ,login_user, logout_user, UserMixin, RoleMixin, login_required, current_user, roles_accepted
 from pymongo import MongoClient
 from flask_mongoengine import MongoEngine
+import _mail
 
-app = flask.Flask(__name__)
 
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -58,6 +59,7 @@ def checkRequestt():
 @app.route('/Map')
 def MapPage():
     return render_template('20-Map.html')
+
 ##############################
 ############功能api###########
 ##############################
@@ -87,8 +89,11 @@ def insertNewUser():
         newUser['_postHistory'] = []
         newUser['_requestHistory'] = []
         userCol.insert_one(newUser)
-        print("create susecess")
-        return render_template('3-index.html')
+        if(_mail.sendMail("海大機車共乘系統註冊通知","感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+
+                            "\n電話:"+newUser["_phone"],newUser['_mail'])):
+            print("create susecess")
+            return '成功'
+        return '失敗'
 
 
 app.run(host ='0.0.0.0',port = '5000')

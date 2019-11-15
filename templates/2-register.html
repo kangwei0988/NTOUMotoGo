@@ -41,26 +41,26 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
   <div class="w3-container w3-padding-32 w3-padding-large" id="contact">
     <div class="w3-content  w3-text-light-grey" style="max-width:600px">
       <h4 class="w3-center"><b>填寫個人資訊</b></h4>
-      <form action="/action_page.php" target="_blank">
+      <form action="/newAccount" method="POST">
         <div class="w3-section">
           <label>姓名</label>
-          <input class="w3-input w3-border" type="text" name="name" required>
+          <input class="w3-input w3-border" type="text" name="_name" required>
         </div>
         <div class="w3-section">
           <label>電話</label>
-          <input class="w3-input w3-border" type="tel" name="phone number" required>
+          <input class="w3-input w3-border" type="tel" name="_phone" required>
         </div>
         <div class="w3-section">
           <label>帳號</label>
-          <input class="w3-input w3-border" type="text" name="account number" required>
+          <input class="w3-input w3-border" type="text" name="Account_name" required>
         </div>
         <div class="w3-section">
             <label>密碼</label>
-            <input class="w3-input w3-border" type="password" name="password" required>
+            <input class="w3-input w3-border" type="password" name="_password" required>
           </div>
           <div class="w3-section">
               <label>email</label>
-              <input class="w3-input w3-border" type="email" name="email" required>
+              <input class="w3-input w3-border" type="email" name="_mail" required>
             </div>
         <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large" style="background-color: #7f92cf;">確認</button>
       </form>
