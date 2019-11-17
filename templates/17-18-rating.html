@@ -43,11 +43,11 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
       <h4 class="w3-center"><b>給個評價吧</b></h4>
       <form action="/action_page.php" target="_blank">
         <div class="w3-section">
-          <img src = "images/star.png" id="star1" alt = "fullStarPic" width="19%">
-          <img src = "images/star.png" id="star2" alt = "fullStarPic" width="19%">
-          <img src = "images/star.png" id="star3" alt = "fullStarPic" width="19%">
-          <img src = "images/star.png" id="star4" alt = "fullStarPic" width="19%">
-          <img src = "images/star.png" id="star5" alt = "fullStarPic" width="19%">
+          <img src = "static/images/star.png" id="star1" alt = "fullStarPic" width="19%">
+          <img src = "static/images/star.png" id="star2" alt = "fullStarPic" width="19%">
+          <img src = "static/images/star.png" id="star3" alt = "fullStarPic" width="19%">
+          <img src = "static/images/star.png" id="star4" alt = "fullStarPic" width="19%">
+          <img src = "static/images/star.png" id="star5" alt = "fullStarPic" width="19%">
         </div>
         <div class="w3-section">
           <label>備註</label>
@@ -96,9 +96,9 @@ function ratingStar(x){
   for(i = 1;i <= 5; i++)
   {
     if(i<=k)
-      document.getElementById("star" + i).src="images/FullStar.png";
+      document.getElementById("star" + i).src="static/images/FullStar.png";
     else
-      document.getElementById("star" + i).src="images/star.png";
+      document.getElementById("star" + i).src="static/images/star.png";
   }
 }
 
