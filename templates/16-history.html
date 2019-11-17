@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="static/assets/css/main.css" />
 <link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
 <style>
 @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
@@ -37,12 +38,14 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 <!-- !PAGE CONTENT! -->
 <div class="w3-main w3-content" style="max-width:1600px;margin-top:100px">
   
-  <div class="w3-container w3-padding-32 w3-padding-large" id="contact">
-    <div class="w3-content  w3-text-light-grey" style="max-width:400px">
-      <h4 class="w3-center"><b>歷史資訊</b></h4>
-        <div class="w3-section" id="historyList"></div>
+  <!-- Main -->
+  <div id="main">
+      <div class="inner">
+  
+        <!-- Boxes -->
+        <div class="thumbnails" id="historyList"></div>
+      </div>
     </div>
-  </div>
 
   <!-- Footer -->
   
@@ -71,48 +74,43 @@ var historyArray = [];
 historyArray.push({ driver:"Lillard", passenger:"Kobe", starting:"school", destination:"court", date:"11/9", time:"4:00", sendRating:"5", receiveRating:"4"});
 historyArray.push({ driver:"Kobe", passenger:"Curry", starting:"court", destination:"resturant", date:"10/31", time:"17:00", sendRating:"4", receiveRating:"5"});
 
-window.onload = function(){
-  console.log("page onload");
-  var i;
-  if(historyArray.length)
-  {
-    for(i = 0; i < historyArray.length;i++)
-    {
-      var showName;
-      if(myName == historyArray[i].driver)
-        showName = historyArray[i].passenger;
-      else
-        showName = historyArray[i].driver;
-      document.getElementById("historyList").innerHTML +="\
-      <div class='w3-section' style='background-color: white; width: 400px; height: 120px; text-align: center;'>\
-        <table width = '400px' height = '120px' style='text-align: center;'>\
-          <tr>\
-            <td width='60px'><img src='images/helmet.ico' width='60px' style='float: left'></td>\
-            <td colspan='3' style='font-size: 50px; text-align: center; color: black;' width='100px'>"+showName+"</td>"+"\
-          </tr>\
-          <tr style='color: black;'>\
-          <td>"+historyArray[i].date+"</td>\
-            <td>抵達時間:"+historyArray[i].time+"</td>\
-            <td>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</td>\
-            <td align='right' valign='bottom''><button id='button"+i+"' onclick='rating()'>評價</button></td>\
-            </tr>\
-          </table>\
-      </div>"
-      //document.getElementById("button"+i).addEventListener("click",function(){console.log("hi"); rating();});
+function onClick(element) {
+      document.getElementById("img01").src = element.src;
+      document.getElementById("modal01").style.display = "block";
+      var captionText = document.getElementById("caption");
+      captionText.innerHTML = element.alt;
     }
-  }
-  else
-  {
-    document.getElementById("historyList").innerHTML += "沒有歷史資訊"
-  }
-  
-}
 
-function rating()
-{
-  console.log("rating");
-  location.replace("17-18-rating.html");
-}
+    window.onload = function(){
+      console.log("page onload");
+      var i;
+      if(historyArray.length)
+      {
+        
+        for(i = 0; i < historyArray.length;i++)
+        {
+          var showName;
+          if(myName == historyArray[i].driver)
+            showName = historyArray[i].passenger;
+          else
+            showName = historyArray[i].driver;
+          document.getElementById("historyList").innerHTML +="\
+          <div class='box'>\
+            <div class='inner'>\
+              <img src='static/images/helmet.ico'>\
+              <h2>"+showName+"</h2>\
+              <p>日期:"+historyArray[i].date+"  抵達時間:"+historyArray[i].time+"</p>\
+              <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
+              <a href='17-18-rating.html' class='button style2 fit'>評價</a>\
+            </div>\
+          </div>"
+        }
+      }
+      else
+      {
+        document.getElementById("historyList").innerHTML += "沒有歷史資訊"
+      }
+    }
 </script>
 
 
