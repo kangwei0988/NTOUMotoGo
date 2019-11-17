@@ -14,6 +14,7 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 .w3-quarter img:hover{opacity: 0.6; transition: 0.3s}
 
 
+
 </style>
 <body  style="background-color: #202024">
 <!-- Sidebar/menu -->
@@ -71,8 +72,8 @@ function w3_close() {
 }
 
 var historyArray = [];
-historyArray.push({ driver:"Lillard", passenger:"Kobe", starting:"school", destination:"court", date:"11/9", time:"4:00", sendRating:"5", receiveRating:"4"});
-historyArray.push({ driver:"Kobe", passenger:"Curry", starting:"court", destination:"resturant", date:"10/31", time:"17:00", sendRating:"4", receiveRating:"5"});
+historyArray.push({pictrue:"static/images/lillard.jpg", driver:"Lillard", passenger:"Kobe", starting:"school", destination:"court", date:"11/9", time:"4:00", sendRating:"5", receiveRating:"4"});
+historyArray.push({pictrue:"static/images/helmet.ico", driver:"Kobe", passenger:"Curry", starting:"court", destination:"resturant", date:"10/31", time:"17:00", sendRating:"4", receiveRating:"5"});
 
 function onClick(element) {
       document.getElementById("img01").src = element.src;
@@ -97,7 +98,7 @@ function onClick(element) {
           document.getElementById("historyList").innerHTML +="\
           <div class='box'>\
             <div class='inner'>\
-              <img src='static/images/helmet.ico'>\
+              <img src="+historyArray[i].pictrue+" width='90%'>\
               <h2>"+showName+"</h2>\
               <p>日期:"+historyArray[i].date+"  抵達時間:"+historyArray[i].time+"</p>\
               <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
