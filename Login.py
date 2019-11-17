@@ -1,5 +1,5 @@
 from flask import Flask, Response, redirect, url_for, request, session, abort
-from flask.login import LoginManager, UserMixin, login_required, login_user, logout_user 
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user 
 
 app = Flask(__name__)
 
@@ -46,7 +46,7 @@ def login():
             return abort(401)
     else:
         return Response('''
-        <form action="" method="post">
+        <form action="/login" method="post">
             <p><input type=text name=username>
             <p><input type=password name=password>
             <p><input type=submit value=Login>
@@ -70,4 +70,4 @@ def page_not_found(e):
 def load_user(userid):
     return User(userid)
 
-app.run()
+app.run(host ='127.0.0.1',port = '5000')
