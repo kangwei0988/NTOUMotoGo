@@ -102,7 +102,7 @@
       captionText.innerHTML = element.alt;
     }
 
-    var map, marker, lat, lng;
+    var map, marker, lat, lng, other_lat, other_lng;
         function initMap() {
             navigator.geolocation.watchPosition((position) => {
                 console.log(position.coords);

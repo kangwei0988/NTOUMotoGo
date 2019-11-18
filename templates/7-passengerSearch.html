@@ -65,15 +65,15 @@
         <form action="/action_page.php" target="_blank">
           <div class="w3-section">
             <label>去哪?</label>
-            <input class="w3-input w3-border" type="text" name="name" required>
+            <input class="w3-input w3-border" type="text" name="destination" id="destination" required>
           </div>
           <div class="w3-section">
             <label>搭車時間</label>
-            <input class="w3-input w3-border" type="tel" name="phone number" required>
+            <input class="w3-input w3-border" type="time" name="time" id="time" required>
           </div>
           <div class="w3-section">
             <label>搭車地點</label>
-            <input class="w3-input w3-border" type="text" name="account number" required>
+            <input class="w3-input w3-border" type="text" name="location" id="location" required>
           </div>
           <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
             style="background-color: #7f92cf;">搜尋</button>
@@ -106,6 +106,13 @@
       document.getElementById("modal01").style.display = "block";
       var captionText = document.getElementById("caption");
       captionText.innerHTML = element.alt;
+    }
+
+    function data() {
+      var destination=document.getElementById("destination"); 
+      var time=document.getElementById("time");
+      var location=document.getElementById("location");
+      var post_id;
     }
 
   </script>
