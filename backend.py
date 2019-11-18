@@ -23,17 +23,41 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.permanent_session_lifetime = datetime.timedelta(seconds=30)
 
 #連接mongodb cluster
-client = MongoClient('mongodb+srv://kang:kkkk0000@cluster0-ew3ql.gcp.mongodb.net/test?retryWrites=true&w=majority')
+client = MongoClient('mongodb+srv://kang:kang0000@cluster0-ew3ql.gcp.mongodb.net/test?retryWrites=true&w=majority')
 #連接cluster 裡的database
 db = client['motoGo']
 #連接user-collection
 userCol = db['user']
 
+#進入每個頁面前
+@app.before_request
+def before_request():
+    #除了註冊，登入功能api及其頁面的請求外，才去判斷登入狀態
+    if request.endpoint not in ['newAccount','register','loginPage','login']:
+        if 'NTOUmotoGoUser' in session: #判斷登入狀態
+            #修改登入時間，登入狀態
+            userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_logged' : True, '_lastLogin' : datetime.datetime.now()}})
+        if 'NTOUmotoGoUser' not in session:
+            return redirect(url_for('loginPage'))
+
+
 #首頁
 @app.route('/')
 def index():
-    if 'NTOUmotoGoUser' in session:
-        return 'You are logged in as ' + session['NTOUmotoGoUser']
+    return redirect(url_for('homePage'))
+#跳轉頁面到0-logout.html
+@app.route('/loginp')
+def loginPage():
+    return render_template('1-login.html')
+#跳轉頁面到1-login.html
+@app.route('/logout')
+def logoutPage():
+    return render_template('0-logout.html')
+@app.route('/home')
+def homePage():
+    return render_template('3-index.html')
+@app.route('/signup')
+def register():
     return render_template('2-register.html')
 #跳轉頁面到7-passengerSearch.html
 @app.route('/passengerSearch')
@@ -63,11 +87,6 @@ def checkRequestt():
 @app.route('/Map')
 def MapPage():
     return render_template('20-Map.html')
-#跳轉頁面到1-login.html
-@app.route('/loginp')
-def loginPage():
-    print()
-    return render_template('1-login.html')
 
 ##############################
 ############功能api###########
@@ -81,12 +100,13 @@ def getTargetLocation():
 
 #創建新使用者
 @app.route('/newAccount',methods=['GET','POST'])
-def insertNewUser():
+def newAccount():
     fault = {}
     newUser = request.values.to_dict()
-    if userCol.find_one({"Account_name":newUser["_name"]}):
+    print(newUser)
+    if userCol.find_one({"Account_name":newUser['Account_name']}):
         fault["_name"] = False
-    if userCol.find_one({"_phone":newUser["_phone"]}):
+    if userCol.find_one({"_phone":newUser['_phone']}):
         fault["_phone"] = False
     if len(fault) != 0 :
         #return jsonify(fault)
@@ -100,11 +120,14 @@ def insertNewUser():
         newUser['_history'] = []
         newUser['_postHistory'] = []
         newUser['_requestHistory'] = []
+        newUser['_lastLogin'] = datetime.datetime.now()
+        newUser['_logged'] = False
+
         userCol.insert_one(newUser)
-        if(_mail.sendMail("海大機車共乘系統註冊通知","感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+
-                            "\n電話:"+newUser["_phone"],newUser['_mail'])):
-            print("create susecess")
-            return render_template('1-login.html')
+        # if(_mail.sendMail("海大機車共乘系統註冊通知","感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+
+        #                     "\n電話:"+newUser["_phone"],newUser['_mail'])):
+        #     print("create susecess")
+        #     return render_template('1-login.html')
         return '失敗'
 
 #使用者登入
@@ -112,17 +135,23 @@ def insertNewUser():
 def login():
     user = request.values.to_dict()
     login_user = userCol.find_one({'Account_name' : user['Account_name']})
-    print(user['_password'].encode('utf-8'))
-    print(login_user['_password'].encode('utf-8'))
+    logoutTime = login_user['_lastLogin'] + datetime.timedelta(seconds= 30)
     if login_user:
         if bcrypt.hashpw(user['_password'].encode('utf-8'), login_user['_password'].encode('utf-8')) == login_user['_password'].encode('utf-8'):
-            session['NTOUmotoGoUser'] = login_user['Account_name']
-            session.permanent = True
-            return ('登入成功')
+            if login_user['_logged'] is False or logoutTime < datetime.datetime.now() :
+                userCol.update({'Account_name' : user['Account_name']}, {"$set": {'_logged' : True, '_lastLogin' : datetime.datetime.now()}})
+                session['NTOUmotoGoUser'] = login_user['Account_name']
+                session.permanent = True
+                return ('登入成功')
+            return ('this account already signin!!')
         return ('password wrong')
     return ('account not exist')
 
-
+@app.route('/logOut',methods=['GET','POST'])
+def logout():
+    userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_logged' : False, '_lastLogin' : datetime.datetime.now()}})
+    session.clear()
+    return ('登出成功')
 
 
 app.run(host ='0.0.0.0',port = '5000')
