@@ -184,7 +184,7 @@ def newAccount():
         #                     "\n電話:"+newUser["_phone"],newUser['_mail'])):
         #     print("create susecess")
         #     return render_template('1-login.html')
-        return ('失敗')
+        return ('成功')
 
 #使用者登入
 @app.route('/loginAPI',methods=['GET','POST'])
