@@ -5,102 +5,130 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
+<link rel="stylesheet" href="static/assets/css/main.css" />
 <style>
-body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-.w3-quarter img{margin-bottom: -6px; cursor: pointer}
-.w3-quarter img:hover{opacity: 0.6; transition: 0.3s}
+  @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: "Noto Sans TC", "Raleway", sans-serif
+  }
+
+  .w3-quarter img {
+    margin-bottom: -6px;
+    cursor: pointer
+  }
+
+  .w3-quarter img:hover {
+    opacity: 0.6;
+    transition: 0.3s
+  }
 </style>
-<body class="w3-light-grey">
 
-<!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large" style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
-  <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a> 
-  <a href="#inform" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
-  <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a> 
-  <a href="#main" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
-  <a href="#history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
-  <a href="#set" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">設置</a>
-</nav>
+<body style="background-color: #202024">
 
-<!-- Top menu on small screens -->
-<header class="w3-container w3-top w3-white w3-xlarge w3-padding-16">
-  <span class="w3-left w3-padding">乘客</span>
-  <a href="javascript:void(0)" class="w3-right w3-button w3-white" onclick="w3_open()">&#9776;</a>
-</header>
+  <!-- Sidebar/menu -->
+  <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
+    style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
+    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a>
+    <a href="#inform" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a>
+    <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
+    <a href="http://122.116.67.75:5000/" onclick="w3_close()"
+      class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
+    <a href="#history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
+    <a href="#set" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">設置</a>
+  </nav>
 
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+  <!-- Top menu on small screens -->
+  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
+    <span class="w3-center w3-padding w3-text-light-grey">請求狀態</span>
+    <a href="javascript:void(0)" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
+  </header>
 
-<!-- !PAGE CONTENT! -->
-<div class="w3-main w3-content" style="max-width:1600px;margin-top:83px">
-  
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+    id="myOverlay"></div>
 
-  <!-- Pagination -->
-  <div class="w3-center w3-padding-32">
-    <div class="w3-bar">
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">&laquo;</a>
-      <a href="#" class="w3-bar-item w3-black w3-button">1</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">2</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">3</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">4</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">&raquo;</a>
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main w3-content" style="max-width:1600px;margin-top:100px">
+
+    <div id="main">
+      <div class="inner">
+
+        <!-- Boxes -->
+        <div class="thumbnails" id="list">
+
+        </div>
+      </div>
     </div>
-  </div>
-  
-  <div class="w3-container w3-light-grey w3-padding-32 w3-padding-large" id="contact">
-    <div class="w3-content" style="max-width:600px">
-      <h4 class="w3-center"><b>刊登</b></h4>
-      <form action="/action_page.php" target="_blank">
-        <div class="w3-section">
-          <label>目的地</label>
-          <input class="w3-input w3-border" type="text" name="Name" required>
-        </div>
-        <div class="w3-section">
-          <label>搭車時間</label>
-          <input class="w3-input w3-border" type="text" name="Email" required>
-        </div>
-        <div class="w3-section">
-          <label>搭車地點</label>
-          <input class="w3-input w3-border" type="text" name="Message" required>
-        </div>
-        <div class="w3-section">
-            <label>其他要求</label>
-            <input class="w3-input w3-border" type="text" name="Message" required>
-          </div>
-        <button type="submit" class="w3-button w3-block w3-black w3-margin-bottom">發布</button>
-      </form>
-    </div>
+
+    <!-- Footer -->
+
+    <div class="w3-center w3-padding-24 w3-text-white" style="background-color: #3c3c44;">Made by <a
+        href="https://youtu.be/NL2e8U0hays" title="W3.CSS" target="_blank"
+        class="w3-hover-opacity">山海關快打旋風程門雞蛋糕猜猜幾把刀</a></div>
+
+    <!-- End page content -->
   </div>
 
-  <!-- Footer -->
-  
-  <div class="w3-black w3-center w3-padding-24">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a></div>
+  <script>
+    // Script to open and close sidebar
+    function w3_open() {
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("myOverlay").style.display = "block";
+    }
 
-<!-- End page content -->
-</div>
+    function w3_close() {
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("myOverlay").style.display = "none";
+    }
 
-<script>
-// Script to open and close sidebar
-function w3_open() {
-  document.getElementById("mySidebar").style.display = "block";
-  document.getElementById("myOverlay").style.display = "block";
-}
+    // Modal Image Gallery
+    function onClick(element) {
+      document.getElementById("img01").src = element.src;
+      document.getElementById("modal01").style.display = "block";
+      var captionText = document.getElementById("caption");
+      captionText.innerHTML = element.alt;
+    }
 
-function w3_close() {
-  document.getElementById("mySidebar").style.display = "none";
-  document.getElementById("myOverlay").style.display = "none";
-}
 
-// Modal Image Gallery
-function onClick(element) {
-  document.getElementById("img01").src = element.src;
-  document.getElementById("modal01").style.display = "block";
-  var captionText = document.getElementById("caption");
-  captionText.innerHTML = element.alt;
-}
+    var mylist = [];
+    mylist.push({ driver: "Lillard", passenger: "Kobe", starting: "school", destination: "court", date: "11/9", time: "4:00", phone: "0970772996" });
+    mylist.push({ driver: "Kobe", passenger: "Curry", starting: "court", destination: "resturant", date: "10/31", time: "17:00", phone: "0970772996" });
 
-</script>
+    window.onload = function () {
+      console.log("page onload");
+      var i;
+      if (mylist.length) {
 
+        for (i = 0; i < mylist.length; i++) {
+          document.getElementById("list").innerHTML += 
+          "\<div class='box'>\
+            <img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            <div class='inner'>\
+              <h3>駕駛:" +mylist[i].driver + "</h3>\
+              <h3>乘客:" +mylist[i].passenger + "</h3>\
+              <p>上車日期:" +mylist[i].date + "</p>\
+              <p>上車時間:" +mylist[i].time + "</p>\
+              <p>上車地點:" +mylist[i].starting + "</p>\
+              <p>目的地:" +mylist[i].destination + "</p>\
+              <p>聯絡電話:" +mylist[i].phone + "</p>\
+              <a class='button fit'>未配對</a>\
+            </div>\
+          </div>"
+        }
+      }
+      else {
+        document.getElementById("list").innerHTML += "沒有請求狀態"
+      }
+    }
+  </script>
 
 </body>
+
 </html>

@@ -148,11 +148,18 @@ def notifation(userid, indexid):
     socketio.emit('news', {'num' : len(newNotif)}, room = userCol.find_one({'_id' : userid})['Account_name']) #向room推播
 
 
-#回傳google Map 要顯示的座標位置
-@app.route('/checkLocation',methods=['GET','POST'])
+#取得座標位置
+@app.route('/getLocation',methods=['GET','POST'])
 def getTargetLocation():
-    addr = {'lat': 25.1504516, 'lng': 121.780}
-    return jsonify(addr)
+    login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    pos = request.values.to_dict()
+    login_user['_lastLocation'] = pos
+
+#回傳google Map 要顯示的對方座標位置
+@app.route('/checkLocation',methods=['GET','POST'])
+def returnTargetLocation():
+    pos = {'other_lat': 25.1504516, 'other_lng': 121.780}
+    return jsonify(pos)
 
 #創建新使用者
 @app.route('/newAccount',methods=['GET','POST'])

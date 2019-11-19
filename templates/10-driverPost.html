@@ -45,7 +45,7 @@
 
   <!-- Top menu on small screens -->
   <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
-    <span class="w3-center w3-padding w3-text-light-grey">駕駛</span>
+    <span class="w3-center w3-padding w3-text-light-grey">駕駛 <a href="9-passengerPost.html" style="text-decoration:none; background-color:blue;">切換身分</a></span>
     <a href="javascript:void(0)" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
   </header>
 
@@ -62,11 +62,11 @@
         <form action="/action_page.php" target="_blank">
           <div class="w3-section">
             <label>搭車時間</label>
-            <input class="w3-input w3-border" type="tel" name="phone number" required>
+            <input class="w3-input w3-border" type="tel" name="post_getOnTime" required>
           </div>
           <div class="w3-section">
             <label>搭車地點</label>
-            <select class="w3-input w3-border" type="text" name="account number" required>
+            <select class="w3-input w3-border" type="text" name="post_location" required>
               　<option value="Taipei">海大</option>
               　<option value="Taoyuan">桃園</option>
               　<option value="Hsinchu">新竹</option>
@@ -75,7 +75,7 @@
           </div>
           <div class="w3-section">
             <label>目的地</label>
-            <select class="w3-input w3-border" type="text" name="account number" required>
+            <select class="w3-input w3-border" type="text" name="post_goto" required>
               　<option value="Taipei">海大</option>
               　<option value="Taoyuan">桃園</option>
               　<option value="Hsinchu">新竹</option>
@@ -84,7 +84,12 @@
           </div>
           <div class="w3-section">
             <label>備註</label>
-            <input class="w3-input w3-border" type="text" name="name" required>
+            <input class="w3-input w3-border" type="text" name="post_notice" required>
+          </div>
+          <div class="w3-section">
+            <label >其他要求:</label>
+            <label><input name = "likes" type = "checkbox" value = true>雨衣</label>
+            <label><input name = "likes" type = "checkbox" value = true>安全帽</label>
           </div>
           <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
             style="background-color: #7f92cf;">發布</button>
