@@ -18,7 +18,7 @@ app.config["DEBUG"] = True
 app.config["JSON_AS_ASCII"] = False
 app.config["MONGODB_HOST"] = "mongodb+srv://kang:kkkk0000@cluster0-ew3ql.gcp.mongodb.net/test?retryWrites=true&w=majority"
 app.config["MONGODB_DB"] = True
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = 'ntouMOTOgo' #os.environ.get('SECRET_KEY')
 app.config['BCRYPT_LOG_ROUNDS'] = 10
 app.jinja_env.auto_reload = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -61,12 +61,18 @@ def loginPage():
 @app.route('/logout')
 def logoutPage():
     return render_template('0-logout.html')
+#跳轉頁面到2-register.html
+@app.route('/signup')
+def register():
+    return render_template('2-register.html',fault={})
+#跳轉頁面到3-index.html
 @app.route('/home')
 def homePage():
     return render_template('3-index.html')
-@app.route('/signup')
-def register():
-    return render_template('2-register.html')
+#跳轉頁面到4-setting.html
+@app.route('/setting')
+def settingPage():
+    return render_template('4-setting.html')
 #跳轉頁面到7-passengerSearch.html
 @app.route('/passengerSearch')
 def passengerSearch():
@@ -95,10 +101,22 @@ def passengerRespond():
 @app.route('/checkRequestt')
 def checkRequestt():
     return render_template('15-_checkRequestt.html')
+#跳轉頁面到16-history.html
+@app.route('/history')
+def history():
+    return render_template('16-history.html')
+#跳轉頁面到19-userInfo.html
+@app.route('/userInfo')
+def userInfo():
+    return render_template('19-userInfo.html')
 #跳轉頁面到20-Map.html
 @app.route('/Map')
 def MapPage():
     return render_template('20-Map.html')
+#跳轉頁面到21-notice.html
+@app.route('/notice')
+def notice():
+    return render_template('21-notice.html')
 
 ##############################
 ############功能api###########
@@ -130,7 +148,6 @@ def notifation(userid, indexid):
     socketio.emit('news', {'num' : len(newNotif)}, room = userCol.find_one({'_id' : userid})['Account_name']) #向room推播
 
 
-
 #回傳google Map 要顯示的座標位置
 @app.route('/checkLocation',methods=['GET','POST'])
 def getTargetLocation():
@@ -140,16 +157,15 @@ def getTargetLocation():
 #創建新使用者
 @app.route('/newAccount',methods=['GET','POST'])
 def newAccount():
-    fault = {}
     newUser = request.values.to_dict()
     if userCol.find_one({"Account_name":newUser['Account_name']}):
-        fault["_name"] = False
+        newUser["faultAccount_name"] = "帳號已被註冊"
     if userCol.find_one({"_phone":newUser['_phone']}):
-        fault["_phone"] = False
+        newUser["fault_phone"] = '電話已被註冊'
     if userCol.find_one({"_mail":newUser['_mail']}):
-        fault["_mail"] = False
-    if len(fault) != 0 :
-        return render_template('2-register.html',fault=fault)
+        newUser["fault_mail"] = 'email已被註冊'
+    if len(newUser) != 5 :
+        return render_template('2-register.html',fault=newUser)
     else:
         pshash = bcrypt.hashpw(newUser['_password'].encode('utf-8'), bcrypt.gensalt())
         newUser['_password'] = str(pshash, encoding = "utf-8")
