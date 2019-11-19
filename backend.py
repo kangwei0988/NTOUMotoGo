@@ -10,6 +10,7 @@ from flask_bcrypt import Bcrypt
 import datetime
 import time
 from bson.objectid import ObjectId
+from flask_socketio import SocketIO, emit, join_room, leave_room
 
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -23,15 +24,18 @@ app.jinja_env.auto_reload = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.permanent_session_lifetime = datetime.timedelta(hours=1) #登入時效
 
+#實作socketio
+socketio = SocketIO(app)
+
 #連接mongodb cluster
 client = MongoClient('mongodb+srv://kang:kang0000@cluster0-ew3ql.gcp.mongodb.net/test?retryWrites=true&w=majority')
 #連接cluster 裡的database
 db = client['motoGo']
 #連接user-collection
 userCol = db['user']
-#連接user-collection
+#連接post-collection
 postCol = db['postInfo']
-#連接user-collection
+#連接request-collection
 requestCol = db['requestInfo']
 
 #每個請求前執行
@@ -39,9 +43,9 @@ requestCol = db['requestInfo']
 def before_request():
     #除了註冊，登入功能api及其頁面的請求外，才去判斷登入狀態
     if request.endpoint not in ['newAccount','register','loginPage','login']:
-        if 'NTOUmotoGoUser' in session: #判斷登入狀態
-            userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_logged' : True, '_lastLogin' : datetime.datetime.now()}}) #修改登入時間，登入狀態
-        if 'NTOUmotoGoUser' not in session: #未登入直接將頁面導引至登入
+        if 'NTOUmotoGoUser' in session: #如果已登入
+            userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_logged' : True, '_lastLogin' : datetime.datetime.now()}}) #更新登入時間，登入狀態
+        if 'NTOUmotoGoUser' not in session: #未登入直接將頁面導引至登入頁面
             return redirect(url_for('loginPage'))
 
 
@@ -79,6 +83,10 @@ def passengerPost():
 @app.route('/driverPost')
 def driverPost():
     return render_template('10-driverPost.html')
+#跳轉頁面到11.12-allPost.html
+@app.route('/allPost')
+def allPost():
+    return render_template('11.12-allPost.html')
 #跳轉頁面到13-passengerRespond.html
 @app.route('/passengerRespond')
 def passengerRespond():
@@ -96,14 +104,30 @@ def MapPage():
 ############功能api###########
 ##############################
 
-#通知新推播
-def notifation(userid, postid):
+#黑阿，就是websocket，每次io.connect會呼叫
+@socketio.on('connect')
+def connect():
+    room = session['NTOUmotoGoUser']
+    print(session['NTOUmotoGoUser'])
+    print('connect!')
+    join_room(room)
+#客戶端無回應呼叫
+@socketio.on('disconnect')
+def disconnect():
+    room = session['NTOUmotoGoUser']
+    print(session['NTOUmotoGoUser'])
+    print('disconnect!')
+    leave_room(room)
+
+#通知新推播(對象id，新內容)
+def notifation(userid, indexid):
     user = userCol.find_one({'_id' : userid})
     notif = user['_notifactions']
     newNotif = user['_new_notifactions']
-    notif.insert(0,userid)
-    newNotif.insert(0,userid)
-    userCol.update({'_id' : userid}, {"$set": {'_logged' : True, '_lastLogin' : datetime.datetime.now()}})
+    notif.insert(0,indexid)
+    newNotif.insert(0,indexid)
+    userCol.update({'_id' : userid}, {"$set": {'_notifactions' : notif, '_new_notifactions' : newNotif}})
+    socketio.emit('news', {'num' : len(newNotif)}, room = userCol.find_one({'_id' : userid})['Account_name']) #向room推播
 
 
 
@@ -203,29 +227,31 @@ def postBoard():
     info = request.values.to_dict() #將data拿出
     target = postCol.find_one({'_id' : info['_id']})
     return jsonify(target)
-#駕駛乘客刊登資訊頁面
+#駕駛乘客發出請求
 @app.route('/sendRequest',methods=['GET','POST'])
 def sendRequest():
     tmp = request.values.to_dict()
-    post = postCol.find_one({'_id':tmp['_id']})
+    post = postCol.find_one({'_id':tmp['post_id']})#postCol.find_one({'_id':tmp['post_id']})
     if post['post_matched']:
         return ('此刊登已消失')
     postType = post['post_type']
-    info = {'post_id' : post['_id'], 'pas_id' : '', 'dri_id' : '', 'pas_ok' : False, 'dri_ok' : False, 'pas_rate' : ObjectId(), 'dri_rate' : ObjectId()}
+    info = {'post_id' : post['_id'], 'pas_id' : '', 'dri_id' : '', 'pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False}
+    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
     if postType == 'pas':
-        info['dri_id'] = postCol.find_one({'Account_name':session['NTOUnotoGoUser']})['_id']
+        info['dri_id'] = user['_id']
         info['dri_ok'] = True
         info['pas_id'] = post['owner_id']
         info['pas_ok'] = False
-    else:
+    else:                   #如果請求人是乘客
         info['dri_id'] = post['owner_id']
         info['dri_ok'] = False
-        info['pas_id'] = postCol.find_one({'Account_name':session['NTOUnotoGoUser']})['_id']
+        info['pas_id'] = user['_id']
         info['pas_ok'] = True
-    request_id =requestCol.insert_one(info).inserted_id
-    notifation(post['owner_id'],str(request_id))##???
-
+    request_id =requestCol.insert_one(info).inserted_id #請求對象的id
+    notifation(post['owner_id'], request_id)        #呼叫通知函示
+    #notifation(ObjectId('5dd2604146b1ebd47626add1'), ObjectId('5dd29fd93a6dc24cc32eddd9'))
+    return ('成功')
 
     
 
-app.run(host ='0.0.0.0',port = '5000')
+socketio.run(app,host ='0.0.0.0',port = '5000',debug=True)
