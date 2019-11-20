@@ -117,6 +117,10 @@ def MapPage():
 @app.route('/notice')
 def notice():
     return render_template('21-notice.html')
+#跳轉頁面到test.html
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
 ##############################
 ############功能api###########
@@ -171,7 +175,7 @@ def newAccount():
         newUser["fault_phone"] = '電話已被註冊'
     if userCol.find_one({"_mail":newUser['_mail']}):
         newUser["fault_mail"] = 'email已被註冊'
-    if len(newUser) != 5 :
+    if len(newUser) > 5 :
         return render_template('2-register.html',fault=newUser)
     else:
         pshash = bcrypt.hashpw(newUser['_password'].encode('utf-8'), bcrypt.gensalt())
@@ -253,8 +257,9 @@ def postBoard():
 #駕駛乘客發出請求
 @app.route('/sendRequest',methods=['GET','POST'])
 def sendRequest():
-    tmp = request.values.to_dict()
-    post = postCol.find_one({'_id':tmp['post_id']})#postCol.find_one({'_id':tmp['post_id']})
+    tmp = request.get_json(silent=True)
+    print(tmp)
+    post = postCol.find_one({'_id':ObjectId(tmp['post_id'])})#postCol.find_one({'_id':tmp['post_id']})
     if post['post_matched']:
         return ('此刊登已消失')
     postType = post['post_type']
@@ -272,9 +277,32 @@ def sendRequest():
         info['pas_ok'] = True
     request_id =requestCol.insert_one(info).inserted_id #請求對象的id
     notifation(post['owner_id'], request_id)        #呼叫通知函示
+    postOwnerRequHis = userCol.find_one({'_id' : post['owner_id']})['_requestHistory']  #抓下刊登者的請求歷史紀錄
+    postOwnerRequHis.insert(0,str(request_id))
+    userCol.update_one({'_id' : post['owner_id']},{'$set' : {'_requestHistory' : postOwnerRequHis}})
     #notifation(ObjectId('5dd2604146b1ebd47626add1'), ObjectId('5dd29fd93a6dc24cc32eddd9'))
     return ('成功')
 
+#回傳使用者發出的要求
+@app.route('/getMySendRequests',methods=['GET','POST'])
+def getMySendRequests():
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    result = []
+    requests = user['_requestHistory']
+    print(type(requests))
+    print(requests)
+    for requ in requests:
+        event = requestCol.find_one({'_id':ObjectId(requ)})
+        post = postCol.find_one({'_id': event['post_id']})
+        if post['owner_id'] == user['_id']:
+            post['_id'] = str(post['_id'])
+            post['owner_id'] = str(post['owner_id'])
+            post['dri_id'] = str(event['dri_id'])
+            post['pas_id'] = str(event['pas_id'])
+            post['dri_ok'] = event['dri_ok']
+            post['pas_ok'] = event['pas_ok']
+            result.append(post)
+    return jsonify(result)
     
 
-socketio.run(app,host ='0.0.0.0',port = '5000',debug=True)
+socketio.run(app,host ='0.0.0.0',port =int('5000'))

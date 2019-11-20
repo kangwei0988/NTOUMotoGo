@@ -101,11 +101,11 @@
 
         <div class="box">
           <div class="inner">
-            <h3>八三天</h3>
+            <h3>康致瑋</h3>
             <p>上車時間:</p>
             <p>上車地點:</p>
             <p>目的地:</p>
-            <span class="button style2 fit">送出請求</span>
+            <span class="button style2 fit" onclick="test('5dd29fd93a6dc24cc32eddd9')">送出請求</span>
           </div>
         </div>
 
@@ -135,6 +135,14 @@
       captionText.innerHTML = element.alt;
     }
 
+    function test(gotid){
+      $.ajax({
+              type: 'POST',
+              url: "/sendRequest",
+              data: JSON.stringify({'post_id' : gotid}),
+              contentType: 'application/json; charset=utf-8',
+      });
+    }
   </script>
   <script src="static/assets/js/jquery.min.js"></script>
   <script src="static/assets/js/jquery.scrolly.min.js"></script>
