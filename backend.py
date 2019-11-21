@@ -162,17 +162,17 @@ def notifation(userid, indexid):
 
 #取得座標位置
 @app.route('/getLocation',methods=['GET','POST'])
-def getTargetLocation():
-    pos = request.get_json(silent=true)
+def getLocation():
+    pos = request.get_json(silent=True)
     userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLocation' : pos}})
 
 #回傳google Map 要顯示的對方座標位置
-@app.route('/checkLocation',methods=['GET','POST'])
-def returnTargetLocation():
-    other_id = request.get_json(silent=true)
-    other_user = userCol.find_one({{'_id' : other_id}})
-    pos = {'other_lat': other_user['_lastLocation'].lat, 'other_lng': other_user['_lastLocation'].lng}
-    return jsonify(pos)
+@app.route('/returnLocation',methods=['GET','POST'])
+def returnLocation():
+    other_id = request.get_json(silent=True)
+    other_user = userCol.find_one({{'_id' : other_id['other_id']}})
+    other_pos = {'other_lat': other_user['_lastLocation'].lat, 'other_lng': other_user['_lastLocation'].lng}
+    return jsonify(other_pos)
 
 #創建新使用者
 @app.route('/newAccount',methods=['GET','POST'])
