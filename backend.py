@@ -313,5 +313,30 @@ def getMySendRequests():
             result.append(post)
     return jsonify(result)
     
-
+#回傳歷史紀錄(包含已完成共乘)
+@app.route('/getHistory', methods=['POST'])
+def getHistory():
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    results = []
+    histories = user['_history']
+    for his in histories:
+        history = requestCol.find_one({'_id':ObjectId(his)})
+        print(history)
+        result={'_id':str(history['_id'])}##
+        tmp = postCol.find_one({'_id':history['post_id']})
+        tmp['_id'] = str(tmp['_id'])
+        tmp['owner_id'] = str(tmp['owner_id'])
+        result['_post'] = tmp##
+        tmp= userCol.find_one({'_id' : history['pas_id']})
+        result['passenger'] = {'_name' : tmp['_name'], '_id' : str(tmp['_id'])}##
+        tmp= userCol.find_one({'_id' : history['dri_id']})
+        result['driver'] = {'_name' : tmp['_name'], '_id' : str(tmp['_id'])}##
+        result['pas_ok'] = history['pas_ok']
+        result['dri_ok'] = history['dri_ok']
+        result['pas_rate'] = str(history['pas_rate'])
+        result['dri_rate'] = str(history['dri_rate'])
+        print(result)
+        results.append(result)
+    return jsonify(results)
+    
 socketio.run(app,host ='0.0.0.0',port =int('5000'))
