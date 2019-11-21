@@ -13,12 +13,11 @@ function getCoords() {
       
       console.log(JSON.stringify(pos));
       $.ajax({
-        url: "{{url_for('getLocation')}}",
+        url: "/getLocation",
         type: "post",
         data: JSON.stringify(pos),
         dataType: 'json',
-        processData: false,
-        contentType: false,
+        contentType: 'application/json; charset=utf-8',
         success: function () {
           console.log("return pos success");
         },

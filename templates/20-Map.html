@@ -84,6 +84,7 @@
   </div>
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap" async defer></script>
+  <script src="static/assets/js/jquery.min.js"></script>
 
   <script>
     // Script to open and close sidebar
@@ -105,10 +106,14 @@
       captionText.innerHTML = element.alt;
     }
 
-    var map, marker, lat, lng, other_lat = 35.710065, other_lng = 139.810702, other_id;
+    var map, marker, lat, lng, other_lat = 35.710065, other_lng = 139.810702, other_id=8877;
     var pos = {
       lat: lat,
       lng: lng
+    }
+    var other_pos = {
+      other_lat: other_lat,
+      other_lng: other_lng
     }
     
     function initMap() {
@@ -121,21 +126,20 @@
 
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 16,
-          center: { lat: other_lat, lng: other_lng }
+          center: { lat: other_pos.other_lat, lng: other_pos.other_lng }
         });
         marker = new google.maps.Marker({
-          position: { lat: other_lat, lng: other_lng },
+          position: { lat: other_pos.other_lat, lng: other_pos.other_lng },
           map: map
         });
 
         console.log(JSON.stringify(pos));
         $.ajax({
-          url: "{{url_for('getLocation')}}",
+          url: "/getLocation",
           type: "post",
           data: JSON.stringify(pos),
           dataType: 'json',
-          processData: false,
-          contentType: false,
+          contentType: 'application/json; charset=utf-8',
           success: function () {
             console.log("return pos success");
           },
@@ -143,18 +147,19 @@
             console.log("return pos fail");
           }
         })
+        console.log(JSON.stringify({other_id:other_id}));
         $.ajax({
-          url: "{{url_for('returnLocation')}}",
+          url: "/returnLocation",
           type: "post",
-          data: other_id,
-          dataType: 'text',
-          processData: false,
-          contentType: false,
-          success: function () {
-            console.log("return pos success");
+          data: JSON.stringify({other_id:other_id}),
+          dataType: 'json',
+          contentType: 'application/json; charset=utf-8',
+          success: function (got_pos) {
+            console.log("get other pos success");
+            other_pos = got_pos;
           },
           error: function () {
-            console.log("return pos fail");
+            console.log("return other_id fail");
           }
         })
       });
