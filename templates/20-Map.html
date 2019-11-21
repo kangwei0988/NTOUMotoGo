@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
   <link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
 
-  <script src="static/assets/js/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="static/assets/js/jquery.min.js"></script>
 
   <style>
     @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
@@ -83,8 +83,7 @@
     <!-- End page content -->
   </div>
 
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap"
-    async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap" async defer></script>
 
   <script>
     // Script to open and close sidebar
@@ -108,14 +107,17 @@
 
     var map, marker, lat, lng, other_lat, other_lng;
     var pos = {
-      'lat': lat,
-      'lng': lng
+      lat: lat,
+      lng: lng
     }
+    
     function initMap() {
       navigator.geolocation.watchPosition((position) => {
         console.log(position.coords);
         lat = position.coords.latitude;
         lng = position.coords.longitude;
+        pos.lat = lat;
+        pos.lng = lng;
 
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 16,
@@ -125,6 +127,8 @@
           position: { lat: lat, lng: lng },
           map: map
         });
+
+        console.log(JSON.stringify(pos));
         $.ajax({
           url: "{{url_for('getLocation')}}",
           type: "post",
