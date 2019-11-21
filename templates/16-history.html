@@ -42,7 +42,9 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
   <!-- Main -->
   <div id="main">
       <div class="inner">
-  
+        <div class="thumbnails">
+          <button id="searchButton" class='button style2 fit' onclick="searchHistory()">搜尋</button>
+        </div>
         <!-- Boxes -->
         <div class="thumbnails" id="historyList"></div>
       </div>
@@ -55,10 +57,24 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 <!-- End page content -->
 </div>
 
+<script src="static/assets/js/jquery.min.js"></script>
+<script src="static/assets/js/jquery.scrolly.min.js"></script>
+<script src="static/assets/js/skel.min.js"></script>
+<script src="static/assets/js/util.js"></script>
+<script src="static/assets/js/main.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+<script src="static/assets/js/ipconfig.js"></script>
+<!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
+
 <script>
 //identity
 var myID;
 var myName = "Kobe";
+var strings = [];
+var historyArray = [];
+historyArray.push({pictrue:"static/images/lillard.jpg", driver:"Lillard", passenger:"Kobe", starting:"school", destination:"court", date:"11/9", time:"4:00", sendRating:"5", receiveRating:"4"});
+historyArray.push({pictrue:"static/images/helmet.ico", driver:"Kobe", passenger:"Curry", starting:"court", destination:"resturant", date:"10/31", time:"17:00", sendRating:"4", receiveRating:"5"});
 
 // Script to open and close sidebar
 function w3_open() {
@@ -71,47 +87,50 @@ function w3_close() {
   document.getElementById("myOverlay").style.display = "none";
 }
 
-var historyArray = [];
-historyArray.push({pictrue:"static/images/lillard.jpg", driver:"Lillard", passenger:"Kobe", starting:"school", destination:"court", date:"11/9", time:"4:00", sendRating:"5", receiveRating:"4"});
-historyArray.push({pictrue:"static/images/helmet.ico", driver:"Kobe", passenger:"Curry", starting:"court", destination:"resturant", date:"10/31", time:"17:00", sendRating:"4", receiveRating:"5"});
-
-function onClick(element) {
-      document.getElementById("img01").src = element.src;
-      document.getElementById("modal01").style.display = "block";
-      var captionText = document.getElementById("caption");
-      captionText.innerHTML = element.alt;
-    }
-
-    window.onload = function(){
-      console.log("page onload");
-      var i;
-      if(historyArray.length)
-      {
-        
-        for(i = 0; i < historyArray.length;i++)
-        {
-          var showName;
-          if(myName == historyArray[i].driver)
-            showName = historyArray[i].passenger;
-          else
-            showName = historyArray[i].driver;
-          document.getElementById("historyList").innerHTML +="\
-          <div class='box'>\
-            <div class='inner'>\
-              <img src="+historyArray[i].pictrue+" width='90%'>\
-              <h2>"+showName+"</h2>\
-              <p>日期:"+historyArray[i].date+"  抵達時間:"+historyArray[i].time+"</p>\
-              <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
-              <a href='17-18-rating.html' class='button style2 fit'>評價</a>\
-            </div>\
-          </div>"
-        }
-      }
+function searchHistory(){
+  var i;
+  if(historyArray.length)
+  {    
+    for(i = 0; i < historyArray.length;i++)
+    {
+      var showName;
+      if(myName == historyArray[i].driver)
+        showName = historyArray[i].passenger;
       else
-      {
-        document.getElementById("historyList").innerHTML += "沒有歷史資訊"
+        showName = historyArray[i].driver;
+      document.getElementById("historyList").innerHTML +="\
+                    <div class='box'>\
+                      <div class='inner'>\
+                        <img src="+historyArray[i].pictrue+" width='90%'>\
+                        <h2>"+showName+"</h2>\
+                        <p>日期:"+historyArray[i].date+"  抵達時間:"+historyArray[i].time+"</p>\
+                        <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
+                        <a href='17-18-rating.html' class='button style2 fit'>評價</a>\
+                      </div>\
+                    </div>"
+    }
+  }
+  else
+  {
+    document.getElementById("historyList").innerHTML += "沒有歷史資訊"
+  }
+}
+
+window.onload = function(){
+  $.ajax({
+    type: 'POST',
+    url: "http://"+hostip+"/getHistory",
+    data: "",
+    contentType: 'application/json; charset=utf-8',
+    success: function(data) {
+      if (data) {
+      // data.redirect contains the string URL to redirect to
+        strings = data;//?????
       }
     }
+  });
+}
+      
 </script>
 
 
