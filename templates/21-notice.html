@@ -81,6 +81,13 @@
   </div>
 
   <!-- Scripts -->
+  <script src="static/assets/js/jquery.min.js"></script>
+  <script src="static/assets/js/jquery.scrolly.min.js"></script>
+  <script src="static/assets/js/skel.min.js"></script>
+  <script src="static/assets/js/util.js"></script>
+  <script src="static/assets/js/main.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+  <!-- <script src="static/assets/js/notifation.js"></script> -->
   <script>
     // Script to open and close sidebar
     function w3_open() {
@@ -105,46 +112,52 @@
     var displaystr = "";
     var data_name = "炫分";
 
-    function creatnotice(choice) {
+    function creatnotice(data) {
       var displayobj = document.getElementById("display");
-      if (choice == 0) {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style4 fit">您與' + data_name + '配對失敗<span class="timestyle">15分鐘前 <span></a></div></div>'+ displaystr;
+      var msgtime = data["msgTime"];
+
+      if (data["type"] == "requ" && true) {
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style4 fit">您與' + data_name + '配對失敗<span class="timestyle">' + msgtime + '<span></a></div></div>'+ displaystr;
         displayobj.innerHTML = displaystr;
       }
-      if (choice == 1) {
+      if (data["type"] == "requ" && true) {
         displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button fit">您與' + data_name + '配對成功<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
-      if (choice == 2) {
+      if (data["type"] == "post") {
         displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">' + "您已刊登成功" + '<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
-      if (choice == 3) {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style3 fit">您已成功發送邀請給' + data_name + '<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
+      if (data["type"] == "rate") {
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">您已收到' + data_name + '的評價<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
+      if (data["type"] == "system") {
+        displaystr = '<div class="box"><div class="inner"><a class="button style2 fit">' + "您已突破系統限制" + '<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
+        displayobj.innerHTML = displaystr;
+      }
+      
 
     }
-
-    $.ajax({
-      type: 'POST',
-      url: "http://" + ipconfig + "/getNotifation",
-      data: JSON.stringify(),
-      contentType: 'application/json; charset=utf-8',
-      success: function (data) {
-        if (data.redirect) {
-          // data.redirect contains the string URL to redirect to
-          window.location.href = data.redirect;
-        }
-      }
+    $(document).ready(function(){
+        $.ajax({
+        type: 'POST',
+        url: "/getNotifation",
+        data: JSON.stringify(),
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          console.log(data);
+          for(let i = 0; data[i] ;i++)
+          {
+            creatnotice(data[i])
+          }
+          // data[1]["driver"]["_name"]
+        },
+      });
     });
+    
 
   </script>
-  <script src="static/assets/js/jquery.min.js"></script>
-  <script src="static/assets/js/jquery.scrolly.min.js"></script>
-  <script src="static/assets/js/skel.min.js"></script>
-  <script src="static/assets/js/util.js"></script>
-  <script src="static/assets/js/main.js"></script>
 
 
 </body>
