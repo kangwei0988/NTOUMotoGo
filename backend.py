@@ -73,6 +73,14 @@ def homePage():
 @app.route('/setting')
 def settingPage():
     return render_template('4-setting.html')
+#跳轉頁面到5-setting.html
+@app.route('/passengerIndex')
+def passengerIndex():
+    return render_template('5-passengerIndex')    
+#跳轉頁面到6-driverIndex
+@app.route('/driverIndex')
+def driverIndex():
+    return render_template('6-driverIndex') 
 #跳轉頁面到7-passengerSearch.html
 @app.route('/passengerSearch')
 def passengerSearch():

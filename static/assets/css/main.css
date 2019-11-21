@@ -1065,6 +1065,30 @@
 				background-color: #8f6bc9;
 			}
 
+			input[type="submit"].style4,
+			input[type="reset"].style4,
+			input[type="button"].style4,
+			button.style4,
+			.button.style4 {
+			background-color: #d07c7c;
+		}
+
+			input[type="submit"].style4:hover,
+			input[type="reset"].style4:hover,
+			input[type="button"].style4:hover,
+			button.style4:hover,
+			.button.style4:hover {
+				background-color: #d89292;
+			}
+
+			input[type="submit"].style4:active,
+			input[type="reset"].style4:active,
+			input[type="button"].style4:active,
+			button.style4:active,
+			.button.style4:active {
+				background-color: #c96969;
+			}
+
 		@media screen and (max-width: 480px) {
 
 			input[type="submit"],
