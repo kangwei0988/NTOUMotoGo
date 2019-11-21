@@ -26,6 +26,17 @@
     opacity: 0.6;
     transition: 0.3s
   }
+  .userinfo{
+    text-decoration:none;
+    text-decoration-color: red;
+    color:yellow;
+  }
+  .userinfo:hover{
+    text-decoration:none;
+    text-decoration-color:orange;
+    color:yellow;
+    cursor: pointer;
+  }
 </style>
 
 <body id="top">
@@ -60,14 +71,14 @@
       <div class="thumbnails">
 
         <div class="box">
-            <a href="https://youtu.be/s6zR2T9vn2c" class="image fit"><img src="static/images/pic03.jpg" alt="" /></a>
+            <a class="image fit"><img src="static/images/pic03.jpg" alt="" /></a>
             <div class="inner">
-              <h3>駕駛:八三夭</h3> 
-              <h3>乘客:白安</h3> 
-              <h1>上車日期:11/21</h1> 
-              <h1>上車時間:16:05</h1> 
-              <h1>上車地點:海大</h1> 
-              <h1>目的地:大朔</h1> 
+              <h3><a onclick="javascript:location.href='19-userInfo.html'" class="userinfo">駕駛:阿德</a></h3> 
+              <h3><a onclick="javascript:location.href='19-userInfo.html'" class="userinfo">乘客:不要命</a></h3>
+              <h1>上車日期:11/24</h1> 
+              <h1>上車時間:12:00</h1> 
+              <h1>上車地點:山海關</h1> 
+              <h1>目的地:台北 四四南村</h1> 
               <h1>連絡電話:0988888888</h1> 
               <a href="https://youtu.be/s6zR2T9vn2c" class="button style3 fit">接受</a>
               <a href="https://youtu.be/s6zR2T9vn2c" class="button style3 fit">拒絕</a>
@@ -75,16 +86,18 @@
           </div>
 
           <div class="box">
-              <a href="https://youtu.be/s6zR2T9vn2c" class="image fit"><img src="static/images/pic02.jpg" alt="" /></a>
+              <a class="image fit"><img src="static/images/pic02.jpg" alt="" /></a>
             <div class="inner">
-              <h3>駕駛:紅商城門雞蛋糕</h3> 
-              <h3>乘客:黑旋風</h3> 
+              <h3><a onclick="javascript:location.href='19-userInfo.html'" class="userinfo">駕駛:紅商城門雞蛋糕</a></h3>
+              <h3><a onclick="javascript:location.href='19-userInfo.html'" class="userinfo">乘客:黑旋風</a></h3> 
               <h1>上車日期:11/20</h1> 
               <h1>上車時間:17:15</h1> 
               <h1>上車地點:火車站</h1> 
               <h1>目的地:海大</h1> 
               <h1>連絡電話:0977777777</h1> 
               <a class="button style2 fit">配對成功</a>
+              <a class="button style2 fit">已完成</a>
+              <a class="button style2 fit">未完成</a>
             </div>
           </div>
           <a class="button style fit" onclick="location.reload()">重新整理</a>
@@ -115,6 +128,10 @@
       captionText.innerHTML = element.alt;
     }
 
+    function goto()
+    {
+
+    }
   </script>
   <script src="static/assets/js/jquery.min.js"></script>
   <script src="static/assets/js/jquery.scrolly.min.js"></script>
