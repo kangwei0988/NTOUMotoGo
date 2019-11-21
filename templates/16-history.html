@@ -69,12 +69,11 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 
 <script>
 //identity
-var myID;
+
 var myName = "Kobe";
 var strings = [];
 var historyArray = [];
-historyArray.push({pictrue:"static/images/lillard.jpg", driver:"Lillard", passenger:"Kobe", starting:"school", destination:"court", date:"11/9", time:"4:00", sendRating:"5", receiveRating:"4"});
-historyArray.push({pictrue:"static/images/helmet.ico", driver:"Kobe", passenger:"Curry", starting:"court", destination:"resturant", date:"10/31", time:"17:00", sendRating:"4", receiveRating:"5"});
+// historyArray.push({pictrue:"static/images/lillard.jpg", driver:"Lillard", passenger:"Kobe", starting:"school", destination:"court", date:"11/9", time:"4:00", sendRating:"5", receiveRating:"4"});
 
 // Script to open and close sidebar
 function w3_open() {
@@ -89,6 +88,7 @@ function w3_close() {
 
 function searchHistory(){
   var i;
+  document.getElementById("historyList").innerHTML="";
   if(historyArray.length)
   {    
     for(i = 0; i < historyArray.length;i++)
@@ -103,11 +103,19 @@ function searchHistory(){
                       <div class='inner'>\
                         <img src="+historyArray[i].pictrue+" width='90%'>\
                         <h2>"+showName+"</h2>\
-                        <p>日期:"+historyArray[i].date+"  抵達時間:"+historyArray[i].time+"</p>\
-                        <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
+                        <p>日期時間:"+historyArray[i].time+"</p>\
+                        <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>";
+      if(historyArray[i].receiveRating != "FALSE"){
+        document.getElementById("historyList").innerHTML +="\
                         <a href='17-18-rating.html' class='button style2 fit'>評價</a>\
                       </div>\
                     </div>"
+      }
+      else{
+        document.getElementById("historyList").innerHTML +="\
+                      </div>\
+                    </div>"
+      }
     }
   }
   else
@@ -115,22 +123,41 @@ function searchHistory(){
     document.getElementById("historyList").innerHTML += "沒有歷史資訊"
   }
 }
+// historyArray.push({pictrue:"static/images/lillard.jpg", driver:"Kobe", passenger:"Curry", starting:"court", destination:"resturant", time:"17:00", sendRating:"4", receiveRating:"5", post_id});
+
+function jsonToStruct(myStrings){
+  var i;
+  for(i = 0;i < strings.length;i++){
+    historyArray.push({pictrue:"static/images/lillard.jpg", driver:"", passenger:"", starting:"", destination:"", date:"", time:"", sendRating:"", receiveRating:"", post_id:""});
+    historyArray[historyArray.length - 1].driver =myStrings[historyArray.length - 1].driver._name;
+    historyArray[historyArray.length - 1].passenger =myStrings[historyArray.length - 1].passenger._name;
+    historyArray[historyArray.length - 1].starting =myStrings[historyArray.length - 1]._post.post_goto;
+    historyArray[historyArray.length - 1].destination =myStrings[historyArray.length - 1]._post.post_location;
+    historyArray[historyArray.length - 1].time =myStrings[historyArray.length - 1]._post.time;
+    historyArray[historyArray.length - 1].sendRating ="FALSE";
+    historyArray[historyArray.length - 1].receiveRating ="FALSE";
+    historyArray[historyArray.length - 1].post_id =myStrings[historyArray.length - 1]._post._id;
+  }
+}
 
 window.onload = function(){
   $.ajax({
     type: 'POST',
-    url: "http://"+hostip+"/getHistory",
+    url: "/getHistory",
     data: "",
     contentType: 'application/json; charset=utf-8',
     success: function(data) {
       if (data) {
       // data.redirect contains the string URL to redirect to
-        strings = data;//?????
+        strings = data;
+        console.log(data);
       }
     }
   });
+  jsonToStruct(strings);
+  localStorage.setItem("notogo_id",strings[0]._id);
 }
-      
+
 </script>
 
 

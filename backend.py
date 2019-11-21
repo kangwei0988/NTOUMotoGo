@@ -37,6 +37,8 @@ userCol = db['user']
 postCol = db['postInfo']
 #連接request-collection
 requestCol = db['requestInfo']
+#連接rate-collection
+rateCol = db['rateInfo']
 
 #每個請求前執行
 @app.before_request
@@ -138,25 +140,21 @@ def test():
 @socketio.on('connect')
 def connect():
     room = session['NTOUmotoGoUser']
-    print(session['NTOUmotoGoUser'])
-    print('connect!')
     join_room(room)
 #客戶端無回應呼叫
 @socketio.on('disconnect')
 def disconnect():
     room = session['NTOUmotoGoUser']
-    print(session['NTOUmotoGoUser'])
-    print('disconnect!')
     leave_room(room)
 
 #通知新推播(對象id，新內容)
 def notifation(userid, indexid):
     user = userCol.find_one({'_id' : userid})
-    notif = user['_notifactions']
-    newNotif = user['_new_notifactions']
+    notif = user['_notifications']
+    newNotif = user['_new_notifications']
     notif.insert(0,indexid)
     newNotif.insert(0,indexid)
-    userCol.update({'_id' : userid}, {"$set": {'_notifactions' : notif, '_new_notifactions' : newNotif}})
+    userCol.update({'_id' : userid}, {"$set": {'_notifications' : notif, '_new_notifications' : newNotif}})
     socketio.emit('news', {'num' : len(newNotif)}, room = userCol.find_one({'_id' : userid})['Account_name']) #向room推播
 
 
@@ -197,8 +195,8 @@ def newAccount():
         newUser['_lastLocation'] = {'lat': 25.1504516, 'lng': 121.780}
         newUser['_lastLogin'] = datetime.datetime.now()
         newUser['_logged'] = False
-        newUser['_notifactions'] = []
-        newUser['_new_notifactions'] = []
+        newUser['_notifications'] = []
+        newUser['_new_notifications'] = []
         userCol.insert_one(newUser)
         # if(_mail.sendMail("海大機車共乘系統註冊通知","感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+
         #                     "\n電話:"+newUser["_phone"],newUser['_mail'])):
@@ -213,7 +211,7 @@ def login():
     login_user = userCol.find_one({'Account_name' : user['Account_name']})
     logoutTime = login_user['_lastLogin'] + datetime.timedelta(hours=1) #登入時效
     if login_user:
-        if bcrypt.hashpw(user['_password'].encode('utf-8'), login_user['_password'].encode('utf-8')) == login_user['_password'].encode('utf-8'):#密碼解碼 核對密碼
+        if bcrypt.hashpw(user['_password'].encode('utf-8'), login_user['_password'].encode('utf-8')) == login_user['_password'].encode('utf-8'):#密碼解碼 核對密碼 找時間嘗試
             if login_user['_logged'] is False or logoutTime < datetime.datetime.now() : #檢查帳號目前登入狀態
                 userCol.update({'Account_name' : user['Account_name']}, {"$set": {'_logged' : True, '_lastLogin' : datetime.datetime.now()}}) #修改登入時間，登入狀態
                 session['NTOUmotoGoUser'] = login_user['Account_name'] #建立session
@@ -335,8 +333,36 @@ def getHistory():
         result['dri_ok'] = history['dri_ok']
         result['pas_rate'] = str(history['pas_rate'])
         result['dri_rate'] = str(history['dri_rate'])
+        result['user_id'] = str(user['_id'])
         print(result)
         results.append(result)
     return jsonify(results)
     
+#回傳通知
+@app.route('/getNotifation',methods=['POST','GET'])
+def getNotifation():
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    news = user['_notifications']
+    results = []
+    for noti in news:
+        if type(noti) is str:#系統訊息
+            tmp = {'type' : 'system', '_id' : str(result['_id']), 'msgTime':datetime.datetime.now(), 'text' : noti}
+            results.append(tmp)
+            continue
+        result = postCol.find_one({'_id' : ObjectId(noti)})
+        if result:#刊登相關通知
+            tmp = {'type' : 'post', '_id' : str(result['_id']), 'msgTime':datetime.datetime.now()}
+            results.append(tmp)
+            continue
+        result = requestCol.find_one({'_id' : ObjectId(noti)})
+        if result:#請求相關通知
+            tmp = {'type' : 'requ', '_id' : str(result['_id']), 'msgTime':datetime.datetime.now()}
+            results.append(tmp)
+            continue
+        result = rateCol.find_one({'_id' : ObjectId(noti)})
+        if result:#評價相關通知
+            tmp = {'type' : 'rate', '_id': str(result['_id']), 'msgTime':datetime.datetime.now()}
+            results.append(tmp)
+            continue
+    return jsonify(results)
 socketio.run(app,host ='0.0.0.0',port =int('5000'))
