@@ -2,7 +2,7 @@ import os
 import flask
 from _init_ import app
 from flask import render_template, request, jsonify, redirect, url_for, session
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from flask_mongoengine import MongoEngine
 import _mail
 import bcrypt
@@ -53,13 +53,10 @@ def before_request():
             # print(userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_token'])
             if session['NTOUmotoGoToken'] == userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_token']:#為什麼不能用ｉｓ要用＝＝阿
                 userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}}) #更新登入時間，登入狀態
-                print(0)
             else:
-                print(1)
                 session.clear()
                 return redirect(url_for('loginPage'))
         else: #未登入直接將頁面導引至登入頁面
-            print(2)
             return redirect(url_for('loginPage'))
 
 
@@ -267,10 +264,10 @@ def pasPost():
     if post_id:
         login_user['_postHistory'].insert(0,str(post_id))
         userCol.update_one({'_id' : login_user['_id']}, {"$set": {'_postHistory' : login_user['_postHistory']}})
-        thr = Thread(target=notifation, args=[app, login_user['owner_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
+        thr = Thread(target=notifation, args=[app, login_user['_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
         thr.start()
     else:
-        thr = Thread(target=notifation, args=[app, login_user['owner_id'], False, 'post', '刊登失敗']) #呼叫通知函示
+        thr = Thread(target=notifation, args=[app, login_user['_id'], False, 'post', '刊登失敗']) #呼叫通知函示
         thr.start()
     return redirect(url_for('allPost'))
 #駕駛刊登
@@ -286,17 +283,28 @@ def driPost():
     if post_id:
         login_user['_postHistory'].insert(0,str(post_id))
         userCol.update_one({'_id' : login_user['_id']}, {"$set": {'_postHistory' : login_user['_postHistory']}})
-        thr = Thread(target=notifation, args=[app, login_user['owner_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
+        thr = Thread(target=notifation, args=[app, login_user['_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
         thr.start()
     else:
-        thr = Thread(target=notifation, args=[app, login_user['owner_id'], False, 'post', '刊登失敗']) #呼叫通知函示
+        thr = Thread(target=notifation, args=[app, login_user['_id'], False, 'post', '刊登失敗']) #呼叫通知函示
         thr.start()
     return redirect(url_for('allPost'))
 #駕駛乘客刊登資訊頁面
 @app.route('/postBoard',methods=['GET','POST'])
 def postBoard():
-    return 0
-    
+    post_type = request.get_json()['post_type']
+    print(post_type)
+    posts = postCol.find({'post_type':post_type,'post_matched':False}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
+    results = []
+    for post in posts:
+        print(post)
+        result = post
+        result['_id'] = str(result['_id'])
+        result['owner_id'] = str(result['owner_id'])
+        result['post_name'] = userCol.find_one({'_id' : ObjectId(post['owner_id'])})['_name']
+        results.append(result)
+    return jsonify(results)
+
 
 #######################################################################
 
@@ -329,13 +337,13 @@ def sendRequest():
             userCol.update_one({'_id' : post['owner_id']},{'$set' : {'_requestHistory' : postOwnerRequHis}})
             userRequHis = userCol.find_one({'_id' : user['id']})['_requestHistory']             #更改被請求者請求歷史紀錄
             userRequHis.insert(0,str(request_id))
-            userCol.update_one({'_id' : user['owner_id']},{'$set' : {'_requestHistory' : userRequHis}})
+            userCol.update_one({'_id' : user['_id']},{'$set' : {'_requestHistory' : userRequHis}})
             thr = Thread(target=notifation, args=[app, post['owner_id'], request_id, 'requ', '新的請求']) #呼叫通知函示，通知被請求者
             thr.start()
             thr2 = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '成功發出請求']) #呼叫通知函示，回報請求者發出成功
             thr2.start()
         else:
-            thr = Thread(target=notifation, args=[app, user['id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次']) #呼叫通知函示，回報請求者發出失敗
+            thr = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次']) #呼叫通知函示，回報請求者發出失敗
             thr.start()
     return redirect(url_for('allPost'))
 
