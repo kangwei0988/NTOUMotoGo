@@ -12,6 +12,7 @@ import time
 from bson.objectid import ObjectId
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from threading import Thread
+import random
 
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -23,7 +24,7 @@ app.config['SECRET_KEY'] = 'ntouMOTOgo' #os.environ.get('SECRET_KEY')
 app.config['BCRYPT_LOG_ROUNDS'] = 10
 app.jinja_env.auto_reload = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.permanent_session_lifetime = datetime.timedelta(seconds=30) #登入時效
+app.permanent_session_lifetime = datetime.timedelta(days=1) #登入時效
 
 #實作socketio
 socketio = SocketIO(app)
@@ -46,9 +47,19 @@ rateCol = db['rateInfo']
 def before_request():
     #除了註冊，登入功能api及其頁面的請求外，才去判斷登入狀態
     if request.endpoint not in ['newAccount','register','loginPage','login']:
-        if 'NTOUmotoGoUser' in session: #如果已登入
-            userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_logged' : True, '_lastLogin' : datetime.datetime.now()}}) #更新登入時間，登入狀態
-        if 'NTOUmotoGoUser' not in session: #未登入直接將頁面導引至登入頁面
+        if 'NTOUmotoGoUser' in session and 'NTOUmotoGoToken' in session:#如果已登入and 'NTOUmotoGoToken' in session
+            # print(session['NTOUmotoGoUser'])
+            # print(session['NTOUmotoGoToken'])
+            # print(userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_token'])
+            if session['NTOUmotoGoToken'] == userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_token']:#為什麼不能用ｉｓ要用＝＝阿
+                userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}}) #更新登入時間，登入狀態
+                print(0)
+            else:
+                print(1)
+                session.clear()
+                return redirect(url_for('loginPage'))
+        else: #未登入直接將頁面導引至登入頁面
+            print(2)
             return redirect(url_for('loginPage'))
 
 
@@ -59,7 +70,7 @@ def index():
 #跳轉頁面到0-logout.html
 @app.route('/login')
 def loginPage():
-    return render_template('1-login.html')
+    return render_template('1-login.html',fault={})
 #跳轉頁面到1-login.html
 @app.route('/logout')
 def logoutPage():
@@ -83,7 +94,7 @@ def passengerIndex():
 #跳轉頁面到6-driverIndex
 @app.route('/driverIndex')
 def driverIndex():
-    return render_template('6-driverIndex') 
+    return render_template('6-driverIndex.html') 
 #跳轉頁面到7-passengerSearch.html
 @app.route('/passengerSearch')
 def passengerSearch():
@@ -137,6 +148,8 @@ def test():
 ############功能api###########
 ##############################
 
+
+#########################socketio########################################
 #黑阿，就是websocket，每次io.connect會呼叫
 @socketio.on('connect')
 def connect():
@@ -155,15 +168,14 @@ def disconnect():
     leave_room(room)
 
 #通知新推播(對象id，新內容)
-def notifation(userid, targetId,type,msg):
+def notifation(app, notiid, targetId, Type, msg):
     with app.app_context():
-        user = userCol.find_one({'_id' : userid})
+        user = userCol.find_one({'_id' : notiid})
         notif = user['_notifications']
-        notif.insert(0,{'_target':str(targetId),'_type':type,'_msg':msg,'_msgTime':datetime.datetime.now()})
-        userCol.update({'_id' : userid},
-        {"$set": {'_notifications' : notif, '_new_notifications' : True}})
-        socketio.emit('news', {'num' : len(notif)}, room = userCol.find_one({'_id' : userid})['Account_name']) #向room推播
-
+        notif.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
+        userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}})
+        socketio.emit('news', {'num' : len(notif)}, room = userCol.find_one({'_id' : notiid})['Account_name']) #向room推播
+########################################################################
 
 #取得座標位置
 @app.route('/getLocation',methods=['GET','POST'])
@@ -180,6 +192,7 @@ def returnLocation():
     other_pos = {'other_lat': other_user['_lastLocation']['lat'], 'other_lng': other_user['_lastLocation']['lng']}
     return jsonify(other_pos)
 
+###########################login########################################
 #創建新使用者
 @app.route('/newAccount',methods=['GET','POST'])
 def newAccount():
@@ -203,31 +216,27 @@ def newAccount():
         newUser['rateHistory'] = []
         newUser['_lastLocation'] = {'lat': 25.1504516, 'lng': 121.780}
         newUser['_lastLogin'] = datetime.datetime.now()
-        newUser['_logged'] = False
+        newUser['_token'] = False
         newUser['_notifications'] = []
         newUser['_new_notifications'] = True
         userCol.insert_one(newUser)
         # if(_mail.sendMail("海大機車共乘系統註冊通知","感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+
         #                     "\n電話:"+newUser["_phone"],newUser['_mail'])):
-        #     print("create susecess")
-        #     return render_template('1-login.html')
-        return render_template('2-register.html',fault={'sucess' : True})
-
+        return redirect(url_for('loginPage'))
 #使用者登入
 @app.route('/loginAPI',methods=['GET','POST'])
 def login():
     user = request.values.to_dict()
     login_user = userCol.find_one({'Account_name' : user['Account_name']})
-    
     if login_user:
-        logoutTime = login_user['_lastLogin'] + datetime.timedelta(hours=1) #登入時效
         if bcrypt.hashpw(user['_password'].encode('utf-8'), login_user['_password'].encode('utf-8')) == login_user['_password'].encode('utf-8'):#密碼解碼 核對密碼 找時間嘗試
-            if login_user['_logged'] and logoutTime > datetime.datetime.now() : #檢查帳號目前登入狀態
-                print('double login!!')
-                print(login_user['Account_name'] + ' will logout')
-                socketio.emit('socketlogout',room = login_user['Account_name'])
-            userCol.update({'Account_name' : user['Account_name']}, {"$set": {'_logged' : True, '_lastLogin' : datetime.datetime.now()}}) #修改登入時間，登入狀態
+            socketio.emit('socketlogout',room = login_user['Account_name']) #把以前的用戶登出
+            token = login_user['_token']
+            while token is login_user['_token']:
+                token = random.random()
+            userCol.update({'_id' : login_user['_id']}, {"$set": {'_token' : token, '_lastLogin' : datetime.datetime.now()}}) #修改登入時間，登入狀態
             session['NTOUmotoGoUser'] = login_user['Account_name'] #建立session
+            session['NTOUmotoGoToken'] = token
             session.permanent = True #設定session時效
             return redirect(url_for('homePage'))
         user["fault_password"] = '錯誤的密碼'
@@ -239,10 +248,12 @@ def login():
 #使用者登出
 @app.route('/logoutAPI',methods=['GET','POST'])
 def logout():
-    userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_logged' : False, '_lastLogin' : datetime.datetime.now()}})
+    userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}})
     session.clear()
-    # socketio.disconnect()
-    return ('登出成功')
+    return redirect(url_for('homePage'))
+########################################################################
+
+###########################post#########################################
 #乘客刊登
 @app.route('/pasPost',methods=['GET','POST'])
 def pasPost():
@@ -253,10 +264,14 @@ def pasPost():
     info['post_time'] = datetime.datetime.now()
     info['post_matched'] = False
     post_id = postCol.insert_one(info).inserted_id #資料庫內建立一筆刊登資訊
-    print(str(post_id))
-    login_user['_postHistory'].append(str(post_id))
-    print(login_user['_postHistory'])
-    userCol.update_one({'_id' : login_user['_id']}, {"$set": {'_postHistory' : login_user['_postHistory']}})
+    if post_id:
+        login_user['_postHistory'].insert(0,str(post_id))
+        userCol.update_one({'_id' : login_user['_id']}, {"$set": {'_postHistory' : login_user['_postHistory']}})
+        thr = Thread(target=notifation, args=[app, login_user['owner_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
+        thr.start()
+    else:
+        thr = Thread(target=notifation, args=[app, login_user['owner_id'], False, 'post', '刊登失敗']) #呼叫通知函示
+        thr.start()
     return redirect(url_for('allPost'))
 #駕駛刊登
 @app.route('/driPost',methods=['GET','POST'])
@@ -268,66 +283,112 @@ def driPost():
     info['post_time'] = datetime.datetime.now()
     info['post_matched'] = False
     post_id = postCol.insert_one(info).inserted_id #資料庫內建立一筆刊登資訊
-    login_user['_postHistory'].append(str(post_id))
-    userCol.update_one({'_id' : login_user['_id']}, {"$set": {'_postHistory' : login_user['_postHistory']}})
+    if post_id:
+        login_user['_postHistory'].insert(0,str(post_id))
+        userCol.update_one({'_id' : login_user['_id']}, {"$set": {'_postHistory' : login_user['_postHistory']}})
+        thr = Thread(target=notifation, args=[app, login_user['owner_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
+        thr.start()
+    else:
+        thr = Thread(target=notifation, args=[app, login_user['owner_id'], False, 'post', '刊登失敗']) #呼叫通知函示
+        thr.start()
     return redirect(url_for('allPost'))
 #駕駛乘客刊登資訊頁面
 @app.route('/postBoard',methods=['GET','POST'])
 def postBoard():
-    info = request.values.to_dict() #將data拿出
-    target = postCol.find_one({'_id' : info['_id']})
-    return jsonify(target)
+    return 0
+    
+
+#######################################################################
+
+###########################request#####################################
 #駕駛乘客發出請求
 @app.route('/sendRequest',methods=['GET','POST'])
 def sendRequest():
     tmp = request.get_json(silent=True)
-    print(tmp)
     post = postCol.find_one({'_id':ObjectId(tmp['post_id'])})#postCol.find_one({'_id':tmp['post_id']})
     if post['post_matched']:
-        return ('此刊登已消失')
-    postType = post['post_type']
-    info = {'post_id' : post['_id'], 'pas_id' : '', 'dri_id' : '', 'pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False}
-    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
-    if postType == 'pas':
-        info['dri_id'] = user['_id']
-        info['dri_ok'] = True
-        info['pas_id'] = post['owner_id']
-        info['pas_ok'] = False
-    else:                   #如果請求人是乘客
-        info['dri_id'] = post['owner_id']
-        info['dri_ok'] = False
-        info['pas_id'] = user['_id']
-        info['pas_ok'] = True
-    request_id =requestCol.insert_one(info).inserted_id #請求對象的id
-    # thr = Thread(target=notifation, args=[app, msg])
-    # thr.start()
-    #notifation(post['owner_id'], request_id)        #呼叫通知函示
-    postOwnerRequHis = userCol.find_one({'_id' : post['owner_id']})['_requestHistory']  #抓下刊登者的請求歷史紀錄
-    postOwnerRequHis.insert(0,str(request_id))
-    userCol.update_one({'_id' : post['owner_id']},{'$set' : {'_requestHistory' : postOwnerRequHis}})
-    return ('成功')
+        thr = Thread(target=notifation, args=[app, post['owner_id'], False, 'requ', '發出請求失敗，該刊登已消失']) #呼叫通知函示
+        thr.start()
+    else:
+        user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+        info = {'post_id' : post['_id'],'sender_id': user['id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False} #請求資料初始
+        if post['post_type'] == 'pas':  #如果請求人是駕駛
+            info['dri_id'] = user['_id']
+            info['dri_ok'] = True
+            info['pas_id'] = post['owner_id']
+            info['pas_ok'] = False
+        else:                           #如果請求人是乘客
+            info['dri_id'] = post['owner_id']
+            info['dri_ok'] = False
+            info['pas_id'] = user['_id']
+            info['pas_ok'] = True
+        request_id =requestCol.insert_one(info).inserted_id     #請求資料的id
+        if request_id:
+            postOwnerRequHis = userCol.find_one({'_id' : post['owner_id']})['_requestHistory']  #更改被請求者請求歷史紀錄
+            postOwnerRequHis.insert(0,str(request_id))
+            userCol.update_one({'_id' : post['owner_id']},{'$set' : {'_requestHistory' : postOwnerRequHis}})
+            userRequHis = userCol.find_one({'_id' : user['id']})['_requestHistory']             #更改被請求者請求歷史紀錄
+            userRequHis.insert(0,str(request_id))
+            userCol.update_one({'_id' : user['owner_id']},{'$set' : {'_requestHistory' : userRequHis}})
+            thr = Thread(target=notifation, args=[app, post['owner_id'], request_id, 'requ', '新的請求']) #呼叫通知函示，通知被請求者
+            thr.start()
+            thr2 = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '成功發出請求']) #呼叫通知函示，回報請求者發出成功
+            thr2.start()
+        else:
+            thr = Thread(target=notifation, args=[app, user['id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次']) #呼叫通知函示，回報請求者發出失敗
+            thr.start()
+    return redirect(url_for('allPost'))
 
 #回傳使用者發出的要求
 @app.route('/getMySendRequests',methods=['GET','POST'])
 def getMySendRequests():
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
-    result = []
+    results = []
     requests = user['_requestHistory']
-    print(type(requests))
-    print(requests)
-    for requ in requests:
-        event = requestCol.find_one({'_id':ObjectId(requ)})
-        post = postCol.find_one({'_id': event['post_id']})
-        if post['owner_id'] == user['_id']:
-            post['_id'] = str(post['_id'])
-            post['owner_id'] = str(post['owner_id'])
-            post['dri_id'] = str(event['dri_id'])
-            post['pas_id'] = str(event['pas_id'])
-            post['dri_ok'] = event['dri_ok']
-            post['pas_ok'] = event['pas_ok']
-            result.append(post)
-    return jsonify(result)
-    
+    for requid in requests:
+        requ = requestCol.find_one({'_id':ObjectId(requid)})
+        if requ['sender_id'] == user['_id']:
+            Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
+            result={
+                'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
+                'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
+                'Location' : Post['post_goto'],
+                'Goto' : Post['post_goto'],
+                'getonTime' : requ['post_getOnTime'],
+                'driver_id' : str(requ['dri_id']),
+                'passenger_id' : str(requ['pas_id']),
+                'user_id'   :   str(user['_id']),
+                'notice'    :   Post['post_id']
+            }
+            results.append(result)
+    return jsonify(results)
+
+#回傳使用者接收的要求
+@app.route('/getMyRequests',methods=['GET','POST'])
+def getMyRequests():
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    results = []
+    requests = user['_requestHistory']
+    for requid in requests:
+        requ = requestCol.find_one({'_id':ObjectId(requid)})
+        if requ['sender_id'] is not user['_id']:
+            Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
+            result={
+                'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
+                'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
+                'Location' : Post['post_goto'],
+                'Goto' : Post['post_goto'],
+                'getonTime' : requ['post_getOnTime'],
+                'driver_id' : str(requ['dri_id']),
+                'passenger_id' : str(requ['pas_id']),
+                'user_id'   :   str(user['_id']),
+                'notice'    :   Post['post_id']
+            }
+            results.append(result)
+    return jsonify(results)
+######################################################################
+
+
 #回傳歷史紀錄(包含已完成共乘)
 @app.route('/getHistory', methods=['POST'])
 def getHistory():
@@ -382,4 +443,4 @@ def getNotifation():
             results.append(tmp)
             continue
     return jsonify(results)
-socketio.run(app,host ='0.0.0.0',port =int('5000'))
+socketio.run(app,host ='0.0.0.0',port = 5000)
