@@ -27,7 +27,7 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.permanent_session_lifetime = datetime.timedelta(days=1) #登入時效
 
 #實作socketio
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='threading')
 
 #連接mongodb cluster
 client = MongoClient('mongodb+srv://kang:kang0000@cluster0-ew3ql.gcp.mongodb.net/test?retryWrites=true&w=majority')
@@ -167,11 +167,11 @@ def disconnect():
 #通知新推播(對象id，新內容)
 def notifation(app, notiid, targetId, Type, msg):
     with app.app_context():
-        user = userCol.find_one({'_id' : notiid})
-        notif = user['_notifications']
-        notif.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
-        userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}})
-        socketio.emit('news', {'num' : len(notif)}, room = userCol.find_one({'_id' : notiid})['Account_name']) #向room推播
+        target = userCol.find_one({'_id' : ObjectId(notiid)})
+        notifications = target['_notifications']
+        notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
+        userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications}})
+        socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
 ########################################################################
 
 #取得座標位置
@@ -207,18 +207,19 @@ def newAccount():
         newUser['_password'] = str(pshash, encoding = "utf-8")
         newUser['_gender'] = False
         newUser['_motoplate'] = ''
-        newUser['_history'] = []
+        newUser['_matchHistory'] = []
         newUser['_postHistory'] = []
         newUser['_requestHistory'] = []
-        newUser['rateHistory'] = []
+        newUser['_rateHistory'] = []
         newUser['_lastLocation'] = {'lat': 25.1504516, 'lng': 121.780}
         newUser['_lastLogin'] = datetime.datetime.now()
         newUser['_token'] = False
         newUser['_notifications'] = []
         newUser['_new_notifications'] = True
-        userCol.insert_one(newUser)
-        # if(_mail.sendMail("海大機車共乘系統註冊通知","感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+
-        #                     "\n電話:"+newUser["_phone"],newUser['_mail'])):
+        userid = userCol.insert_one(newUser).inserted_id
+        
+        # if userid:
+        #     _mail.sendMail("海大機車共乘系統註冊通知","感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+"\n電話:"+newUser["_phone"],newUser['_mail'])
         return redirect(url_for('loginPage'))
 #使用者登入
 @app.route('/loginAPI',methods=['GET','POST'])
@@ -319,7 +320,7 @@ def sendRequest():
         thr.start()
     else:
         user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
-        info = {'post_id' : post['_id'],'sender_id': user['id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False} #請求資料初始
+        info = {'post_id' : post['_id'],'sender_id': user['_id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False} #請求資料初始
         if post['post_type'] == 'pas':  #如果請求人是駕駛
             info['dri_id'] = user['_id']
             info['dri_ok'] = True
@@ -335,7 +336,7 @@ def sendRequest():
             postOwnerRequHis = userCol.find_one({'_id' : post['owner_id']})['_requestHistory']  #更改被請求者請求歷史紀錄
             postOwnerRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : post['owner_id']},{'$set' : {'_requestHistory' : postOwnerRequHis}})
-            userRequHis = userCol.find_one({'_id' : user['id']})['_requestHistory']             #更改被請求者請求歷史紀錄
+            userRequHis = userCol.find_one({'_id' : user['_id']})['_requestHistory']             #更改被請求者請求歷史紀錄
             userRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : user['_id']},{'$set' : {'_requestHistory' : userRequHis}})
             thr = Thread(target=notifation, args=[app, post['owner_id'], request_id, 'requ', '新的請求']) #呼叫通知函示，通知被請求者
@@ -402,10 +403,9 @@ def getMyRequests():
 def getHistory():
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     results = []
-    histories = user['_history']
+    histories = user['_matchHistory']
     for his in histories:
         history = requestCol.find_one({'_id':ObjectId(his)})
-        print(history)
         result={'_id':str(history['_id'])}##
         tmp = postCol.find_one({'_id':history['post_id']})
         tmp['_id'] = str(tmp['_id'])
@@ -420,7 +420,6 @@ def getHistory():
         result['pas_rate'] = str(history['pas_rate'])
         result['dri_rate'] = str(history['dri_rate'])
         result['user_id'] = str(user['_id'])
-        print(result)
         results.append(result)
     return jsonify(results)
     
