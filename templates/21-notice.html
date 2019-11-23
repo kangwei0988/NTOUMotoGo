@@ -52,14 +52,15 @@
   </section>
 
   <header class="w3-container w3-top w3-xlarge w3-padding-16">
-    <a href="javascript:void(0)" class="w3-right w3-button w3-border" onclick="w3_open()">&#9776;</a>
+    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border" onclick="w3_open()">&#9776;</a>
   </header>
 
   <!-- Sidebar/menu -->
-  <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large" style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
-    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a> 
-    <a href="/notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
-    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a> 
+  <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
+    style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
+    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a>
+    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a>
+    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
     <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
     <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
     <a href="/setting" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">設置</a>
@@ -112,12 +113,13 @@
     var displaystr = "";
     var data_name = "炫分";
 
+    //創造一個通知欄位
     function creatnotice(data) {
       var displayobj = document.getElementById("display");
       var msgtime = data["msgTime"];
 
       if (data["type"] == "requ" && true) {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style4 fit">您與' + data_name + '配對失敗<span class="timestyle">' + msgtime + '<span></a></div></div>'+ displaystr;
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style4 fit">您與' + data_name + '配對失敗<span class="timestyle">' + msgtime + '<span></a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
       if (data["type"] == "requ" && true) {
@@ -136,26 +138,43 @@
         displaystr = '<div class="box"><div class="inner"><a class="button style2 fit">' + "您已突破系統限制" + '<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
-      
 
+      alertnotice();
     }
-    $(document).ready(function(){
-        $.ajax({
+
+    //有通知時提醒用戶
+    function alertnotice() {
+      var x = document.getElementById("notice");
+      var y = document.getElementById("menu");
+      x.innerHTML = "新通知";
+
+      function alert() {
+        x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16 w3-animate-zoom");
+        setTimeout(function () { x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16") }, 1000);
+
+        y.setAttribute("class", "w3-right w3-button w3-border w3-animate-zoom");
+        setTimeout(function () { y.setAttribute("class", "w3-right w3-button w3-border") }, 1000);
+      }
+
+      setInterval(alert,1500);
+    }
+
+
+    $(document).ready(function () {
+      $.ajax({
         type: 'POST',
         url: "/getNotifation",
         data: JSON.stringify(),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
           console.log(data);
-          for(let i = 0; data[i] ;i++)
-          {
-            creatnotice(data[i])
+          for (let i = 0; data[i]; i++) {
+            creatnotice(data[i]);
           }
-          // data[1]["driver"]["_name"]
         },
       });
     });
-    
+
 
   </script>
 

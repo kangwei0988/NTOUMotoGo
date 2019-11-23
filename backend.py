@@ -218,8 +218,9 @@ def newAccount():
 def login():
     user = request.values.to_dict()
     login_user = userCol.find_one({'Account_name' : user['Account_name']})
-    logoutTime = login_user['_lastLogin'] + datetime.timedelta(hours=1) #登入時效
+    
     if login_user:
+        logoutTime = login_user['_lastLogin'] + datetime.timedelta(hours=1) #登入時效
         if bcrypt.hashpw(user['_password'].encode('utf-8'), login_user['_password'].encode('utf-8')) == login_user['_password'].encode('utf-8'):#密碼解碼 核對密碼 找時間嘗試
             if login_user['_logged'] and logoutTime > datetime.datetime.now() : #檢查帳號目前登入狀態
                 print('double login!!')
@@ -229,8 +230,11 @@ def login():
             session['NTOUmotoGoUser'] = login_user['Account_name'] #建立session
             session.permanent = True #設定session時效
             return redirect(url_for('homePage'))
-        return ('password wrong')
-    return ('account not exist')
+        user["fault_password"] = '錯誤的密碼'
+        return render_template('1-login.html',fault=user)
+    else:
+        user["faultAccount_name"] = '帳號不存在喔~'
+        return render_template('1-login.html',fault=user)
 
 #使用者登出
 @app.route('/logoutAPI',methods=['GET','POST'])
