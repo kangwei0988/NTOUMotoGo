@@ -164,8 +164,11 @@ def disconnect():
     print('disconnect')
     leave_room(room)
 
-#通知新推播(對象id，新內容)
-def notifation(app, notiid, targetId, Type, msg):
+# 通知新推播(對象id，新內容)
+# 用以下方式呼叫
+# thr = Thread(target=notifation, args=[app, notiid, targetId, Type, msg) #呼叫通知函示
+# thr.start()
+def notifation(app, notiid, targetId, Type, msg):#(app:context上下文， notiid:對象id,string or objectid型態都行， targetId:相關事件的id， Type:'post,requ,rate,system'， msg:要顯示訊息)
     with app.app_context():
         target = userCol.find_one({'_id' : ObjectId(notiid)})
         notifications = target['_notifications']
@@ -320,7 +323,7 @@ def sendRequest():
         thr.start()
     else:
         user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
-        info = {'post_id' : post['_id'],'sender_id': user['_id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False} #請求資料初始
+        info = {'post_id' : post['_id'],'sender_id': user['_id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False, '_state' : 'waiting'} #請求資料初始
         if post['post_type'] == 'pas':  #如果請求人是駕駛
             info['dri_id'] = user['_id']
             info['dri_ok'] = True
