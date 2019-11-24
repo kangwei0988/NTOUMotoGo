@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
   <link rel="stylesheet" href="static/assets/css/main.css" />
   <link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
 <style>
@@ -36,7 +37,6 @@
     background-color: #4CAF50; /* Green */
     border: none;
     color: white;
-    padding:5px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -45,20 +45,18 @@
     text-align: center;
     
   }
-
-
 </style>
 
 <body id="top">
 
-    <section id="banner" data-video="static/images/banner">
-      <div class="inner">
-        <header>
-          <h1><b>所有刊登</b></h1>
-        </header>
-        <a href="#main" class="more">Learn More</a>
-      </div>
-    </section>
+  <section id="banner" data-video="static/images/banner">
+    <div class="inner">
+      <header>
+        <h1><b>所有刊登</b></h1>
+      </header>
+      <a href="#main" class="more">Learn More</a>
+    </div>
+  </section>
 
   <header class="w3-container w3-top w3-xlarge w3-padding-16">
     <a href="javascript:void(0)" class="w3-right w3-button w3-border" onclick="w3_open()">&#9776;</a>
@@ -80,39 +78,29 @@
   <!-- Main -->
   <div id="main">
     <div class="inner">
-      
-      <!-- Boxes -->
-      <div class="thumbnails">
-        <div class="mybox">
-            <button  class="mybutton">乘客</button>
-            <button type="button" class="mybutton">駕駛</button>
-            <button type="button" class="mybutton">搜尋</button>
-        </div>
-          
-        <div class="box">
-          <div class="inner">
-            <h3>蘭旋風</h3>
-            <p>上車時間:1600</p>
-            <p>上車地點:海大</p>
-            <p>目的地:山海關</p>
-            <a class="button fit">送出請求</a>
-          </div>
-        </div>
-
-        <div class="box">
-          <div class="inner">
-            <h3>康致瑋</h3>
-            <p>上車時間:</p>
-            <p>上車地點:</p>
-            <p>目的地:</p>
-            <span class="button style2 fit" onclick="test('5dd29fd93a6dc24cc32eddd9')">送出請求</span>
-          </div>
-        </div>
-
+      <div class="inner" >
+        <button type="button" class="mybutton" id="passenger" onclick="passengerPost()">乘客</button>
+        <button type="button" class="mybutton" id="driver" onclick="driverPost()">駕駛</button>
+        <button type="button" class="mybutton" id="search" onclick="inputSearch()">搜尋</button>
       </div>
+      <!--Post Section  --> 
+      <div class="inner" id="allPost"></div> 
+
+      <div class="box">
+          <div class="inner">
+            <h2 class="posterName" onclick="posterInfo()">張嘉航</h2>
+            <p style="text-align: left;">目的地:<br>上車時間:<br>上車地點:<br>安全帽:有<br>雨衣:無<br>備註:aaaaa</p>
+            <span class="button style2 fit" onclick="sendR(5dd95c1ed1bd6ea5543bda6d)">送出請求</span>
+          </div> 
+      </div>
+     
+       
+
 
     </div>
   </div>
+
+
 
   <!-- Scripts -->
   <script>
@@ -133,17 +121,88 @@
       document.getElementById("modal01").style.display = "block";
       var captionText = document.getElementById("caption");
       captionText.innerHTML = element.alt;
-    }
+    } 
+///////////
 
-    function test(gotid){
+    function defaultPost(){
       $.ajax({
-              type: 'POST',
-              url: "/sendRequest",
-              data: JSON.stringify({'post_id' : gotid}),
-              contentType: 'application/json; charset=utf-8',
+        type: 'POST',
+        url: "/postBoard",
+        data: JSON.stringify({'post_type' : 0}),
+        contentType: 'application/json; charset=utf-8',
+        success: displayPost
+      });
+    } 
+
+    function passengerPost(){
+      $.ajax({
+        type: 'POST',
+        url: "/postBoard",
+        data: JSON.stringify({'post_type' : "pas"}),
+        contentType: 'application/json; charset=utf-8',
+        success: displayPost
       });
     }
+
+    function driverPost(){
+      $.ajax({
+        type: 'POST',
+        url: "/postBoard",
+        data: JSON.stringify({'post_type' : "dri"}),
+        contentType: 'application/json; charset=utf-8',
+        success: displayPost
+      });
+    }
+
+    function displayPost(postResult){
+      console.log(postResult);
+      
+      $("#allPost").empty();
+      var popContent="";
+      for(var i=0;i<postResult.length;i++){      
+        popContent +='<div class="box"><div class="inner"><h3 id="posterName"> '+ postResult[i].post_name  +'</h3><p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
+        if(postResult[i].post_hat==true)popContent+='<br>安全帽 : 有';
+        else popContent+='<br>安全帽 : 無';
+        if(postResult[i].post_raincoat==true)popContent+='<br>雨衣 : 有';
+        else popContent+='<br>雨衣 : 無';
+        popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
+        popContent+='<button class="button style2 fit" type="button" onclick="sendR(\''+postResult[i]._id+'\')" >送出請求</button></div> </div>';
+      }
+      console.log(typeof(postResult[0]._id));
+      $("#allPost").append(popContent);
+    }
+    //
+    function sendR(a){
+      $.ajax({
+        type: 'POST',
+        url: "/sendRequest",
+        data: JSON.stringify({'post_id' : a}),
+        contentType: 'application/json; charset=utf-8'
+      });
+    }      
+
+    
+    function inputSearch(){
+
+    }
+
+    function posterInfo(){
+      alert("aaa");
+    }
+
+  
+    
+ /*   var myJSON = '{"name":"John", "age":31, "city":"New York"}';
+    var myObj = JSON.parse(myJSON);
+    var a="<p>"+myObj.name+"</p>";
+    $(".button").append(a);*/
+  
+
+
+
   </script>
+
+
   <script src="static/assets/js/jquery.min.js"></script>
   <script src="static/assets/js/jquery.scrolly.min.js"></script>
   <script src="static/assets/js/skel.min.js"></script>
@@ -151,6 +210,7 @@
   <script src="static/assets/js/main.js"></script>
 
   <!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
 
 </body>
 
