@@ -73,7 +73,6 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 var myName = "Kobe";
 var strings = [];
 var historyArray = [];
-// historyArray.push({pictrue:"static/images/lillard.jpg", driver:"Lillard", passenger:"Kobe", starting:"school", destination:"court", date:"11/9", time:"4:00", sendRating:"5", receiveRating:"4"});
 
 // Script to open and close sidebar
 function w3_open() {
@@ -88,6 +87,8 @@ function w3_close() {
 
 function searchHistory(){
   var i;
+  jsonToStruct(strings);
+  localStorage.setItem("notogo_id",strings[0]._id);
   document.getElementById("historyList").innerHTML="";
   if(historyArray.length)
   {    
@@ -98,21 +99,27 @@ function searchHistory(){
         showName = historyArray[i].passenger;
       else
         showName = historyArray[i].driver;
-      document.getElementById("historyList").innerHTML +="\
+
+      if(historyArray[i].receiveRating = "FALSE"){
+        document.getElementById("historyList").innerHTML +="\
                     <div class='box'>\
                       <div class='inner'>\
                         <img src="+historyArray[i].pictrue+" width='90%'>\
                         <h2>"+showName+"</h2>\
-                        <p>日期時間:"+historyArray[i].time+"</p>\
-                        <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>";
-      if(historyArray[i].receiveRating != "FALSE"){
-        document.getElementById("historyList").innerHTML +="\
+                        <p>Time:"+historyArray[i].time+"</p>\
+                        <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
                         <a href='17-18-rating.html' class='button style2 fit'>評價</a>\
                       </div>\
                     </div>"
       }
       else{
         document.getElementById("historyList").innerHTML +="\
+                    <div class='box'>\
+                      <div class='inner'>\
+                        <img src="+historyArray[i].pictrue+" width='90%'>\
+                        <h2>"+showName+"</h2>\
+                        <p>Time:"+historyArray[i].time+"</p>\
+                        <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
                       </div>\
                     </div>"
       }
@@ -123,20 +130,21 @@ function searchHistory(){
     document.getElementById("historyList").innerHTML += "沒有歷史資訊"
   }
 }
-// historyArray.push({pictrue:"static/images/lillard.jpg", driver:"Kobe", passenger:"Curry", starting:"court", destination:"resturant", time:"17:00", sendRating:"4", receiveRating:"5", post_id});
 
 function jsonToStruct(myStrings){
   var i;
   for(i = 0;i < strings.length;i++){
     historyArray.push({pictrue:"static/images/lillard.jpg", driver:"", passenger:"", starting:"", destination:"", date:"", time:"", sendRating:"", receiveRating:"", post_id:""});
-    historyArray[historyArray.length - 1].driver =myStrings[historyArray.length - 1].driver._name;
-    historyArray[historyArray.length - 1].passenger =myStrings[historyArray.length - 1].passenger._name;
-    historyArray[historyArray.length - 1].starting =myStrings[historyArray.length - 1]._post.post_goto;
-    historyArray[historyArray.length - 1].destination =myStrings[historyArray.length - 1]._post.post_location;
-    historyArray[historyArray.length - 1].time =myStrings[historyArray.length - 1]._post.time;
-    historyArray[historyArray.length - 1].sendRating ="FALSE";
-    historyArray[historyArray.length - 1].receiveRating ="FALSE";
-    historyArray[historyArray.length - 1].post_id =myStrings[historyArray.length - 1]._post._id;
+    historyArray[i].driver = myStrings[historyArray.length - 1].driver._name;
+    historyArray[i].passenger = myStrings[historyArray.length - 1].passenger._name;
+    historyArray[i].starting = myStrings[historyArray.length - 1]._post.post_goto;
+    historyArray[i].destination = myStrings[historyArray.length - 1]._post.post_location;
+    historyArray[i].time = myStrings[historyArray.length - 1]._post.post_time;
+    historyArray[i].sendRating ="FALSE";
+    historyArray[i].receiveRating ="FALSE";
+    historyArray[i].post_id = myStrings[historyArray.length - 1]._post._id;
+    console.log(historyArray[i]);
+    console.log(historyArray[i].time);
   }
 }
 
@@ -154,8 +162,7 @@ window.onload = function(){
       }
     }
   });
-  jsonToStruct(strings);
-  localStorage.setItem("notogo_id",strings[0]._id);
+  
 }
 
 </script>
