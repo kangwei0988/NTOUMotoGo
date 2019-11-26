@@ -76,6 +76,16 @@
     <!-- End page content -->
   </div>
 
+  <script src="static/assets/js/jquery.min.js"></script>
+  <script src="static/assets/js/jquery.scrolly.min.js"></script>
+  <script src="static/assets/js/skel.min.js"></script>
+  <script src="static/assets/js/util.js"></script>
+  <script src="static/assets/js/main.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+  <script src="static/assets/js/ipconfig.js"></script>
+  <!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
+
   <script>
     // Script to open and close sidebar
     function w3_open() {
@@ -107,17 +117,17 @@
       if (mylist.length) {
 
         for (i = 0; i < mylist.length; i++) {
-          document.getElementById("list").innerHTML += 
-          "\<div class='box'>\
+          document.getElementById("list").innerHTML +=
+            "\<div class='box'>\
             <img class='image fit' src='static/images/pic01.jpg' alt='' />\
             <div class='inner'>\
-              <h3>駕駛:" +mylist[i].driver + "</h3>\
-              <h3>乘客:" +mylist[i].passenger + "</h3>\
-              <p>上車日期:" +mylist[i].date + "</p>\
-              <p>上車時間:" +mylist[i].time + "</p>\
-              <p>上車地點:" +mylist[i].starting + "</p>\
-              <p>目的地:" +mylist[i].destination + "</p>\
-              <p>聯絡電話:" +mylist[i].phone + "</p>\
+              <h3>駕駛:" + mylist[i].driver + "</h3>\
+              <h3>乘客:" + mylist[i].passenger + "</h3>\
+              <p>上車日期:" + mylist[i].date + "</p>\
+              <p>上車時間:" + mylist[i].time + "</p>\
+              <p>上車地點:" + mylist[i].starting + "</p>\
+              <p>目的地:" + mylist[i].destination + "</p>\
+              <p>聯絡電話:" + mylist[i].phone + "</p>\
               <a class='button fit'>未配對</a>\
             </div>\
           </div>"
