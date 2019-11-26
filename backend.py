@@ -378,7 +378,20 @@ def getMySendRequests():
 #回覆接收的要求
 @app.route('/replyRequest',methods=['GET','POST'])
 def replyRequest():
-    
+    reply = request.get_json(silent=True)
+    requ = requestCol.find_one({'_id' : ObjectId(reply['requ_id'])})
+    getOnTime = postCol.find_one({'_id' : requ['post_id']})['post_getOnTime']
+    if requ and getOnTime > datetime.datetime.now():
+        requ.update({'_id':requ['_id']},{'$set' : {requ['type']+'_ok' : reply['accept_ok'], 'answer_msg' : reply['answer_msg']}})
+        if reply['accept_ok']:
+            thr = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '答應請求成功，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
+            thr.start()
+        else:
+
+    else:
+        thr = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '回復請求失敗，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
+        thr.start()
+
 
 #回傳使用者接收的要求
 @app.route('/getMyRequests',methods=['GET','POST'])
