@@ -111,35 +111,31 @@
 
 
     var displaystr = "";
-    var data_name = "炫分";
+    
 
     //創造一個通知欄位
     function creatnotice(data) {
       var displayobj = document.getElementById("display");
       var msgtime = data["msgTime"];
 
-      if (data["type"] == "requ" && true) {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style4 fit">您與' + data_name + '配對失敗<span class="timestyle">' + msgtime + '<span></a></div></div>' + displaystr;
-        displayobj.innerHTML = displaystr;
-      }
-      if (data["type"] == "requ" && true) {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button fit">您與' + data_name + '配對成功<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
+      
+      if (data["type"] == "requ") {
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button fit">您與' + data["_id"] + '配對成功<span class="timestyle">'+ data["msgTime"] +' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
       if (data["type"] == "post") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">' + "您已刊登成功" + '<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">' + "您已刊登成功" + '<span class="timestyle">'+ data["msgTime"] +' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
       if (data["type"] == "rate") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">您已收到' + data_name + '的評價<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style3 fit">您已收到新的評價<span class="timestyle">'+ data["msgTime"] +' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
       if (data["type"] == "system") {
-        displaystr = '<div class="box"><div class="inner"><a class="button style2 fit">' + "您已突破系統限制" + '<span class="timestyle">15分鐘前 </a></div></div>' + displaystr;
+        displaystr = '<div class="box"><div class="inner"><a class="button style4 fit">' + data["text"] + '<span class="timestyle">'+ data["msgTime"] +' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
 
-      alertnotice();
     }
 
     //有通知時提醒用戶

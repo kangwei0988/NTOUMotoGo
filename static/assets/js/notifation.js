@@ -3,6 +3,7 @@
             socket = io.connect('http://' + document.domain + ':' + location.port,{'reconnect' : true});
             socket.on('news', function(data) {
                 console.log(data.num)
+                alertnotice();
             });
             socket.on('socketlogout', function() {
                 
@@ -21,3 +22,19 @@
                   });
             });
         });
+
+        function alertnotice() {
+            var x = document.getElementById("notice");
+            var y = document.getElementById("menu");
+            x.innerHTML = "新通知";
+      
+            function alert() {
+              x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16 w3-animate-zoom");
+              setTimeout(function () { x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16") }, 1000);
+      
+              y.setAttribute("class", "w3-right w3-button w3-border w3-animate-zoom");
+              setTimeout(function () { y.setAttribute("class", "w3-right w3-button w3-border") }, 1000);
+            }
+      
+            setInterval(alert,1500);
+          }
