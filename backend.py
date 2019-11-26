@@ -168,11 +168,11 @@ def disconnect():
 # 用以下方式呼叫
 # thr = Thread(target=notifation, args=[app, notiid, targetId, Type, msg) #呼叫通知函示
 # thr.start()
-def notifation(app, notiid, targetId, Type, msg):#(app:context上下文， notiid:對象id,string or objectid型態都行， targetId:相關事件的id， Type:'post,requ,rate,system'， msg:要顯示訊息)
+def notifation(app, notiid, targetId, Type, msg, name):#(app:context上下文， notiid:對象id,string or objectid型態都行， targetId:相關事件的id， Type:'post,requ,rate,system'， msg:要顯示訊息)
     with app.app_context():
         target = userCol.find_one({'_id' : ObjectId(notiid)})
         notifications = target['_notifications']
-        notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
+        notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now(),'name':name})
         userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications}})
         socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
 ########################################################################
@@ -323,7 +323,7 @@ def sendRequest():
         thr.start()
     else:
         user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
-        info = {'post_id' : post['_id'],'sender_id': user['_id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False, '_state' : 'waiting': '_uptime'} #請求資料初始
+        info = {'post_id' : post['_id'],'sender_id': user['_id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False, '_state' : 'waiting','_uptime': datetime.datetime.now()} #請求資料初始
         if post['post_type'] == 'pas':  #如果請求人是駕駛
             info['dri_id'] = user['_id']
             info['dri_ok'] = True
@@ -336,7 +336,7 @@ def sendRequest():
             info['pas_ok'] = True
         request_id =requestCol.insert_one(info).inserted_id     #請求資料的id
         if request_id:
-            postOwnerRequHis = userCol.find_one({'_id' : post['owner_id']})['_requestHistory']  #更改被請求者請求歷史紀錄
+            postOwnerRequHis = userCol.find_one({'_id' : post['owner_id']})['_requestHistory']   #更改被請求者請求歷史紀錄
             postOwnerRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : post['owner_id']},{'$set' : {'_requestHistory' : postOwnerRequHis}})
             userRequHis = userCol.find_one({'_id' : user['_id']})['_requestHistory']             #更改被請求者請求歷史紀錄
@@ -380,17 +380,26 @@ def getMySendRequests():
 def replyRequest():
     reply = request.get_json(silent=True)
     requ = requestCol.find_one({'_id' : ObjectId(reply['requ_id'])})
-    getOnTime = postCol.find_one({'_id' : requ['post_id']})['post_getOnTime']
+    post = postCol.find_one({'_id' : requ['post_id']})
+    getOnTime = post['post_getOnTime']
+    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+    sender = userCol.find_one({'_id' : post['owner_id']})
     if requ and getOnTime > datetime.datetime.now():
         requ.update({'_id':requ['_id']},{'$set' : {requ['type']+'_ok' : reply['accept_ok'], 'answer_msg' : reply['answer_msg']}})
         if reply['accept_ok']:
-            thr = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '答應請求成功，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
+            thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '答應'+sender['_name']+'請求成功'])    #呼叫通知函示，回報被請求者
             thr.start()
+            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', user['_name']+'已答應請求'])        #呼叫通知函示，回報請求者
+            thr2.start()
         else:
-
+            thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '已拒絕'+sender['_name']+'的請求'])     #呼叫通知函示，回報被請求者
+            thr.start()
+            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', '對'+ user['_name']+'的請求被拒絕'])  #呼叫通知函示，回報請求者
+            thr2.start()
     else:
-        thr = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '回復請求失敗，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
+        thr = Thread(target=notifation, args=[app, user['_id'], False, 'requ', '回復請求失敗，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
         thr.start()
+    return redirect(request.url)
 
 
 #回傳使用者接收的要求
@@ -451,24 +460,6 @@ def getNotifation():
     news = user['_notifications']
     results = []
     for noti in news:
-        if type(noti) is str:#系統訊息
-            tmp = {'type' : 'system', '_id' : str(result['_id']), 'msgTime':datetime.datetime.now(), 'text' : noti}
-            results.append(tmp)
-            continue
-        result = postCol.find_one({'_id' : ObjectId(noti)})
-        if result:#刊登相關通知
-            tmp = {'type' : 'post', '_id' : str(result['_id']), 'msgTime':datetime.datetime.now()}
-            results.append(tmp)
-            continue
-        result = requestCol.find_one({'_id' : ObjectId(noti)})
-        if result:#請求相關通知
-            tmp = {'type' : 'requ', '_id' : str(result['_id']), 'msgTime':datetime.datetime.now()}
-            results.append(tmp)
-            continue
-        result = rateCol.find_one({'_id' : ObjectId(noti)})
-        if result:#評價相關通知
-            tmp = {'type' : 'rate', '_id': str(result['_id']), 'msgTime':datetime.datetime.now()}
-            results.append(tmp)
-            continue
+        results.append(noti)
     return jsonify(results)
 socketio.run(app,host ='0.0.0.0',port = 5000)
