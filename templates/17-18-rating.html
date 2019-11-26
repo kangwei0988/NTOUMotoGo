@@ -114,7 +114,7 @@ function ratingStar(x){
 }
 
 function sendRate(){
-  var myJson = '{"post_id":"'+localStorage.getItem("rate_post")+'","rate_range":"'+rateRange+'","rate_note":"'+document.getElementById("note").value+'"}'
+  var myJson = '{"post_id":"'+localStorage.getItem("rate_post")+'","receiver_id":"'+localStorage.getItem("receiver_id")+'","rate_range":"'+rateRange+'","rate_note":"'+document.getElementById("note").value+'"}'
   var jsonObj = JSON.stringify(myJson);
   $.ajax({
     type: 'POST',

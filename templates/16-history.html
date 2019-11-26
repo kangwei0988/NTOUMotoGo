@@ -150,6 +150,10 @@ function jsonToStruct(myStrings){
 function toRate(myObj){
   var str = myObj.id.charAt(6);
   localStorage.setItem("rate_post",historyArray[str].post_id)
+  if(myID == strings[i].driver._id)
+    localStorage.setItem("receiver_id",strings[str].passenger._id)
+  else
+    localStorage.setItem("receiver_id",strings[str].driver._id)
   window.location.replace('/rate');
 }
 
