@@ -124,6 +124,10 @@ def checkRequestt():
 @app.route('/history')
 def history():
     return render_template('16-history.html')
+#跳轉頁面到17-18-rating.html
+@app.route('/rate')
+def rating():
+    return render_template('17-18-rating.html')
 #跳轉頁面到19-userInfo.html
 @app.route('/userInfo')
 def userInfo():
@@ -462,4 +466,15 @@ def getNotifation():
     for noti in news:
         results.append(noti)
     return jsonify(results)
+
+#評價資訊存入資料庫
+@app.route('/sendRate',methods=['GET','POST'])
+def sendRate():
+    tmp = request.get_json(silent=True)
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    info = {'request_id':tmp['request_id'],'rater_id': user['_id'],'receiver_id':tmp['receiver_id'],'rate_range':tmp['rate_range'],'rate_note':tmp['rate_note']}
+    rate_id = rateCol.insert_one(info).inserted_id
+
+    return '成功'
+
 socketio.run(app,host ='0.0.0.0',port = 5000)
