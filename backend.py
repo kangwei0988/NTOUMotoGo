@@ -262,7 +262,7 @@ def pasPost():
     login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     info['post_type'] = 'pas'
     info['owner_id'] = login_user['_id']
-    info['post_time'] = datetime.datetime.now()
+    info['_uptime'] = datetime.datetime.now()
     info['post_matched'] = False
     post_id = postCol.insert_one(info).inserted_id #資料庫內建立一筆刊登資訊
     if post_id:
@@ -281,7 +281,7 @@ def driPost():
     login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     info['post_type'] = 'dri'
     info['owner_id'] = login_user['_id']
-    info['post_time'] = datetime.datetime.now()
+    info['_uptime'] = datetime.datetime.now()
     info['post_matched'] = False
     post_id = postCol.insert_one(info).inserted_id #資料庫內建立一筆刊登資訊
     if post_id:
@@ -323,7 +323,7 @@ def sendRequest():
         thr.start()
     else:
         user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
-        info = {'post_id' : post['_id'],'sender_id': user['_id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False, '_state' : 'waiting'} #請求資料初始
+        info = {'post_id' : post['_id'],'sender_id': user['_id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False, '_state' : 'waiting': '_uptime'} #請求資料初始
         if post['post_type'] == 'pas':  #如果請求人是駕駛
             info['dri_id'] = user['_id']
             info['dri_ok'] = True
@@ -374,6 +374,11 @@ def getMySendRequests():
             }
             results.append(result)
     return jsonify(results)
+
+#回覆接收的要求
+@app.route('/replyRequest',methods=['GET','POST'])
+def replyRequest():
+    
 
 #回傳使用者接收的要求
 @app.route('/getMyRequests',methods=['GET','POST'])
