@@ -114,16 +114,17 @@ function ratingStar(x){
 }
 
 function sendRate(){
-  var myJson = '{"post_id":"'+localStorage.getItem("rate_post")+'","receiver_id":"'+localStorage.getItem("receiver_id")+'","rate_range":"'+rateRange+'","rate_note":"'+document.getElementById("note").value+'"}'
-  var jsonObj = JSON.stringify(myJson);
+  var url = location.href;
+  var temp = url.split("?");
+  var vars = temp[1].split("&");
+  var myJson = {"request_id":vars[0],"receiver_id":vars[1],"rate_range":rateRange,"rate_note":document.getElementById("note").value};
   $.ajax({
     type: 'POST',
     url: "/sendRate",
-    data: JSON.stringify(jsonObj),
+    data: JSON.stringify(myJson),
     contentType: 'application/json; charset=utf-8',
     success: function(data) {
       console.log(data);
-      console.log(jsonObj);
     }
   });
 }

@@ -109,7 +109,7 @@ function searchHistory(){
                         <h2>"+showName+"</h2>\
                         <p>Time:"+historyArray[i].time+"</p>\
                         <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
-                        <button id='button"+i+"' class='button style2 fit' onclick='toRate(this)'>評價</button>\
+                        <button href='/rate' id='button"+i+"' class='button style2 fit' onclick='toRate(this)'>評價</button>\
                       </div>\
                     </div>"
       }
@@ -149,12 +149,12 @@ function jsonToStruct(myStrings){
 
 function toRate(myObj){
   var str = myObj.id.charAt(6);
-  localStorage.setItem("rate_post",historyArray[str].post_id)
-  if(myID == strings[i].driver._id)
-    localStorage.setItem("receiver_id",strings[str].passenger._id)
+  var receiver_id;
+  if(myID == strings[str].driver._id)
+    receiver_id = strings[str].passenger._id;
   else
-    localStorage.setItem("receiver_id",strings[str].driver._id)
-  window.location.replace('/rate');
+    receiver_id = strings[str].driver._id;
+  window.location.replace('/rate?' + strings[0].request_id + '&' + receiver_id);
 }
 
 window.onload = function(){
