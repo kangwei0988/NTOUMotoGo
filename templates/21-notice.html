@@ -9,8 +9,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
   <link rel="stylesheet" href="static/assets/css/main.css" />
   <link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
-  <script src="static/assets/js/notifation.js"></script>
 </head>
 
 <style>
@@ -88,7 +86,7 @@
   <script src="static/assets/js/util.js"></script>
   <script src="static/assets/js/main.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
-  <!-- <script src="static/assets/js/notifation.js"></script> -->
+  <script src="static/assets/js/notifation.js"></script>
   <script>
     // Script to open and close sidebar
     function w3_open() {
@@ -119,20 +117,20 @@
       var msgtime = data["msgTime"];
 
       
-      if (data["type"] == "requ") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button fit">您與' + data["_id"] + '配對成功<span class="timestyle">'+ data["msgTime"] +' </a></div></div>' + displaystr;
+      if (data["_type"] == "requ") {
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button fit">' + data["_msg"] + '<span class="timestyle">'+ data["_msgTime"] +' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
-      if (data["type"] == "post") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">' + "您已刊登成功" + '<span class="timestyle">'+ data["msgTime"] +' </a></div></div>' + displaystr;
+      if (data["_type"] == "post") {
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">'+ data["_msgTime"] +' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
-      if (data["type"] == "rate") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style3 fit">您已收到新的評價<span class="timestyle">'+ data["msgTime"] +' </a></div></div>' + displaystr;
+      if (data["_type"] == "rate") {
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style3 fit">' + data["_msg"] + '<span class="timestyle">'+ data["_msgTime"] +' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
-      if (data["type"] == "system") {
-        displaystr = '<div class="box"><div class="inner"><a class="button style4 fit">' + data["text"] + '<span class="timestyle">'+ data["msgTime"] +' </a></div></div>' + displaystr;
+      if (data["_type"] == "system") {
+        displaystr = '<div class="box"><div class="inner"><a class="button style4 fit">' + data["_msg"] + '<span class="timestyle">'+ data["_msgTime"] +' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
 
