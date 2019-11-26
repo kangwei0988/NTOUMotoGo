@@ -70,7 +70,7 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 <script>
 //identity
 
-var myName = "Kobe";
+var myID;
 var strings = [];
 var historyArray = [];
 
@@ -87,6 +87,7 @@ function w3_close() {
 
 function searchHistory(){
   var i;
+  var myIdentity;
   jsonToStruct(strings);
   localStorage.setItem("notogo_id",strings[0]._id);
   document.getElementById("historyList").innerHTML="";
@@ -95,7 +96,7 @@ function searchHistory(){
     for(i = 0; i < historyArray.length;i++)
     {
       var showName;
-      if(myName == historyArray[i].driver)
+      if(myID == strings[i].driver._id)
         showName = historyArray[i].passenger;
       else
         showName = historyArray[i].driver;
@@ -108,7 +109,7 @@ function searchHistory(){
                         <h2>"+showName+"</h2>\
                         <p>Time:"+historyArray[i].time+"</p>\
                         <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
-                        <a href='17-18-rating.html' class='button style2 fit'>評價</a>\
+                        <button id='button"+i+"' class='button style2 fit' onclick='toRate(this)'>評價</button>\
                       </div>\
                     </div>"
       }
@@ -143,9 +144,13 @@ function jsonToStruct(myStrings){
     historyArray[i].sendRating ="FALSE";
     historyArray[i].receiveRating ="FALSE";
     historyArray[i].post_id = myStrings[historyArray.length - 1]._post._id;
-    console.log(historyArray[i]);
-    console.log(historyArray[i].time);
   }
+}
+
+function toRate(myObj){
+  var str = myObj.id.charAt(6);
+  localStorage.setItem("rate_post",historyArray[str].post_id)
+  window.location.replace('/rate');
 }
 
 window.onload = function(){
@@ -158,11 +163,12 @@ window.onload = function(){
       if (data) {
       // data.redirect contains the string URL to redirect to
         strings = data;
+        if(strings.length)
+          myID = strings[0]._id;
         console.log(data);
       }
     }
   });
-  
 }
 
 </script>

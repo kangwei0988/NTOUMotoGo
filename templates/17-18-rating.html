@@ -41,7 +41,6 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
   <div class="w3-container w3-padding-32 w3-padding-large" id="contact">
     <div class="w3-content  w3-text-light-grey" style="max-width:600px">
       <h4 class="w3-center"><b>給個評價吧</b></h4>
-      <form action="/action_page.php" target="_blank">
         <div class="w3-section">
           <img src = "static/images/star.png" id="star1" alt = "fullStarPic" width="19%">
           <img src = "static/images/star.png" id="star2" alt = "fullStarPic" width="19%">
@@ -51,10 +50,9 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
         </div>
         <div class="w3-section">
           <label>備註</label>
-          <input class="w3-input w3-border" type="text" name="name" required>
+          <input class="w3-input w3-border" type="text" name="name" id = "note">
         </div>
-        <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large" style="background-color: #7f92cf;">確認</button>
-      </form>
+        <button class="w3-button w3-block w3-margin-bottom w3-round-large" style="background-color: #7f92cf;" onclick="sendRate()">確認</button>
     </div>
   </div>
 
@@ -65,7 +63,19 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 <!-- End page content -->
 </div>
 
+<script src="static/assets/js/jquery.min.js"></script>
+<script src="static/assets/js/jquery.scrolly.min.js"></script>
+<script src="static/assets/js/skel.min.js"></script>
+<script src="static/assets/js/util.js"></script>
+<script src="static/assets/js/main.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+<script src="static/assets/js/ipconfig.js"></script>
+<!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
 <script>
+
+var rateRange;
+
 document.getElementById("star1").addEventListener("click",function(){ratingStar(this.id)});
 document.getElementById("star2").addEventListener("click",function(){ratingStar(this.id)});
 document.getElementById("star3").addEventListener("click",function(){ratingStar(this.id)});
@@ -100,7 +110,24 @@ function ratingStar(x){
     else
       document.getElementById("star" + i).src="static/images/star.png";
   }
+  rateRange = k;
 }
+
+function sendRate(){
+  var myJson = '{"post_id":"'+localStorage.getItem("rate_post")+'","rate_range":"'+rateRange+'","rate_note":"'+document.getElementById("note").value+'"}'
+  var jsonObj = JSON.stringify(myJson);
+  $.ajax({
+    type: 'POST',
+    url: "/sendRate",
+    data: JSON.stringify(jsonObj),
+    contentType: 'application/json; charset=utf-8',
+    success: function(data) {
+      console.log(data);
+      console.log(jsonObj);
+    }
+  });
+}
+
 
 </script>
 
