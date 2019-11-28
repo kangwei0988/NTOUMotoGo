@@ -179,6 +179,41 @@ def notifation(app, notiid, targetId, Type, msg, name):#(app:context上下文，
         notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now(),'name':name})
         userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications}})
         socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
+
+@socketio.on('joined', namespace='/chat')
+def joined(message):
+    """Sent by clients when they enter a room.
+    A status message is broadcast to all people in the room."""
+    room = request.url.split('?')[1]
+    join_room(room)
+    requ = requestCol.find_one({'_id' : ObjectId(room)})
+    if requ['pas_id'] == userCol.find_one({'Account_name' : session['NTOUmotoGoUser']}):
+        tarName = userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name']
+    else:
+        tarName = userCol.find_one({'_id' : ObjectId(requ['pas_id'])})['_name']
+    emit('status', {'msg':  requ['msg_record'], 'tarName' : tarName}, room=room)
+
+
+@socketio.on('text', namespace='/chat')
+def text(message):
+    """Sent by a client when the user entered a new message.
+    The message is sent to all people in the room."""
+    room = session.get('room')
+    msg = requestCol.find_one({'_id' : ObjectId(request.url.split('?')[1])})['msg_record']
+    name = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_name']
+    newMsg = name + ':' + message['msg']
+    msg += newMsg + '\n'
+    requestCol.update_one({'_id' : ObjectId(request.url.split('?')[1]}, {'$set' :{'msg_record' : msg}})
+    emit('message', {'msg': newMsg}, room=room)
+
+
+@socketio.on('left', namespace='/chat')
+def left(message):
+    """Sent by clients when they leave a room.
+    A status message is broadcast to all people in the room."""
+    room = session.get('room')
+    leave_room(room)
+    emit('status', {'msg': session.get('name') + ' has left the room.'}, room=room)
 ########################################################################
 
 #取得座標位置
@@ -327,7 +362,17 @@ def sendRequest():
         thr.start()
     else:
         user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
-        info = {'post_id' : post['_id'],'sender_id': user['_id'], 'pas_id' : '', 'dri_id' : '','pas_ok' : False, 'dri_ok' : False, 'pas_rate' : False, 'dri_rate' : False, '_state' : 'waiting','_uptime': datetime.datetime.now()} #請求資料初始
+        info = {'post_id' : post['_id']
+                'sender_id': user['_id'],
+                'pas_id' : '',
+                'dri_id' : '',
+                'pas_ok' : False,
+                'dri_ok' : False,
+                'pas_rate' : False,
+                'dri_rate' : False,
+                '_state' : 'waiting',
+                '_uptime': datetime.datetime.now(),
+                'chat_record' : ''} #請求資料初始
         if post['post_type'] == 'pas':  #如果請求人是駕駛
             info['dri_id'] = user['_id']
             info['dri_ok'] = True
