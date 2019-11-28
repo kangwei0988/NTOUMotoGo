@@ -152,7 +152,7 @@
       var i;
       var myIdentity;
       jsonToStruct(array);
-      document.getElementById("historyList").innerHTML="";
+      document.getElementById("RequestList").innerHTML="";
       if(requestarray.length)
       {    
         for(i = 0; i < requestarray.length;i++)
@@ -197,15 +197,17 @@
     var i;
     for(i = 0;i < string.length;i++){
       requestarray.push({pictrue:"static/images/lillard.jpg", driver:"", passenger:"", starting:"", destination:"", date:"", time:"", sendRating:"", receiveRating:"", post_id:""});
-      requestarray[i].driver = string[historyArray.length - 1].driver._name;
-      requestarray[i].passenger = string[historyArray.length - 1].passenger._name;
-      requestarray[i].starting = string[historyArray.length - 1]._post.post_goto;
-      requestarray[i].destination = string[historyArray.length - 1]._post.post_location;
-      requestarray[i].time = string[historyArray.length - 1]._post.post_time;
+      requestarray[i].driver = string[i].driver._name;
+      requestarray[i].passenger = string[i].passenger._name;
+      requestarray[i].starting = string[[i]._post.post_goto;
+      requestarray[i].destination = string[i]._post.post_location;
+      requestarray[i].time = string[i]._post.post_getOnTime;
+      requestarray[i].dri_id = 
       requestarray[i].sendRating ="FALSE";
       requestarray[i].receiveRating ="FALSE";
-      requestarray[i].post_id = string[historyArray.length - 1]._post._id;
+      requestarray[i].post_id = string[i]._post._id;
     }
+    {driverName:"name", passengerName:"name",Location :"post_location", Goto:"post_goto",getonTime:"pos_getOnTime", driver_id:"_id", passenger_id:"id", user_id:"_id", notice:"post_notice"}
     function goto()
     {
 
@@ -219,6 +221,9 @@
   <script src="static/assets/js/main.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
   <script src="static/assets/js/notifation.js"></script>
+  <script src="static/assets/js/getCoords.js" ></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap" async defer></script>
+
 
 </body>
 
