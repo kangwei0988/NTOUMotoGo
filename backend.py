@@ -52,8 +52,11 @@ def before_request():
             # print(session['NTOUmotoGoUser'])
             # print(session['NTOUmotoGoToken'])
             # print(userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_token'])
-            if session['NTOUmotoGoToken'] == userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_token']:#為什麼不能用ｉｓ要用＝＝阿
+            user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+            if session['NTOUmotoGoToken'] == user['_token']:#為什麼不能用ｉｓ要用＝＝阿
                 userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}}) #更新登入時間，登入狀態
+                if user['_new_notifications']:
+                    socketio.emit('news', {'num' : 1}, room = user['Account_name'])
             else:
                 session.clear()
                 return redirect(url_for('loginPage'))
@@ -140,6 +143,7 @@ def MapPage():
 #跳轉頁面到21-notice.html
 @app.route('/notice')
 def notice():
+    userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_new_notifications' : False}})
     return render_template('21-notice.html')
 @app.route('/chatRoom')
 def chatRoom():
