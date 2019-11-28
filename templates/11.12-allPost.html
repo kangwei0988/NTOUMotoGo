@@ -43,8 +43,15 @@
     margin: 4px 2px;
     cursor: pointer;
     text-align: center;
-    
+
+    top: 50%;
   }
+
+  .wrapper {
+    text-align: center;
+  }
+
+
 </style>
 
 <body id="top">
@@ -76,27 +83,26 @@
   <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
   <!-- Main -->
-  <div id="main">
+  <div>
+    <p></p>
     <div class="inner">
-      <div class="inner" >
-        <button type="button" class="mybutton" id="passenger" onclick="passengerPost()">乘客</button>
-        <button type="button" class="mybutton" id="driver" onclick="driverPost()">駕駛</button>
-        <button type="button" class="mybutton" id="search" onclick="inputSearch()">搜尋</button>
+      <div class="wrapper">
+        <button type="button" class="mybutton" id="passenger" onclick="passengerPost()" style="width: 35%;">乘客</button>
+        <button type="button" class="mybutton" id="driver" onclick="driverPost()" style="width: 35%;">駕駛</button>
+        <button type="button" class="mybutton" id="search" onclick="inputSearch()" style="width: 15%;">搜尋</button>
+        <p><br></p>
       </div>
+
       <!--Post Section  --> 
       <div class="inner" id="allPost"></div> 
 
-      <div class="box">
+      <!-- <div class="box"> 
           <div class="inner">
             <h2 class="posterName" onclick="posterInfo()">張嘉航</h2>
             <p style="text-align: left;">目的地:<br>上車時間:<br>上車地點:<br>安全帽:有<br>雨衣:無<br>備註:aaaaa</p>
             <span class="button style2 fit" onclick="sendR(5dd95c1ed1bd6ea5543bda6d)">送出請求</span>
           </div> 
-      </div>
-     
-       
-
-
+      </div>-->
     </div>
   </div>
 
@@ -122,7 +128,19 @@
       var captionText = document.getElementById("caption");
       captionText.innerHTML = element.alt;
     } 
-///////////
+
+//////////////////////////////////////////
+   
+    // ! 進入頁面就顯示預設刊登 
+    $(document).ready(function(){
+      $.ajax({
+        type: 'POST',
+        url: "/postBoard",
+        data: JSON.stringify({'post_type' : "pas"}),
+        contentType: 'application/json; charset=utf-8',
+        success: displayPost
+      });
+    });
 
     function defaultPost(){
       $.ajax({
@@ -156,39 +174,48 @@
 
     function displayPost(postResult){
       console.log(postResult);
-      
       $("#allPost").empty();
       var popContent="";
       for(var i=0;i<postResult.length;i++){      
-        popContent +='<div class="box"><div class="inner"><h3 id="posterName"> '+ postResult[i].post_name  +'</h3><p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
+        popContent +='<div class="box"><div class="inner"><h3 id="posterName" onclick="posterInfo(\''+postResult[i].owner_id+'\')"> '+ postResult[i].post_name  +'</h3><p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
         if(postResult[i].post_hat==true)popContent+='<br>安全帽 : 有';
         else popContent+='<br>安全帽 : 無';
         if(postResult[i].post_raincoat==true)popContent+='<br>雨衣 : 有';
         else popContent+='<br>雨衣 : 無';
         popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
-        popContent+='<button class="button style2 fit" type="button" onclick="sendR(\''+postResult[i]._id+'\')" >送出請求</button></div> </div>';
+        popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button></div> </div>';
       }
-      console.log(typeof(postResult[0]._id));
+      //console.log(typeof(postResult[0]._id));
       $("#allPost").append(popContent);
     }
-    //
-    function sendR(a){
+    
+    //是否要已送出過就無法再按
+    function sendRequest(postID){
       $.ajax({
         type: 'POST',
         url: "/sendRequest",
-        data: JSON.stringify({'post_id' : a}),
+        data: JSON.stringify({'post_id' : postID}),
         contentType: 'application/json; charset=utf-8'
       });
     }      
 
+    //刊登人個人資訊 
+    function posterInfo(ownerID){
+      $.ajax({
+        type: 'POST',
+        url: "/postBoard",
+        data: JSON.stringify({'post_type' : "dri"}),
+        contentType: 'application/json; charset=utf-8',
+        success: displayPost
+      });
+    }
     
+    //填入搜尋資訊
     function inputSearch(){
 
     }
 
-    function posterInfo(){
-      alert("aaa");
-    }
+
 
   
     
