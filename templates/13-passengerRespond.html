@@ -106,12 +106,38 @@
       captionText.innerHTML = element.alt;
     }
 
-
+    var strings = [];
     var mylist = [];
-    mylist.push({ driver: "Lillard", passenger: "Kobe", starting: "school", destination: "court", date: "11/9", time: "4:00", phone: "0970772996" });
-    mylist.push({ driver: "Kobe", passenger: "Curry", starting: "court", destination: "resturant", date: "10/31", time: "17:00", phone: "0970772996" });
-
     window.onload = function () {
+      $.ajax({
+        type: 'POST',
+        url: "/getMySendRequests",
+        data: "",
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          if (data) {
+            // data.redirect contains the string URL to redirect to
+            strings = data;
+            if (strings.length)
+              myID = strings[0]._id;
+            console.log(data);
+          }
+        }
+      });
+
+      for(var i = 0; i < strings.length; i ++)
+      {
+        mylist[i].driver = strings[i].driveName;
+        mylist[i].passenger = strings[i].passengerName
+        mylist[i].location = strings[i].Location 
+        mylist[i].destination = strings[i].Goto
+        mylist[i].time = strings[i].getonTime
+        mylist[i].notice = strings[i].notice
+      }
+      
+
+      //{driverName:"name", passengerName:"name",Location :"post_location", 
+      //Goto:"post_goto",getonTime:"pos_getOnTime", driver_id:"_id", passenger_id:"id", user_id:"_id", notice:"post_notice"}
       console.log("page onload");
       var i;
       if (mylist.length) {
@@ -123,11 +149,10 @@
             <div class='inner'>\
               <h3>駕駛:" + mylist[i].driver + "</h3>\
               <h3>乘客:" + mylist[i].passenger + "</h3>\
-              <p>上車日期:" + mylist[i].date + "</p>\
               <p>上車時間:" + mylist[i].time + "</p>\
-              <p>上車地點:" + mylist[i].starting + "</p>\
+              <p>上車地點:" + mylist[i].location + "</p>\
               <p>目的地:" + mylist[i].destination + "</p>\
-              <p>聯絡電話:" + mylist[i].phone + "</p>\
+              <p>備註:" + mylist[i].notice + "</p>\
               <a class='button fit'>未配對</a>\
             </div>\
           </div>"
@@ -137,6 +162,7 @@
         document.getElementById("list").innerHTML += "沒有請求狀態"
       }
     }
+
   </script>
 
 </body>
