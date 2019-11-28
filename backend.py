@@ -182,8 +182,14 @@ def notifation(app, notiid, targetId, Type, msg):#(app:context上下文， notii
         notifications = target['_notifications']
         notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
         userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications}})
+        if target['_want_mail'] and Type != 'system':
+            title = '你在海大機車共乘系統中有一則新信息'
+            _mail.sendMail(title,msg,target['_mail'])
         socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
+###########################################################################
 
+#############################聊天室功能#####################################
+#加入聊天室
 @socketio.on('joined', namespace='/chat')
 def joined(message):
     """Sent by clients when they enter a room.
@@ -197,8 +203,7 @@ def joined(message):
     else:
         tarName = userCol.find_one({'_id' : ObjectId(requ['pas_id'])})['_name']
     emit('status', {'msg':  requ['chat_record'], 'tarName' : tarName}, room=room)
-
-
+#傳送訊息
 @socketio.on('text', namespace='/chat')
 def text(message):
     """Sent by a client when the user entered a new message.
@@ -207,19 +212,18 @@ def text(message):
     msg = requestCol.find_one({'_id' : ObjectId(room)})['chat_record']
     name = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_name']
     uncodeMsg = urllib.parse.unquote(message['msg'])
+    print(uncodeMsg)
     newMsg = name + ':' + uncodeMsg +'\n'+ str(datetime.datetime.now())
     msg += newMsg + '\n'
     requestCol.update_one({'_id' : ObjectId(room)}, {'$set' :{'chat_record' : msg}})
     emit('message', {'msg': newMsg}, room=room)
-
-
+#離開
 @socketio.on('left', namespace='/chat')
 def left(message):
     """Sent by clients when they leave a room.
     A status message is broadcast to all people in the room."""
-    room = session.get('room')
+    room = message['room']
     leave_room(room)
-    emit('status', {'msg': session.get('name') + ' has left the room.'}, room=room)
 ########################################################################
 
 #取得座標位置
@@ -426,11 +430,11 @@ def getMySendRequests():
                 'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
                 'Location' : Post['post_goto'],
                 'Goto' : Post['post_goto'],
-                'getonTime' : requ['post_getOnTime'],
+                'getonTime' : Post['post_getOnTime'],
                 'driver_id' : str(requ['dri_id']),
                 'passenger_id' : str(requ['pas_id']),
                 'user_id'   :   str(user['_id']),
-                'notice'    :   Post['post_id']
+                'notice'    :   Post['post_notice']
             }
             results.append(result)
     return jsonify(results)

@@ -112,12 +112,15 @@
     var mylist = [];
     function show() {
       for (var i = 0; i < strings.length; i++) {
-        mylist[i].driver = strings[i].driveName;
-        mylist[i].passenger = strings[i].passengerName
-        mylist[i].location = strings[i].Location
-        mylist[i].destination = strings[i].Goto
-        mylist[i].time = strings[i].getonTime
-        mylist[i].notice = strings[i].notice
+        tmp = {
+          'driver' : strings[i].driverName,
+          'passenger' : strings[i].passengerName,
+          'location' :  strings[i].Location,
+          'destination' : strings[i].Goto,
+          'time' : strings[i].getonTime,
+          'notice' : strings[i].notice
+        }
+        mylist.push(tmp);
       }
 
 
@@ -161,10 +164,10 @@
             if (strings.length)
               myID = strings[0]._id;
             console.log(data);
+            show();
           }
         }
       });
-      show();
     }
 
   </script>
