@@ -40,6 +40,6 @@ function alertnotice() {
 
   setInterval(alertnotice, 1500);
   alertProgram = setInterval(alertmenu, 1500);
-  window.addEventListener("click", function () { clearInterval(alertProgram) }, false);
+  window.addEventListener("click", function () { clearInterval(alertProgram); y.setAttribute("class", "w3-right w3-button w3-border"); console.log("clear") }, false);
 
 }

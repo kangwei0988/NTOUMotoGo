@@ -542,8 +542,13 @@ def getNotifation():
 def sendRate():
     tmp = request.get_json(silent=True)
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    receiver = userCol.find_one({'_id' : tmp['receiver_id']})
     info = {'request_id':tmp['request_id'],'rater_id': user['_id'],'receiver_id':tmp['receiver_id'],'rate_range':tmp['rate_range'],'rate_note':tmp['rate_note']}
     rate_id = rateCol.insert_one(info).inserted_id
+    userRateTmp = user['_rateHistory'].append(rate_id)
+    receiverRateTmp = receiver['_rateHistory'].append(rate_id)
+    userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_rateHistory' : userRateTmp}})
+    userCol.update_one({'_id' : tmp['receiver_id']}, {"$set": {'_rateHistory' : receiverRateTmp}})
 
     return '成功'
 
