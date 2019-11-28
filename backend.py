@@ -13,6 +13,7 @@ from bson.objectid import ObjectId
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from threading import Thread
 import random
+import urllib.parse
 
 #app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -140,6 +141,9 @@ def MapPage():
 @app.route('/notice')
 def notice():
     return render_template('21-notice.html')
+@app.route('/chatRoom')
+def chatRoom():
+    return render_template('22-chat.html')
 #跳轉頁面到test.html
 @app.route('/test')
 def test():
@@ -172,11 +176,11 @@ def disconnect():
 # 用以下方式呼叫
 # thr = Thread(target=notifation, args=[app, notiid, targetId, Type, msg) #呼叫通知函示
 # thr.start()
-def notifation(app, notiid, targetId, Type, msg, name):#(app:context上下文， notiid:對象id,string or objectid型態都行， targetId:相關事件的id， Type:'post,requ,rate,system'， msg:要顯示訊息)
+def notifation(app, notiid, targetId, Type, msg):#(app:context上下文， notiid:對象id,string or objectid型態都行， targetId:相關事件的id， Type:'post,requ,rate,system'， msg:要顯示訊息)
     with app.app_context():
         target = userCol.find_one({'_id' : ObjectId(notiid)})
         notifications = target['_notifications']
-        notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now(),'name':name})
+        notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
         userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications}})
         socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
 
@@ -184,26 +188,28 @@ def notifation(app, notiid, targetId, Type, msg, name):#(app:context上下文，
 def joined(message):
     """Sent by clients when they enter a room.
     A status message is broadcast to all people in the room."""
-    room = request.url.split('?')[1]
+    room = message['room']
     join_room(room)
     requ = requestCol.find_one({'_id' : ObjectId(room)})
+    tarName = ''
     if requ['pas_id'] == userCol.find_one({'Account_name' : session['NTOUmotoGoUser']}):
         tarName = userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name']
     else:
         tarName = userCol.find_one({'_id' : ObjectId(requ['pas_id'])})['_name']
-    emit('status', {'msg':  requ['msg_record'], 'tarName' : tarName}, room=room)
+    emit('status', {'msg':  requ['chat_record'], 'tarName' : tarName}, room=room)
 
 
 @socketio.on('text', namespace='/chat')
 def text(message):
     """Sent by a client when the user entered a new message.
     The message is sent to all people in the room."""
-    room = session.get('room')
-    msg = requestCol.find_one({'_id' : ObjectId(request.url.split('?')[1])})['msg_record']
+    room = message['room']
+    msg = requestCol.find_one({'_id' : ObjectId(room)})['chat_record']
     name = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_name']
-    newMsg = name + ':' + message['msg']
+    uncodeMsg = urllib.parse.unquote(message['msg'])
+    newMsg = name + ':' + uncodeMsg +'\n'+ str(datetime.datetime.now())
     msg += newMsg + '\n'
-    requestCol.update_one({'_id' : ObjectId(request.url.split('?')[1]}, {'$set' :{'msg_record' : msg}})
+    requestCol.update_one({'_id' : ObjectId(room)}, {'$set' :{'chat_record' : msg}})
     emit('message', {'msg': newMsg}, room=room)
 
 
@@ -367,7 +373,7 @@ def sendRequest():
         thr.start()
     else:
         user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
-        info = {'post_id' : post['_id']
+        info = {'post_id' : post['_id'],
                 'sender_id': user['_id'],
                 'pas_id' : '',
                 'dri_id' : '',
