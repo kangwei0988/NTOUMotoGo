@@ -81,8 +81,9 @@
 
   <!-- Scripts -->
   <script src="static/assets/js/jquery.min.js"></script>
-  <script src="static/assets/js/getCoords.js" ></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap" async defer></script>
+  <script src="static/assets/js/getCoords.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap"
+    async defer></script>
   <script src="static/assets/js/jquery.scrolly.min.js"></script>
   <script src="static/assets/js/skel.min.js"></script>
   <script src="static/assets/js/util.js"></script>
@@ -113,28 +114,28 @@
 
 
     var displaystr = "";
-    
+
 
     //創造一個通知欄位
     function creatnotice(data) {
       var displayobj = document.getElementById("display");
       var msgtime = data["msgTime"];
 
-      
+
       if (data["_type"] == "requ") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button fit">' + data["_msg"] + '<span class="timestyle">'+ data["_msgTime"] +' </a></div></div>' + displaystr;
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "post") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">'+ data["_msgTime"] +' </a></div></div>' + displaystr;
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "rate") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style3 fit">' + data["_msg"] + '<span class="timestyle">'+ data["_msgTime"] +' </a></div></div>' + displaystr;
+        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style3 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "system") {
-        displaystr = '<div class="box"><div class="inner"><a class="button style4 fit">' + data["_msg"] + '<span class="timestyle">'+ data["_msgTime"] +' </a></div></div>' + displaystr;
+        displaystr = '<div class="box"><div class="inner"><a class="button style4 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>' + displaystr;
         displayobj.innerHTML = displaystr;
       }
 
@@ -144,17 +145,22 @@
     function alertnotice() {
       var x = document.getElementById("notice");
       var y = document.getElementById("menu");
+
       x.innerHTML = "新通知";
 
-      function alert() {
+      function alertnotice() {
         x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16 w3-animate-zoom");
         setTimeout(function () { x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16") }, 1000);
-
+      }
+      function alertmenu() {
         y.setAttribute("class", "w3-right w3-button w3-border w3-animate-zoom");
         setTimeout(function () { y.setAttribute("class", "w3-right w3-button w3-border") }, 1000);
       }
 
-      setInterval(alert,1500);
+      setInterval(alertnotice, 1500);
+      alertProgram = setInterval(alertmenu, 1500);
+      window.addEventListener("click", function () { clearInterval(alertProgram) }, false);
+
     }
 
 

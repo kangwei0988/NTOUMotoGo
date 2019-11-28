@@ -36,7 +36,7 @@
   <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
     style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
     <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a> 
-    <a href="/notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
+    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
     <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a> 
     <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
     <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
@@ -110,19 +110,33 @@
 
     var strings = [];
     var mylist = [];
-    function show() {
-      for (var i = 0; i < strings.length; i++) {
-        tmp = {
-          'driver' : strings[i].driverName,
-          'passenger' : strings[i].passengerName,
-          'location' :  strings[i].Location,
-          'destination' : strings[i].Goto,
-          'time' : strings[i].getonTime,
-          'notice' : strings[i].notice
+    window.onload = function () {
+      $.ajax({
+        type: 'POST',
+        url: "/getMySendRequests",
+        data: "",
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          if (data) {
+            // data.redirect contains the string URL to redirect to
+            strings = data;
+            if (strings.length)
+              myID = strings[0]._id;
+            console.log(data);
+          }
         }
-        mylist.push(tmp);
-      }
+      });
 
+      for(var i = 0; i < strings.length; i ++)
+      {
+        mylist[i].driver = strings[i].driveName;
+        mylist[i].passenger = strings[i].passengerName
+        mylist[i].location = strings[i].Location 
+        mylist[i].destination = strings[i].Goto
+        mylist[i].time = strings[i].getonTime
+        mylist[i].notice = strings[i].notice
+      }
+      
 
       //{driverName:"name", passengerName:"name",Location :"post_location", 
       //Goto:"post_goto",getonTime:"pos_getOnTime", driver_id:"_id", passenger_id:"id", user_id:"_id", notice:"post_notice"}
@@ -149,25 +163,6 @@
       else {
         document.getElementById("list").innerHTML += "沒有請求狀態"
       }
-    }
-
-    window.onload = function () {
-      $.ajax({
-        type: 'POST',
-        url: "/getMySendRequests",
-        data: "",
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-          if (data) {
-            // data.redirect contains the string URL to redirect to
-            strings = data;
-            if (strings.length)
-              myID = strings[0]._id;
-            console.log(data);
-            show();
-          }
-        }
-      });
     }
 
   </script>
