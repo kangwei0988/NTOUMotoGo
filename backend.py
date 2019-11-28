@@ -258,10 +258,15 @@ def newAccount():
         newUser['_token'] = False
         newUser['_notifications'] = []
         newUser['_new_notifications'] = True
+        newUser['_want_mail'] = True
         userid = userCol.insert_one(newUser).inserted_id
-        
-        # if userid:
-        #     _mail.sendMail("海大機車共乘系統註冊通知","感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+"\n電話:"+newUser["_phone"],newUser['_mail'])
+        if userid:
+            title = "海大機車共乘系統註冊通知"
+            msg = "感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+"\n電話:"+newUser["_phone"]
+            thr = Thread(target=_mail.sendMail, args=[app, title,msg,newUser['_mail']]) #呼叫通知函示
+            thr.start()
+            thr2 = Thread(target=notifation, args=[app, userid, userid, 'system', '帳號創建成功~']) #呼叫通知函示
+            thr2.start()
         return redirect(url_for('loginPage'))
 #使用者登入
 @app.route('/loginAPI',methods=['GET','POST'])
