@@ -420,7 +420,12 @@ def sendRequest():
     return redirect(url_for('allPost'))
 
 #回傳使用者發出的要求
-for requid in requests[::-1]:#注意　倒敘問題
+@app.route('/getRequests',methods=['GET','POST'])
+def getRequests():
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    results = []
+    requests = user['_requestHistory']
+    for requid in requests[::-1]:#注意　倒敘問題
         requ = requestCol.find_one({'_id':ObjectId(requid)})
         if requ:
             if requ['sender_id'] == user['_id']:
