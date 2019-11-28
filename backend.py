@@ -420,28 +420,25 @@ def sendRequest():
     return redirect(url_for('allPost'))
 
 #回傳使用者發出的要求
-@app.route('/getMySendRequests',methods=['GET','POST'])
-def getMySendRequests():
-    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
-    results = []
-    requests = user['_requestHistory']
-    for requid in requests:
+for requid in requests[::-1]:#注意　倒敘問題
         requ = requestCol.find_one({'_id':ObjectId(requid)})
-        if requ['sender_id'] == user['_id']:
-            Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
-            result={
-                'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
-                'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
-                'Location' : Post['post_goto'],
-                'Goto' : Post['post_goto'],
-                'getonTime' : Post['post_getOnTime'],
-                'driver_id' : str(requ['dri_id']),
-                'passenger_id' : str(requ['pas_id']),
-                'user_id'   :   str(user['_id']),
-                'notice'    :   Post['post_notice']
-            }
-            results.append(result)
-    return jsonify(results)
+        if requ:
+            if requ['sender_id'] == user['_id']:
+                Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
+                result={
+                    'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
+                    'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
+                    'Location' : Post['post_goto'],
+                    'Goto' : Post['post_goto'],
+                    'getonTime' : requ['post_getOnTime'],
+                    'driver_id' : str(requ['dri_id']),
+                    'passenger_id' : str(requ['pas_id']),
+                    'user_id'   :   str(user['_id']),
+                    'notice'    :   Post['post_id']
+                }
+                results.insert(0,result)
+        else:
+            requests.remove(requid)
 
 #回覆接收的要求
 @app.route('/replyRequest',methods=['GET','POST'])
@@ -476,22 +473,26 @@ def getMyRequests():
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     results = []
     requests = user['_requestHistory']
-    for requid in requests:
+    for requid in requests[::-1]:#注意　倒敘問題
         requ = requestCol.find_one({'_id':ObjectId(requid)})
-        if requ['sender_id'] is not user['_id']:
-            Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
-            result={
-                'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
-                'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
-                'Location' : Post['post_goto'],
-                'Goto' : Post['post_goto'],
-                'getonTime' : requ['post_getOnTime'],
-                'driver_id' : str(requ['dri_id']),
-                'passenger_id' : str(requ['pas_id']),
-                'user_id'   :   str(user['_id']),
-                'notice'    :   Post['post_id']
-            }
-            results.append(result)
+        if requ:
+            if requ['sender_id'] != user['_id']:
+                Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
+                result={
+                    'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
+                    'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
+                    'Location' : Post['post_goto'],
+                    'Goto' : Post['post_goto'],
+                    'getonTime' : requ['post_getOnTime'],
+                    'driver_id' : str(requ['dri_id']),
+                    'passenger_id' : str(requ['pas_id']),
+                    'user_id'   :   str(user['_id']),
+                    'notice'    :   Post['post_id']
+                }
+                results.insert(0,result)
+        else:
+            requests.remove(requid)
+    userCol.update_one({'_id':user['_id']},{'$set':{'_requestHistory' : requests}})
     return jsonify(results)
 ######################################################################
 
