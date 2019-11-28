@@ -110,33 +110,16 @@
 
     var strings = [];
     var mylist = [];
-    window.onload = function () {
-      $.ajax({
-        type: 'POST',
-        url: "/getMySendRequests",
-        data: "",
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-          if (data) {
-            // data.redirect contains the string URL to redirect to
-            strings = data;
-            if (strings.length)
-              myID = strings[0]._id;
-            console.log(data);
-          }
-        }
-      });
-
-      for(var i = 0; i < strings.length; i ++)
-      {
+    function show() {
+      for (var i = 0; i < strings.length; i++) {
         mylist[i].driver = strings[i].driveName;
         mylist[i].passenger = strings[i].passengerName
-        mylist[i].location = strings[i].Location 
+        mylist[i].location = strings[i].Location
         mylist[i].destination = strings[i].Goto
         mylist[i].time = strings[i].getonTime
         mylist[i].notice = strings[i].notice
       }
-      
+
 
       //{driverName:"name", passengerName:"name",Location :"post_location", 
       //Goto:"post_goto",getonTime:"pos_getOnTime", driver_id:"_id", passenger_id:"id", user_id:"_id", notice:"post_notice"}
@@ -163,6 +146,25 @@
       else {
         document.getElementById("list").innerHTML += "沒有請求狀態"
       }
+    }
+
+    window.onload = function () {
+      $.ajax({
+        type: 'POST',
+        url: "/getMySendRequests",
+        data: "",
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          if (data) {
+            // data.redirect contains the string URL to redirect to
+            strings = data;
+            if (strings.length)
+              myID = strings[0]._id;
+            console.log(data);
+          }
+        }
+      });
+      show();
     }
 
   </script>
