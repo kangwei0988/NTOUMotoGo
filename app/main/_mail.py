@@ -31,6 +31,6 @@ def sendMail(app,msg_title,msg_body,addr):
                     recipients=[addr],
                     )
         msg.body = msg_body
-        mail.send(msg)
+        # mail.send(msg)
     
         
