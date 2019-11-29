@@ -163,13 +163,13 @@
 
     function jsonToStruct(){
       var i;
-      console.log(string.length);
+      
       for(i = 0;i < string.length;i++){
         var list={
           'driver' : string[i].driverName,
           'passenger' : string[i].passengerName,
           'starting' : string[i].post_goto,
-          'destination' : string.post_location,
+          'destination' : string[i].post_location,
           'time' : string[i].getOnTime,
           'dri_id' : string[i].driver_id,
           'pas_id' : string[i].passenger_id,
@@ -177,6 +177,7 @@
           'note' : string[i].post_notice,
           'matched' : string[i]._state
         };
+        console.log(list);
         requestarray.push(list);
       }
     }
