@@ -138,19 +138,19 @@
       var notice = document.getElementById("noti").value;
       var haveCoat;
       var haveHat;
-      var isChecked1 = $("coat").prop("checked");
+      var isChecked1 = $("#coat").prop("checked");
       if (isChecked1) {
-        haveCoat = "true";
+        haveCoat = true;
       }
       else {
-        haveCoat = "false";
+        haveCoat = false;
       }
-      var isChecked2 = $("hat").prop("checked");
+      var isChecked2 = $("#hat").prop("checked");
       if (isChecked2) {
-        haveHat = "true";
+        haveHat = true;
       }
       else {
-        haveHat = "false";
+        haveHat = false;
       }
 
       var list = {
