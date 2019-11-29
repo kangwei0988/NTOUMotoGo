@@ -44,7 +44,6 @@
     cursor: pointer;
     text-align: center;
 
-    top: 50%;
   }
 
   .wrapper {
@@ -55,12 +54,6 @@
 </style>
 
 <body id="top">
-
-  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
-      <span class="w3-center w3-padding w3-text-light-grey">乘客 <a href="10-driverPost.html"
-          style="text-decoration:none; background-color:blue;">切換身分</a></span>
-    </header>
-
   <!-- Sidebar/menu -->
   <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
     style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
@@ -72,29 +65,24 @@
    
   </nav>
 
-  <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
-
+  <!-- Top menu on small screens -->
+  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
+    <span class="w3-center w3-padding w3-text-light-grey">
+      <span id="myType"></span> 
+      <span style="text-decoration:none; background-color:blue;" onclick="changeType()">切換身分</span>
+      <button type="button" class="mybutton" id="search" onclick="inputSearch()" style="width: 15%;">搜尋</button>
+    </span>
+    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
+  </header>
+  
   <!-- Main -->
+  <br><br><br><br>
   <div>
-    <p></p>
+    <div id = "searchBar"></div>
     <div class="inner">
-      <div class="wrapper">
-        <button type="button" class="mybutton" id="passenger" onclick="passengerPost()" style="width: 35%;">乘客</button>
-        <button type="button" class="mybutton" id="driver" onclick="driverPost()" style="width: 35%;">駕駛</button>
-        <button type="button" class="mybutton" id="search" onclick="inputSearch()" style="width: 15%;">搜尋</button>
-        <div id = "searchBar"></div>
-      </div>
 
       <!--Post Section  --> 
       <div class="inner" id="allPost"></div> 
-
-      <!-- <div class="box"> 
-          <div class="inner">
-            <h2 class="posterName" onclick="posterInfo()">張嘉航</h2>
-            <p style="text-align: left;">目的地:<br>上車時間:<br>上車地點:<br>安全帽:有<br>雨衣:無<br>備註:aaaaa</p>
-            <span class="button style2 fit" onclick="sendR(5dd95c1ed1bd6ea5543bda6d)">送出請求</span>
-          </div> 
-      </div>-->
     </div>
   </div>
 
@@ -113,6 +101,8 @@
   <!-- Scripts -->
   <script>
     var allPostList = [];
+    var myType;
+    var searchType;
     // Script to open and close sidebar
     function w3_open() {
       document.getElementById("mySidebar").style.display = "block";
@@ -135,70 +125,76 @@
 //////////////////////////////////////////
    
     // ! 進入頁面就顯示預設刊登 
-    $(document).ready(function(){
-      $.ajax({
-        type: 'POST',
-        url: "/postBoard",
-        data: JSON.stringify({'post_type' : "pas"}),
-        contentType: 'application/json; charset=utf-8',
-        success: displayPost
-      });
-    });
-
-    function passengerPost(){
-      $.ajax({
-        type: 'POST',
-        url: "/postBoard",
-        data: JSON.stringify({'post_type' : "pas"}),
-        contentType: 'application/json; charset=utf-8',
-        success: displayPost
-      });
+    window.onload = function(){
+      myType = location.href.split("?")[1];
+      if(myType == 'dri')
+      {
+        searchType = 'pas'
+        document.getElementById("myType").innerHTML="駕駛";
+      }
+      else
+      {
+        searchType = 'dri';
+        document.getElementById("myType").innerHTML="乘客";
+      }
+      roadPostData();
     }
 
-    function driverPost(){
+    function changeType(){
+      if(myType == 'pas')
+      {
+        myType = 'dri';
+        searchType = 'pas';
+        roadPostData();
+        document.getElementById("myType").innerHTML="駕駛";
+      }
+      else
+      {
+        myType = 'pas';
+        searchType = 'dri';
+        roadPostData();
+        document.getElementById("myType").innerHTML="乘客";
+      }
+    }
+
+    function roadPostData(){
       $.ajax({
         type: 'POST',
         url: "/postBoard",
-        data: JSON.stringify({'post_type' : "dri"}),
+        data: JSON.stringify({'post_type' : searchType}),
         contentType: 'application/json; charset=utf-8',
-        success: function(postResult) {
-          if (postResult) {
-          // data.redirect contains the string URL to redirect to
-            allPostList = postResult;
-            displayPost(postResult);
-          }
-          else{
-            $("#allPost").empty();
-            $("#allPost").append("目前沒有刊登訊息");
-          }
-        }
+        success: displayPost
       });
     }
 
     function displayPost(postResult){
-      allPostList = postResult;
-      
+      console.log(postResult)
       $("#allPost").empty();
 
-      var popContent="";
-      for(var i=0;i<postResult.length;i++){      
-        popContent +='<div class="box">\
-                        <div class="inner">\
-                          <h3 id="posterName" onclick="posterInfo(\''+postResult[i].owner_id+'\')">'+ postResult[i].post_name  +'</h3>\
-                          <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
-        if(postResult[i].post_hat==true)
-          popContent+='<br>安全帽 : 有';
-        else 
-          popContent+='<br>安全帽 : 無';
-        if(postResult[i].post_raincoat==true)
-          popContent+='<br>雨衣 : 有';
-        else 
-          popContent+='<br>雨衣 : 無';
-        popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
-        popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button></div> </div>';
+      if(postResult.length)
+      {
+        var popContent="";
+        for(var i=0;i<postResult.length;i++){      
+          popContent +='<div class="box">\
+                          <div class="inner">\
+                            <h3 id="posterName" onclick="posterInfo(\''+postResult[i].owner_id+'\')">'+ postResult[i].post_name  +'</h3>\
+                            <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
+          if(postResult[i].post_hat==true)
+            popContent+='<br>安全帽 : 有';
+          else 
+            popContent+='<br>安全帽 : 無';
+          if(postResult[i].post_raincoat==true)
+            popContent+='<br>雨衣 : 有';
+          else 
+            popContent+='<br>雨衣 : 無';
+          popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
+          popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button></div> </div>';
+        }
+        //console.log(typeof(postResult[0]._id));
+        $("#allPost").append(popContent);
       }
-      //console.log(typeof(postResult[0]._id));
-      $("#allPost").append(popContent);
+      else
+        $("#allPost").append("目前沒有刊登資訊");
     }
     
     //是否要已送出過就無法再按
