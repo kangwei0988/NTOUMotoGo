@@ -56,18 +56,10 @@
 
 <body id="top">
 
-  <section id="banner" data-video="static/images/banner">
-    <div class="inner">
-      <header>
-        <h1><b>所有刊登</b></h1>
-      </header>
-      <a href="#main" class="more">Learn More</a>
-    </div>
-  </section>
-
-  <header class="w3-container w3-top w3-xlarge w3-padding-16">
-    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border" onclick="w3_open()">&#9776;</a>
-  </header>
+  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
+      <span class="w3-center w3-padding w3-text-light-grey">乘客 <a href="10-driverPost.html"
+          style="text-decoration:none; background-color:blue;">切換身分</a></span>
+    </header>
 
   <!-- Sidebar/menu -->
   <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
@@ -90,7 +82,7 @@
         <button type="button" class="mybutton" id="passenger" onclick="passengerPost()" style="width: 35%;">乘客</button>
         <button type="button" class="mybutton" id="driver" onclick="driverPost()" style="width: 35%;">駕駛</button>
         <button type="button" class="mybutton" id="search" onclick="inputSearch()" style="width: 15%;">搜尋</button>
-        <p><br></p>
+        <div id = "searchBar"></div>
       </div>
 
       <!--Post Section  --> 
@@ -120,6 +112,7 @@
 
   <!-- Scripts -->
   <script>
+    var allPostList = [];
     // Script to open and close sidebar
     function w3_open() {
       document.getElementById("mySidebar").style.display = "block";
@@ -152,16 +145,6 @@
       });
     });
 
-    function defaultPost(){
-      $.ajax({
-        type: 'POST',
-        url: "/postBoard",
-        data: JSON.stringify({'post_type' : 0}),
-        contentType: 'application/json; charset=utf-8',
-        success: displayPost
-      });
-    } 
-
     function passengerPost(){
       $.ajax({
         type: 'POST',
@@ -178,20 +161,39 @@
         url: "/postBoard",
         data: JSON.stringify({'post_type' : "dri"}),
         contentType: 'application/json; charset=utf-8',
-        success: displayPost
+        success: function(postResult) {
+          if (postResult) {
+          // data.redirect contains the string URL to redirect to
+            allPostList = postResult;
+            displayPost(postResult);
+          }
+          else{
+            $("#allPost").empty();
+            $("#allPost").append("目前沒有刊登訊息");
+          }
+        }
       });
     }
 
     function displayPost(postResult){
-      console.log(postResult);
+      allPostList = postResult;
+      
       $("#allPost").empty();
+
       var popContent="";
       for(var i=0;i<postResult.length;i++){      
-        popContent +='<div class="box"><div class="inner"><h3 id="posterName" onclick="posterInfo(\''+postResult[i].owner_id+'\')"> '+ postResult[i].post_name  +'</h3><p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
-        if(postResult[i].post_hat==true)popContent+='<br>安全帽 : 有';
-        else popContent+='<br>安全帽 : 無';
-        if(postResult[i].post_raincoat==true)popContent+='<br>雨衣 : 有';
-        else popContent+='<br>雨衣 : 無';
+        popContent +='<div class="box">\
+                        <div class="inner">\
+                          <h3 id="posterName" onclick="posterInfo(\''+postResult[i].owner_id+'\')">'+ postResult[i].post_name  +'</h3>\
+                          <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
+        if(postResult[i].post_hat==true)
+          popContent+='<br>安全帽 : 有';
+        else 
+          popContent+='<br>安全帽 : 無';
+        if(postResult[i].post_raincoat==true)
+          popContent+='<br>雨衣 : 有';
+        else 
+          popContent+='<br>雨衣 : 無';
         popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
         popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button></div> </div>';
       }
@@ -222,19 +224,56 @@
     
     //填入搜尋資訊
     function inputSearch(){
+      postReg = 0;
+      $('#searchBar').empty();
+      			
+      var popContent =        '<div>'+
+                                '<label>搭車地點</label>'+
+                                '<select class="w3-input w3-border" type="text" name="post_location" required style="background-color:black;" id = "loc">'+
+                                  　'<option value="Taipei">海大</option>\
+                                  　<option value="Taoyuan">桃園</option>\
+                                  　<option value="Hsinchu">新竹</option>\
+                                  　<option value="Miaoli">苗栗</option>\
+                                </select>\
+                              </div>\
+                              <div>\
+                                <label>目的地</label>\
+                                <select class="w3-input w3-border" type="text" name="post_goto" required style="background-color:black;" id = "goto">\
+                                  　<option value="Taipei">海大</option>\
+                                  　<option value="Taoyuan">桃園</option>\
+                                  　<option value="Hsinchu">新竹</option>\
+                                  　<option value="Miaoli">苗栗</option>\
+                                </select>\
+                              </div>\
+                              <div class="inner">\
+                                <div class="wrapper">\
+                                  <button type="button" class="mybutton" id="submitSearch" onclick="submitSearch()" style="width: 35%;">送出</button>\
+                                </div>\
+                              </div>';
 
+      $('#searchBar').append(popContent);
+      //return newNode;
     }
 
-
-
   
-    
- /*   var myJSON = '{"name":"John", "age":31, "city":"New York"}';
-    var myObj = JSON.parse(myJSON);
-    var a="<p>"+myObj.name+"</p>";
-    $(".button").append(a);*/
-  
-
+function submitSearch(){
+  var i;
+  var j = 0;
+  console.log(document.getElementById("loc").value);
+  console.log(document.getElementById("goto").value);
+  var mySearch = [];
+  var temp = [];
+  for(i = 0;i < allPostList.length;i++){
+    if(allPostList[i].post_goto == document.getElementById("goto").value)
+      temp[j++] = allPostList[i];
+  }
+  j = 0;
+  for(i = 0;i < temp.length;i++){
+    if(allPostList[i].post_location == document.getElementById("loc").value)
+      mySearch[j++] = temp[i];
+  }
+  displayPost(mySearch);
+}
 
 
   </script>
