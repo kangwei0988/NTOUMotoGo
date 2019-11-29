@@ -204,7 +204,7 @@ def driPost():
 def postBoard():
     post_type = request.get_json()['post_type']
     print(post_type)
-    posts = postCol.find({'post_type':post_type,'post_matched':False}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
+    posts = postCol.find({'post_type':post_type,'post_matched':False,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
     results = []
     for post in posts:
         print(post)
@@ -344,7 +344,7 @@ def getMyRequests():
     userCol.update_one({'_id':user['_id']},{'$set':{'_requestHistory' : requests}})
     return jsonify(results)
 
-    #回覆要求
+#回覆要求
 @app.route('/replyRequest',methods=['GET','POST'])
 def replyRequest():
     reply = request.get_json(silent=True)
@@ -356,6 +356,7 @@ def replyRequest():
         requ.update({'_id':requ['_id']},{'$set' : {requ['type']+'_ok' : reply['accept_ok'], 'answer_msg' : reply['answer_msg']}})
         if reply['accept_ok']:
             requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'macthed'}})
+            postCol.update_one({'_id':post['_id']},{'$set' : {'post_matched' : True}})
             thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '答應'+sender['_name']+'的請求成功'])    #呼叫通知函示，回報被請求者
             thr.start()
             thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', user['_name']+'已答應你的請求'])        #呼叫通知函示，回報請求者
