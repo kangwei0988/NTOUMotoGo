@@ -108,7 +108,7 @@
       captionText.innerHTML = element.alt;
     }
 
-    var strings = [];
+    /*var strings = [];
     var mylist = [];
     window.onload = function () {
       $.ajax({
@@ -164,7 +164,93 @@
         document.getElementById("list").innerHTML += "沒有請求狀態"
       }
     }
+*/
+var string=[];
+    var requestarray=[];
+    window.onload = function(){
+      $.ajax({
+        type: 'POST',
+        url: "/getMySendRequests",
+        data: JSON.stringify({"request_id": 'token'}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data) {
+          if (data) {
+            string = data;
+            jsonToStruct();
+            showrequests();
+          }
+        }
+      });
+    }
+    function showrequests(){
+      var i;
+      if (requestarray.length) {
+        var requestlist=document.getElementById("RequestList");
+        for (i = 0; i < requestarray.length; i++) {
+            var id = "list"+i;
+            requestlist.innerHTML +=
+            "\<div class='box' id=";
+            requestlist.innerHTML += id;
+            requestlist.innerHTML += ">";
+            requestlist.innerHTML +=
+            "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            <div class='inner'>\
+              <h3><a onclick='javascript:location.href='userInfo'' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a onclick='javascript:location.href='userInfo'' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <p>上車時間:" + requestarray[i].time + "</p>\
+              <p>上車地點:" + requestarray[i].location + "</p>\
+              <p>目的地:" + requestarray[i].destination + "</p>\
+              <p>備註:" + requestarray[i].notice + "</p>";
+              if(requestarray[i].matched == "waiting")
+              {
+                requestlist.innerHTML+=
+                "\<a class='button style3 fit' onclick='accept("+i+")'>接受</a>\
+                \<a class='button style3 fit' onclick='refuese("+i+")'>拒絕</a>"
+              }
+              else
+              {
+                if(requestlist[i].user_id == requestlist[i].dri_id)
+                  requestlist.innerHTML+=
+                  "<a class='button style2 fit'>配對成功</a>\
+                  \<a class='button style2 fit' onclick=''>已完成</a>\
+                  \<a class='button style2 fit' onclick=''>未完成</a>"
+                else
+                {
+                  requestlist.innerHTML+=
+                  "<a class='button style2 fit'>配對成功</a>"
+                }
+              }
+              requestlist.innerHTML+=
+                "</div>\
+              </div>";
+        }
+      }
+      else {
+        document.getElementById("RequestList").innerHTML += "沒有邀請訊息"
+      }
+      }
 
+    function jsonToStruct(){
+      var i;
+      console.log(string.length);
+      for(i = 0;i < string.length;i++){
+        var list={
+          'driver' : string[i].driverName,
+          'passenger' : string[i].passengerName,
+          'starting' : string[i].post_goto,
+          'destination' : string.post_location,
+          'time' : string[i].getOnTime,
+          'dri_id' : string[i].driver_id,
+          'pas_id' : string[i].passenger_id,
+          'user_id' : string[i].user_id,
+          'note' : string[i].post_notice,
+          'matched' : string[i]._state
+        };
+        requestarray.add(list);
+      }
+    }
+    
+   
   </script>
 
 </body>
