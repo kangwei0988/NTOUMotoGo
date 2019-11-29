@@ -1,34 +1,16 @@
 import os
 import flask
-from _init_ import app
+from .. import app,socketio
 from flask import render_template, request, jsonify, redirect, url_for, session
 from pymongo import MongoClient, DESCENDING
 from flask_mongoengine import MongoEngine
-import _mail
-import bcrypt
 from flask_bcrypt import Bcrypt
-import datetime
-import time
 from bson.objectid import ObjectId
-from flask_socketio import SocketIO, emit, join_room, leave_room
 from threading import Thread
-import random
 import urllib.parse
+import datetime
 
-#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-app.config["DEBUG"] = True
-app.config["JSON_AS_ASCII"] = False
-app.config["MONGODB_HOST"] = "mongodb+srv://kang:kkkk0000@cluster0-ew3ql.gcp.mongodb.net/test?retryWrites=true&w=majority"
-app.config["MONGODB_DB"] = True
-app.config['SECRET_KEY'] = 'ntouMOTOgo' #os.environ.get('SECRET_KEY')
-app.config['BCRYPT_LOG_ROUNDS'] = 10
-app.jinja_env.auto_reload = True
-app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.permanent_session_lifetime = datetime.timedelta(days=1) #登入時效
-
-#實作socketio
-socketio = SocketIO(app, async_mode='threading')
 
 #連接mongodb cluster
 client = MongoClient('mongodb+srv://kang:kang0000@cluster0-ew3ql.gcp.mongodb.net/test?retryWrites=true&w=majority')
@@ -43,6 +25,7 @@ requestCol = db['requestInfo']
 #連接rate-collection
 rateCol = db['rateInfo']
 
+from ._socket import notifation
 #每個請求前執行
 @app.before_request
 def before_request():
@@ -158,78 +141,6 @@ def test():
 ##############################
 
 
-#########################socketio########################################
-#黑阿，就是websocket，每次io.connect會呼叫
-@socketio.on('connect')
-def connect():
-    room = session['NTOUmotoGoUser']
-    print(room)
-    print(request.sid)
-    print('connect')
-    join_room(room)
-#客戶端無回應呼叫
-@socketio.on('disconnect')
-def disconnect():
-    room = session['NTOUmotoGoUser']
-    print(room)
-    print(request.sid)
-    print('disconnect')
-    leave_room(room)
-
-# 通知新推播(對象id，新內容)
-# 用以下方式呼叫
-# thr = Thread(target=notifation, args=[app, notiid, targetId, Type, msg) #呼叫通知函示
-# thr.start()
-def notifation(app, notiid, targetId, Type, msg):#(app:context上下文， notiid:對象id,string or objectid型態都行， targetId:相關事件的id， Type:'post,requ,rate,system'， msg:要顯示訊息)
-    with app.app_context():
-        target = userCol.find_one({'_id' : ObjectId(notiid)})
-        notifications = target['_notifications']
-        notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
-        userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications}})
-        # if target['_want_mail'] and Type != 'system':
-        #     title = '你在海大機車共乘系統中有一則新信息'
-        #     _mail.sendMail(title,msg,target['_mail'])
-        socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
-###########################################################################
-
-#############################聊天室功能#####################################
-#加入聊天室
-@socketio.on('joined', namespace='/chat')
-def joined(message):
-    """Sent by clients when they enter a room.
-    A status message is broadcast to all people in the room."""
-    room = message['room']
-    join_room(room)
-    requ = requestCol.find_one({'_id' : ObjectId(room)})
-    tarName = ''
-    if requ['pas_id'] == userCol.find_one({'Account_name' : session['NTOUmotoGoUser']}):
-        tarName = userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name']
-    else:
-        tarName = userCol.find_one({'_id' : ObjectId(requ['pas_id'])})['_name']
-    emit('status', {'msg':  requ['chat_record'], 'tarName' : tarName}, room=room)
-#傳送訊息
-@socketio.on('text', namespace='/chat')
-def text(message):
-    """Sent by a client when the user entered a new message.
-    The message is sent to all people in the room."""
-    room = message['room']
-    msg = requestCol.find_one({'_id' : ObjectId(room)})['chat_record']
-    name = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_name']
-    uncodeMsg = urllib.parse.unquote(message['msg'])
-    print(uncodeMsg)
-    newMsg = name + ':' + uncodeMsg +'\n'+ str(datetime.datetime.now())
-    msg += newMsg + '\n'
-    requestCol.update_one({'_id' : ObjectId(room)}, {'$set' :{'chat_record' : msg}})
-    emit('message', {'msg': newMsg}, room=room)
-#離開
-@socketio.on('left', namespace='/chat')
-def left(message):
-    """Sent by clients when they leave a room.
-    A status message is broadcast to all people in the room."""
-    room = message['room']
-    leave_room(room)
-########################################################################
-
 #取得座標位置
 @app.route('/getLocation',methods=['GET','POST'])
 def getLocation():
@@ -245,72 +156,6 @@ def returnLocation():
     other_pos = {'other_lat': other_user['_lastLocation']['lat'], 'other_lng': other_user['_lastLocation']['lng']}
     return jsonify(other_pos)
 
-###########################login########################################
-#創建新使用者
-@app.route('/newAccount',methods=['GET','POST'])
-def newAccount():
-    newUser = request.values.to_dict()
-    if userCol.find_one({"Account_name":newUser['Account_name']}):
-        newUser["faultAccount_name"] = "帳號已被註冊"
-    if userCol.find_one({"_phone":newUser['_phone']}):
-        newUser["fault_phone"] = '電話已被註冊'
-    if userCol.find_one({"_mail":newUser['_mail']}):
-        newUser["fault_mail"] = 'email已被註冊'
-    if len(newUser) > 5 :
-        return render_template('2-register.html',fault=newUser)
-    else:
-        pshash = bcrypt.hashpw(newUser['_password'].encode('utf-8'), bcrypt.gensalt())#密碼加密 編碼:UTF-8
-        newUser['_password'] = str(pshash, encoding = "utf-8")
-        newUser['_gender'] = False
-        newUser['_motoplate'] = ''
-        newUser['_matchHistory'] = []
-        newUser['_postHistory'] = []
-        newUser['_requestHistory'] = []
-        newUser['_rateHistory'] = []
-        newUser['_lastLocation'] = {'lat': 25.1504516, 'lng': 121.780}
-        newUser['_lastLogin'] = datetime.datetime.now()
-        newUser['_token'] = False
-        newUser['_notifications'] = []
-        newUser['_new_notifications'] = True
-        newUser['_want_mail'] = True
-        userid = userCol.insert_one(newUser).inserted_id
-        if userid:
-            title = "海大機車共乘系統註冊通知"
-            msg = "感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+"\n電話:"+newUser["_phone"]
-            # thr = Thread(target=_mail.sendMail, args=[app, title,msg,newUser['_mail']]) #呼叫通知函示
-            # thr.start()
-            thr2 = Thread(target=notifation, args=[app, userid, userid, 'system', '帳號創建成功~']) #呼叫通知函示
-            thr2.start()
-        return redirect(url_for('loginPage'))
-#使用者登入
-@app.route('/loginAPI',methods=['GET','POST'])
-def login():
-    user = request.values.to_dict()
-    login_user = userCol.find_one({'Account_name' : user['Account_name']})
-    if login_user:
-        if bcrypt.hashpw(user['_password'].encode('utf-8'), login_user['_password'].encode('utf-8')) == login_user['_password'].encode('utf-8'):#密碼解碼 核對密碼 找時間嘗試
-            socketio.emit('socketlogout',room = login_user['Account_name']) #把以前的用戶登出
-            token = login_user['_token']
-            while token is login_user['_token']:
-                token = random.random()
-            userCol.update({'_id' : login_user['_id']}, {"$set": {'_token' : token, '_lastLogin' : datetime.datetime.now()}}) #修改登入時間，登入狀態
-            session['NTOUmotoGoUser'] = login_user['Account_name'] #建立session
-            session['NTOUmotoGoToken'] = token
-            session.permanent = True #設定session時效
-            return redirect(url_for('homePage'))
-        user["fault_password"] = '錯誤的密碼'
-        return render_template('1-login.html',fault=user)
-    else:
-        user["faultAccount_name"] = '帳號不存在喔~'
-        return render_template('1-login.html',fault=user)
-
-#使用者登出
-@app.route('/logoutAPI',methods=['GET','POST'])
-def logout():
-    userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}})
-    session.clear()
-    return redirect(url_for('homePage'))
-########################################################################
 
 ###########################post#########################################
 #乘客刊登
@@ -318,6 +163,7 @@ def logout():
 def pasPost():
     info = request.get_json(silent=True) #將data拿出
     login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    print(info['post_getOnTime'])
     info['post_getOnTime'] = datetime.datetime.fromisoformat(info['post_getOnTime'])
     info['post_type'] = 'pas'
     info['owner_id'] = login_user['_id']
@@ -571,5 +417,3 @@ def sendRate():
     userCol.update_one({'_id' : tmp['receiver_id']}, {"$set": {'_rateHistory' : receiverRateTmp}})
 
     return '成功'
-
-socketio.run(app,host ='0.0.0.0',port = 5000)
