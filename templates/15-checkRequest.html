@@ -69,23 +69,23 @@
         <div class="box">
             <a class="image fit"><img src="static/images/pic03.jpg" alt="" /></a>
             <div class="inner">
-              <h3><a onclick="javascript:location.href='19-userInfo.html'" class="userinfo">駕駛:阿德</a></h3> 
-              <h3><a onclick="javascript:location.href='19-userInfo.html'" class="userinfo">乘客:不要命</a></h3>
+              <h3><a onclick="javascript:location.href='userInfo'" class="userinfo">駕駛:阿德</a></h3> 
+              <h3><a onclick="javascript:location.href='userInfo'" class="userinfo">乘客:不要命</a></h3>
               <h1>上車日期:11/24</h1> 
               <h1>上車時間:12:00</h1> 
               <h1>上車地點:山海關</h1> 
               <h1>目的地:台北 四四南村</h1> 
               <h1>連絡電話:0988888888</h1> 
-              <a href="https://youtu.be/s6zR2T9vn2c" class="button style3 fit">接受</a>
-              <a href="https://youtu.be/s6zR2T9vn2c" class="button style3 fit">拒絕</a>
+              <a class="button style3 fit" onclick="accept()">接受</a>
+              <a class="button style3 fit" onclick="refuese()">拒絕</a>
             </div>
           </div>
 
           <div class="box">
               <a class="image fit"><img src="static/images/pic02.jpg" alt="" /></a>
             <div class="inner">
-              <h3><a onclick="javascript:location.href='19-userInfo.html'" class="userinfo">駕駛:紅商城門雞蛋糕</a></h3>
-              <h3><a onclick="javascript:location.href='19-userInfo.html'" class="userinfo">乘客:黑旋風</a></h3> 
+              <h3><a onclick="javascript:location.href='userInfo'" class="userinfo">駕駛:紅商城門雞蛋糕</a></h3>
+              <h3><a onclick="javascript:location.href='userInfo'" class="userinfo">乘客:黑旋風</a></h3> 
               <h1>上車日期:11/20</h1> 
               <h1>上車時間:17:15</h1> 
               <h1>上車地點:火車站</h1> 
@@ -133,7 +133,7 @@
       $.ajax({
         type: 'POST',
         url: "/getMyRequests",
-        data: "request_id: 'token'",
+        data: JSON.stringify({"request_id": 'token'}),
         contentType: 'application/json; charset=utf-8',
         success: function(data) {
           if (data) {
@@ -147,21 +147,44 @@
     function showrequests(){
       var i;
       if (requestarray.length) {
-
+        var requestlist=document.getElementById("RequestList");
         for (i = 0; i < requestarray.length; i++) {
-          document.getElementById("RequestList").innerHTML +=
-            "\<div class='box'>\
-            <img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            var id = "list"+i;
+            requestlist.innerHTML +=
+            "\<div class='box' id=";
+            requestlist.innerHTML += id;
+            requestlist.innerHTML += ">";
+            requestlist.innerHTML +=
+            "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
             <div class='inner'>\
-              <h3>駕駛:" + requestarray[i].driver + "</h3>\
-              <h3>乘客:" + requestarray[i].passenger + "</h3>\
+              <h3><a onclick='javascript:location.href='userInfo'' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a onclick='javascript:location.href='userInfo'' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
               <p>上車時間:" + requestarray[i].time + "</p>\
               <p>上車地點:" + requestarray[i].location + "</p>\
               <p>目的地:" + requestarray[i].destination + "</p>\
-              <p>備註:" + requestarray[i].notice + "</p>\
-              <a class='button fit'>未配對</a>\
-            </div>\
-          </div>"
+              <p>備註:" + requestarray[i].notice + "</p>";
+              if(requestarray[i].matched == "waiting")
+              {
+                requestlist.innerHTML+=
+                "\<a class='button style3 fit' onclick='accept("+i+")'>接受</a>\
+                \<a class='button style3 fit' onclick='refuese("+i+")'>拒絕</a>"
+              }
+              else
+              {
+                if(requestlist[i].user_id == requestlist[i].dri_id)
+                  requestlist.innerHTML+=
+                  "<a class='button style2 fit'>配對成功</a>\
+                  \<a class='button style2 fit' onclick=''>已完成</a>\
+                  \<a class='button style2 fit' onclick=''>未完成</a>"
+                else
+                {
+                  requestlist.innerHTML+=
+                  "<a class='button style2 fit'>配對成功</a>"
+                }
+              }
+              requestlist.innerHTML+=
+                "</div>\
+              </div>";
         }
       }
       else {
@@ -174,17 +197,115 @@
       console.log(string.length);
       for(i = 0;i < string.length;i++){
         var list={
-          driver : string[i].driverName,
-          passenger : string[i].passengerName,
-          starting : string[i].post_goto,
-          destination : string.post_location,
-          time : string[i].getOnTime,
-          dri_id : string[i].driver_id,
-          pas_id : string[i].passenger_id,
-          user_id : string[i].user_id,
-          note : string[i].post_notice
-        }
+          'driver' : string[i].driverName,
+          'passenger' : string[i].passengerName,
+          'starting' : string[i].post_goto,
+          'destination' : string.post_location,
+          'time' : string[i].getOnTime,
+          'dri_id' : string[i].driver_id,
+          'pas_id' : string[i].passenger_id,
+          'user_id' : string[i].user_id,
+          'note' : string[i].post_notice,
+          'matched' : string[i]._state
+        };
         requestarray.append(list);
+      }
+    }
+    function accept(i)
+    {
+      var requestlist=document.getElementById("list"+i);
+      var id = "list"+i;
+            requestlist.innerHTML +=
+            "\<div class='box' id=";
+            requestlist.innerHTML += id;
+            requestlist.innerHTML += ">";
+            requestlist.innerHTML +=
+            "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            <div class='inner'>\
+              <h3><a onclick='javascript:location.href='userInfo'' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a onclick='javascript:location.href='userInfo'' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <p>上車時間:" + requestarray[i].time + "</p>\
+              <p>上車地點:" + requestarray[i].location + "</p>\
+              <p>目的地:" + requestarray[i].destination + "</p>\
+              <p>備註:" + requestarray[i].notice + "</p>\
+                <a class='button style2 fit'>配對成功</a>\
+                \<a class='button style2 fit' onclick=''>已完成</a>\
+                \<a class='button style2 fit' onclick=''>未完成</a>\
+                \<a class='button style2 fit' onclick=''>聊天</a>\
+                </div>\
+              </div>";
+      if(requestlist[i].dri_id == requestlist[i].user_id)
+      {
+        $.ajax({
+        type: 'POST',
+        url: "",
+        data: JSON.stringify({'request_id': 'token', 'accept_ok' : 'True', 'type' : 'dri', 'answer_msg' : ''}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data) {
+          if (data) {
+          }
+        }
+        });
+      }
+      else{
+        $.ajax({
+        type: 'POST',
+        url: "",
+        data: JSON.stringify({'request_id': 'token', 'accept_ok' : 'True', 'type' : 'pas', 'answer_msg' : ''}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data) {
+          if (data) {
+          }
+        }
+        });
+      }
+    }
+    function reject(i)
+    {
+      var requestlist=document.getElementById("list"+i);
+      var id = "list"+i;
+            requestlist.innerHTML +=
+            "\<div class='box' id=";
+            requestlist.innerHTML += id;
+            requestlist.innerHTML += ">";
+            requestlist.innerHTML +=
+            "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            <div class='inner'>\
+              <h3>駕駛:" + requestarray[i].driver + "</h3>\
+              <h3>乘客:" + requestarray[i].passenger + "</h3>\
+              <p>上車時間:" + requestarray[i].time + "</p>\
+              <p>上車地點:" + requestarray[i].location + "</p>\
+              <p>目的地:" + requestarray[i].destination + "</p>\
+              <p>備註:" + requestarray[i].notice + "</p>\
+                <a class='button style2 fit'>接受</a>\
+                \<a class='button style2 fit' onclick=''>拒絕</a>\
+                \<a class='button style2 fit' onclick=''>聊天</a>\
+                </div>\
+              </div>";
+      if(requestlist[i].dri_id == requestlist[i].user_id)
+      {
+        $.ajax({
+        type: 'POST',
+        url: "",
+        data: JSON.stringify({'request_id': 'token', 'accept_ok': 'False', 'type' : 'dri', 'answer_msg' : ''}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data) {
+          if (data) {
+          }
+        }
+        });
+      }
+      else{
+        $.ajax({
+        type: 'POST',
+        url: "",
+        data: JSON.stringify({'request_id': 'token', 'accept_ok': 'False', 'type' : 'pas', 'answer_msg' : ''}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data) {
+          if (data) {
+          }
+        }
+        });
       }
     }
   </script>
@@ -197,7 +318,7 @@
     <script src="static/assets/js/main.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
     <script src="static/assets/js/notifation.js"></script>
-    //<!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+    <!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
   
 </body>
 
