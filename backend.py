@@ -277,8 +277,8 @@ def newAccount():
         if userid:
             title = "海大機車共乘系統註冊通知"
             msg = "感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+"\n電話:"+newUser["_phone"]
-            thr = Thread(target=_mail.sendMail, args=[app, title,msg,newUser['_mail']]) #呼叫通知函示
-            thr.start()
+            # thr = Thread(target=_mail.sendMail, args=[app, title,msg,newUser['_mail']]) #呼叫通知函示
+            # thr.start()
             thr2 = Thread(target=notifation, args=[app, userid, userid, 'system', '帳號創建成功~']) #呼叫通知函示
             thr2.start()
         return redirect(url_for('loginPage'))
@@ -440,7 +440,7 @@ def sendRequest():
     return redirect(url_for('allPost'))
 
 #回傳使用者發出的要求
-@app.route('/getRequests',methods=['GET','POST'])
+@app.route('/getMySendRequests',methods=['GET','POST'])
 def getRequests():
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     results = []
@@ -508,11 +508,11 @@ def getMyRequests():
                     'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
                     'Location' : Post['post_goto'],
                     'Goto' : Post['post_goto'],
-                    'getonTime' : requ['post_getOnTime'],
+                    'getonTime' : Post['post_getOnTime'],
                     'driver_id' : str(requ['dri_id']),
                     'passenger_id' : str(requ['pas_id']),
                     'user_id'   :   str(user['_id']),
-                    'notice'    :   Post['post_id']
+                    'notice'    :   Post['post_notice']
                 }
                 results.insert(0,result)
         else:
