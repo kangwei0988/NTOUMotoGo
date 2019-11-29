@@ -186,9 +186,9 @@ def notifation(app, notiid, targetId, Type, msg):#(app:context上下文， notii
         notifications = target['_notifications']
         notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
         userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications}})
-        if target['_want_mail'] and Type != 'system':
-            title = '你在海大機車共乘系統中有一則新信息'
-            _mail.sendMail(title,msg,target['_mail'])
+        # if target['_want_mail'] and Type != 'system':
+        #     title = '你在海大機車共乘系統中有一則新信息'
+        #     _mail.sendMail(title,msg,target['_mail'])
         socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
 ###########################################################################
 
@@ -316,7 +316,7 @@ def logout():
 #乘客刊登
 @app.route('/pasPost',methods=['GET','POST'])
 def pasPost():
-    info = request.values.to_dict() #將data拿出
+    info = request.get_json(silent=True) #將data拿出
     login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     info['post_type'] = 'pas'
     info['owner_id'] = login_user['_id']
@@ -335,7 +335,7 @@ def pasPost():
 #駕駛刊登
 @app.route('/driPost',methods=['GET','POST'])
 def driPost():
-    info = request.values.to_dict() #將data拿出
+    info = request.get_json(silent=True) #將data拿出
     login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     info['post_type'] = 'dri'
     info['owner_id'] = login_user['_id']
