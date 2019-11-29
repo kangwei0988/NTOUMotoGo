@@ -318,6 +318,7 @@ def logout():
 def pasPost():
     info = request.get_json(silent=True) #將data拿出
     login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    info['post_getOnTime'] = datetime.datetime.fromisoformat(info['post_getOnTime'])
     info['post_type'] = 'pas'
     info['owner_id'] = login_user['_id']
     info['_uptime'] = datetime.datetime.now()
@@ -337,6 +338,7 @@ def pasPost():
 def driPost():
     info = request.get_json(silent=True) #將data拿出
     login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    info['post_getOnTime'] = datetime.datetime.fromisoformat(info['post_getOnTime'])
     info['post_type'] = 'dri'
     info['owner_id'] = login_user['_id']
     info['_uptime'] = datetime.datetime.now()
