@@ -371,6 +371,24 @@ def postBoard():
 #######################################################################
 
 ###########################request#####################################
+#刪除請求紀錄
+@app.route('/deleteRequest',methods=['GET','POST'])
+def deleteRequest():
+    deleteID = request.get_json(silent=True)
+    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+    temp = user['_requestHistory']
+    for eachRequest in temp:
+        if eachRequest == deleteID['requ_id']:
+            temp.remove(deleteID['requ_id'])
+            userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_requestHistory' : temp}})       
+            requestCol.delete_one({'_id':ObjectId(deleteID['requ_id'])})
+            thr = Thread(target=notifation, args=[app, user['_id'], eachRequest, 'requ', '刪除請求紀錄成功']) #呼叫通知函式，回報刪除成功
+            thr.start()
+            return redirect(request.url)
+    thr = Thread(target=notifation, args=[app, user['_id'], eachRequest, 'requ', '刪除失敗，該請求紀錄可能已被刪除，或請重新嘗試']) #呼叫通知函式，回報刪除失敗
+    thr.start()        
+    return redirect(request.url)
+
 #駕駛乘客發出請求
 @app.route('/sendRequest',methods=['GET','POST'])
 def sendRequest():
