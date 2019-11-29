@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>海大共乘go</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
+<style>
+  @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: "Noto Sans TC", "Raleway", sans-serif
+  }
+
+  .w3-quarter img {
+    margin-bottom: -6px;
+    cursor: pointer
+  }
+
+  .w3-quarter img:hover {
+    opacity: 0.6;
+    transition: 0.3s
+  }
+</style>
+
+<body style="background-color: #202024">
+
+  <!-- Sidebar/menu -->
+  <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
+    style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
+    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a>
+    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a>
+    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
+    <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
+    <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
+
+  </nav>
+
+  <!-- Top menu on small screens -->
+  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
+    <span class="w3-center w3-padding w3-text-light-grey">乘客 <a href="10-driverPost.html"
+        style="text-decoration:none; background-color:blue;">切換身分</a></span>
+    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey"
+      onclick="w3_open()">&#9776;</a>
+  </header>
+
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+    id="myOverlay"></div>
+
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main w3-content" style="max-width:1600px;margin-top:100px">
+
+    <div class="w3-container w3-padding-32 w3-padding-large" id="contact">
+      <div class="w3-content  w3-text-light-grey" style="max-width:600px">
+        <h4 class="w3-center"><b>刊登</b></h4>
+        <div class="w3-section" id="time">
+
+        </div>
+        <div class="w3-section">
+          <label>搭車地點</label>
+          <select class="w3-input w3-border" type="text" name="post_location" required id="loc">
+            　<option value="ntou">海大</option>
+            　<option value="Taoyuan">桃園</option>
+            　<option value="Hsinchu">新竹</option>
+            　<option value="Miaoli">苗栗</option>
+          </select>
+        </div>
+        <div class="w3-section">
+          <label>目的地</label>
+          <select class="w3-input w3-border" type="text" name="post_goto" required id="des">
+            　<option value="ntou">海大</option>
+            　<option value="Taoyuan">桃園</option>
+            　<option value="Hsinchu">新竹</option>
+            　<option value="Miaoli">苗栗</option>
+          </select>
+        </div>
+        <div class="w3-section">
+          <label>備註</label>
+          <input class="w3-input w3-border" type="text" name="post_notice" required id="noti">
+        </div>
+        <div class="w3-section">
+          <label>其他要求:</label>
+          <label><input name="post_raincoat" id="coat" type="checkbox" value=false>雨衣</label>
+          <label><input name="post_haveHat" id="hat" type="checkbox" value=false>安全帽</label>
+        </div>
+        <input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"style="background-color: #7f92cf;" onclick="submit()" value = "發布">
+      </div>
+    </div>
+
+    <!-- Footer -->
+
+    <div class="w3-center w3-padding-24 w3-text-white" style="background-color: #3c3c44;">Made by <a
+        href="https://youtu.be/NL2e8U0hays" title="W3.CSS" target="_blank"
+        class="w3-hover-opacity">山海關快打旋風程門雞蛋糕猜猜幾把刀</a></div>
+
+    <!-- End page content -->
+  </div>
+
+  <script>
+    // Script to open and close sidebar
+    function w3_open() {
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("myOverlay").style.display = "block";
+    }
+
+    function w3_close() {
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("myOverlay").style.display = "none";
+    }
+
+    // Modal Image Gallery
+    function onClick(element) {
+      document.getElementById("img01").src = element.src;
+      document.getElementById("modal01").style.display = "block";
+      var captionText = document.getElementById("caption");
+      captionText.innerHTML = element.alt;
+    }
+    var date = new Date();
+    window.onload = function () {
+      var message = "<label>搭車時間</label><input type='datetime-local'>";
+      document.getElementById("time").innerHTML = "日期:<input type='date' id = 'tem_date' value = '" + date.getFullYear() + "-" + (date.getMonth() + 1)
+        + "-" + date.getDate() + "'> 時間: <input type = 'time'  id = 'tem_time' value = '" + date.getHours() + ":" + date.getMinutes() + "'>";
+
+    }
+
+    function submit() {
+      var time2 = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" + date.getHours() + ":" + date.getMinutes() + ":" + "00.358+00:00";
+      console.log(time2);
+      var location = document.getElementById("loc").value;
+      var goto = document.getElementById("des").value;
+      var notice = document.getElementById("noti").value;
+      var haveCoat;
+      var haveHat;
+      var isChecked1 = $("coat").prop("checked");
+      if (isChecked1) {
+        haveCoat = "true";
+      }
+      else {
+        haveCoat = "false";
+      }
+      var isChecked2 = $("hat").prop("checked");
+      if (isChecked2) {
+        haveHat = "true";
+      }
+      else {
+        haveHat = "false";
+      }
+
+      var list = {
+        "post_type": 0,
+        "post_getOnTime": time2,
+        "post_location": location,
+        "post_goto": goto,
+        "post_notice": notice,
+        "post_haveHat": haveHat,
+        "post_raincoat": haveCoat
+      };
+
+      $.ajax({
+        type: 'POST',
+        url: "/pasPost",
+        data: JSON.stringify(list),
+        contentType: 'application/json; charset=utf-8',
+      });
+
+
+
+    }
+
+    //{type:"post_type",post_getOnTime:"時間",post_location:"地點",post_goto:"目的地",post_notice:"備註",post_haveHat:"帽子",post_raincoat:"雨衣"}
+  </script>
+
+  <script src="static/assets/js/jquery.min.js"></script>
+  <script src="static/assets/js/getCoords.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap"
+    async defer></script>
+  <script src="static/assets/js/jquery.scrolly.min.js"></script>
+  <script src="static/assets/js/skel.min.js"></script>
+  <script src="static/assets/js/util.js"></script>
+  <script src="static/assets/js/main.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+  <script src="static/assets/js/notifation.js"></script>
+  <!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
+
+
+</body>
+
+</html>
