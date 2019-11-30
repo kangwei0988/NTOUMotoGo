@@ -258,7 +258,7 @@ def sendRequest():
                 '_state' : 'waiting',
                 '_uptime': datetime.datetime.now(),
                 'chat_record' : '',
-                'anser_msg':''
+                'answer_msg':''
                 } #請求資料初始
         if post['post_type'] == 'pas':  #如果請求人是駕駛
             info['dri_id'] = user['_id']
