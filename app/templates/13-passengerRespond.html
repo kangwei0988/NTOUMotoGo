@@ -28,6 +28,17 @@
     opacity: 0.6;
     transition: 0.3s
   }
+  .userinfo{
+    text-decoration:none;
+    text-decoration-color: red;
+    color:yellow;
+  }
+  .userinfo:hover{
+    text-decoration:none;
+    text-decoration-color:orange;
+    color:yellow;
+    cursor: pointer;
+  }
 </style>
 
 <body style="background-color: #202024">
@@ -60,7 +71,7 @@
       <div class="inner">
 
         <!-- Boxes -->
-        <div class="thumbnails" id="list">
+        <div class="thumbnails" id="RequestList">
 
         </div>
       </div>
@@ -118,6 +129,7 @@
         contentType: 'application/json; charset=utf-8',
         success: function(data) {
           if (data) {
+            console.log(data);
             string = data;
             jsonToStruct();
             showrequests();
@@ -142,11 +154,24 @@
               <p>目的地:" + requestarray[i].destination + "</p>\
               <p>備註:" + requestarray[i].note + "</p></div></div>";
               var box=document.getElementById("list"+i);
-              if(requestarray[i].user_id == requestarray[i].pas_id)
+              if(requestarray[i].state == "waiting")
               {
                 box.innerHTML+=
                 "\<a class='button style3 fit' onclick='accept("+i+")'>等待回應</a>\
                 \<a class='button style3 fit' onclick='reject("+i+")'>取消</a>\
+                \<a class='button style3 fit' onclick=''>聊天</a>"
+              }
+              else if(requestarray[i].state == "rejected")
+              {
+                box.innerHTML+=
+                "\<a class='button style3 fit' onclick='accept("+i+")'>已被拒絕/a>\
+                \<a class='button style3 fit' onclick='reject("+i+")'>理由:"+request[i].answer_msg+"</a>\
+                \<a class='button style3 fit' onclick=''>聊天</a>"
+              }
+              else if(requestarray[i].state == "accepted")
+              {
+                box.innerHTML+=
+                "\<a class='button style3 fit' onclick='accept("+i+")'>已接受/a>\
                 \<a class='button style3 fit' onclick=''>聊天</a>"
               }
         }
@@ -172,7 +197,7 @@
           'pas_id' : string[i].passenger_id,
           'user_id' : string[i].user_id,
           'note' : string[i].notice,
-          'matched' : string[i]._state
+          'state' : string[i].state
         };
         
         requestarray.push(list);

@@ -129,7 +129,7 @@
               <p>目的地:" + requestarray[i].destination + "</p>\
               <p>備註:" + requestarray[i].note + "</p></div></div>";
               var box=document.getElementById("list"+i);
-              if(requestarray[i].user_id == requestarray[i].pas_id)
+              if(requestarray[i].matched == "waiting")
               {
                 box.innerHTML+=
                 "\<a class='button style3 fit' onclick='accept("+i+")'>接受</a>\
@@ -174,7 +174,8 @@
           'pas_id' : string[i].passenger_id,
           'user_id' : string[i].user_id,
           'note' : string[i].notice,
-          'matched' : string[i]._state
+          'matched' : string[i].state,
+          'requ_id' : string[i].requ_id
         };
         
         requestarray.push(list);
@@ -203,7 +204,7 @@
             $.ajax({
             type: 'POST',
             url: "/replyRequest",
-            data: JSON.stringify({'request_id': 'token', 'accept_ok' : 'True', 'type' : 'dri', 'answer_msg' : ''}),
+            data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok' : 'True', 'type' : 'dri', 'answer_msg' : ''}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
               if (data) {
@@ -215,7 +216,7 @@
             $.ajax({
             type: 'POST',
             url: "/replyRequest",
-            data: JSON.stringify({'request_id': 'token', 'accept_ok' : 'True', 'type' : 'pas', 'answer_msg' : ''}),
+            data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok' : 'True', 'type' : 'pas', 'answer_msg' : ''}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
               if (data) {
@@ -254,7 +255,7 @@
         $.ajax({
         type: 'POST',
         url: "",
-        data: JSON.stringify({'request_id': 'token', 'accept_ok': 'False', 'type' : 'dri', 'answer_msg' : message}),
+        data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok': 'False', 'type' : 'dri', 'answer_msg' : message}),
         contentType: 'application/json; charset=utf-8',
         success: function(data) {
           if (data) {
@@ -266,7 +267,7 @@
         $.ajax({
         type: 'POST',
         url: "",
-        data: JSON.stringify({'request_id': 'token', 'accept_ok': 'False', 'type' : 'pas', 'answer_msg' : message}),
+        data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok': 'False', 'type' : 'pas', 'answer_msg' : message}),
         contentType: 'application/json; charset=utf-8',
         success: function(data) {
           if (data) {
