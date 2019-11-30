@@ -327,8 +327,8 @@ def getMyRequests():
             if requ['sender_id'] != user['_id']:
                 Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
                 result={
-                    'requ_id'   :   str(requ['_id'])
-                    'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
+                    'requ_id'   :   str(requ['_id']),
+                    'driverName':  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
                     'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
                     'Location' : Post['post_location'],
                     'Goto' : Post['post_goto'],
