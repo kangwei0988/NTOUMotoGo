@@ -164,15 +164,20 @@
               else if(requestarray[i].state == "rejected")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit' onclick='accept("+i+")'>已被拒絕/a>\
+                "\<a class='button style3 fit' onclick='accept("+i+")'>已被拒絕</a>\
                 \<a class='button style3 fit' onclick='reject("+i+")'>理由:"+request[i].answer_msg+"</a>\
                 \<a class='button style3 fit' onclick=''>聊天</a>"
               }
               else if(requestarray[i].state == "accepted")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit' onclick='accept("+i+")'>已接受/a>\
+                "\<a class='button style3 fit' onclick='accept("+i+")'>已接受</a>\
                 \<a class='button style3 fit' onclick=''>聊天</a>"
+              }
+              else if(requestarray[i].state == "due")
+              {
+                box.innerHTML+=
+                "\<a class='button style3 fit'>該要求已過期</a>"
               }
         }
       }

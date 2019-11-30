@@ -132,9 +132,14 @@
               if(requestarray[i].matched == "waiting")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit' onclick='accept("+i+")'>接受</a>\
+                "\<a class='button style3 fit' onclick='accept_api("+i+")'>接受</a>\
                 \<a class='button style3 fit' onclick='reject("+i+")'>拒絕</a>\
                 \<a class='button style3 fit' onclick=''>聊天</a>"
+              }
+              else if(requestarray[i].matched == "due")
+              {
+                box.innerHTML+=
+                "\<a class='button style3 fit')>此要求已過期</a>"
               }
               else
               {
@@ -199,6 +204,9 @@
           \<a class='button style2 fit' onclick=''>已完成</a>\
           \<a class='button style2 fit' onclick=''>未完成</a>\
           \<a class='button style3 fit' onclick=''>聊天</a></div></div>";
+    }
+    function accept_api(i)
+    {
           if(requestarray[i].dri_id == requestarray[i].user_id)
           {
             $.ajax({
@@ -207,8 +215,7 @@
             data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok' : 'True', 'type' : 'dri', 'answer_msg' : ''}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
-              if (data) {
-              }
+              accept(i);
             }
             });
           }
@@ -219,8 +226,7 @@
             data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok' : 'True', 'type' : 'pas', 'answer_msg' : ''}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
-              if (data) {
-              }
+              accept(i);
             }
             });
           }
@@ -239,7 +245,7 @@
               <p>上車地點:" + requestarray[i].starting + "</p>\
               <p>目的地:" + requestarray[i].destination + "</p>\
               <p>備註:" + requestarray[i].note + "</p>\
-                <a class='button style2 fit' onclick='accept("+i+")'>接受</a>\
+                <a class='button style2 fit' onclick='accept_api("+i+")'>接受</a>\
                 \<p>理由:</p>\
                 \<input type='text' id='reason'>\
                 \<a class='button style2 fit' onclick='sendReason("+i+")'>送出</a>\
