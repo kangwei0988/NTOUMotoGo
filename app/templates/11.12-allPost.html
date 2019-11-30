@@ -101,6 +101,7 @@
   <!-- Scripts -->
   <script>
     var allPostList = [];
+    var mySearch = [];
     var myType;
     var searchType;
     // Script to open and close sidebar
@@ -170,16 +171,17 @@
     function displayPost(postResult){
       console.log(postResult)
       $("#allPost").empty();
-
+      allPostList = postResult;
       if(postResult.length)
       {
         var popContent="";
         for(var i=0;i<postResult.length;i++){      
           popContent +='<div class="box">\
                           <div class="inner">\
-                            <h3 id="posterName" onclick="posterInfo(\''+postResult[i].owner_id+'\')">'+ postResult[i].post_name  +'</h3>\
+                            <h3 id="post'+i+'" onclick="posterInfo(this)">'+ postResult[i].post_name  +'</h3>\
+                            <div id="posterInfo'+i+'"></div>\
                             <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
-          if(postResult[i].post_hat==true)
+          if(postResult[i].post_haveHat==true)
             popContent+='<br>安全帽 : 有';
           else 
             popContent+='<br>安全帽 : 無';
@@ -208,14 +210,19 @@
     }      
 
     //刊登人個人資訊 
-    function posterInfo(ownerID){
-      $.ajax({
-        type: 'POST',
-        url: "/postBoard",
-        data: JSON.stringify({'post_type' : "dri"}),
-        contentType: 'application/json; charset=utf-8',
-        success: displayPost
-      });
+    function posterInfo(obj){
+      var whoName = obj.id.charAt(4);
+      var popPosterInfo="顯示"+allPostList[whoName].post_name+"的資訊";
+      console.log(popPosterInfo);
+      $("#posterInfo"+whoName).append(popPosterInfo);
+
+      // $.ajax({
+      //   type: 'POST',
+      //   url: "/postBoard",
+      //   data: JSON.stringify({'post_type' : "dri"}),
+      //   contentType: 'application/json; charset=utf-8',
+      //   success: displayPost
+      // });
     }
     
     //填入搜尋資訊
@@ -223,29 +230,61 @@
       postReg = 0;
       $('#searchBar').empty();
       			
-      var popContent =        '<div>'+
-                                '<label>搭車地點</label>'+
-                                '<select class="w3-input w3-border" type="text" name="post_location" required style="background-color:black;" id = "loc">'+
-                                  　'<option value="Taipei">海大</option>\
-                                  　<option value="Taoyuan">桃園</option>\
-                                  　<option value="Hsinchu">新竹</option>\
-                                  　<option value="Miaoli">苗栗</option>\
-                                </select>\
-                              </div>\
-                              <div>\
-                                <label>目的地</label>\
-                                <select class="w3-input w3-border" type="text" name="post_goto" required style="background-color:black;" id = "goto">\
-                                  　<option value="Taipei">海大</option>\
-                                  　<option value="Taoyuan">桃園</option>\
-                                  　<option value="Hsinchu">新竹</option>\
-                                  　<option value="Miaoli">苗栗</option>\
-                                </select>\
-                              </div>\
-                              <div class="inner">\
-                                <div class="wrapper">\
-                                  <button type="button" class="mybutton" id="submitSearch" onclick="submitSearch()" style="width: 35%;">送出</button>\
-                                </div>\
-                              </div>';
+      var popContent =  '<div class="w3-section">\
+                          <label>搭車地點</label>\
+                          <select class="w3-input w3-border" type="text" name="post_location" required id="loc" style="background-color: #3c3c44;">\
+                            　<option value="瑞芳車站">瑞芳車站</option>\
+                            　<option value="山海觀">山海觀</option>\
+                            　<option value="海洋大學體育館">海洋大學體育館</option>\
+                            　<option value="海洋大學濱海校門">海洋大學濱海校門</option>\
+                            　<option value="海洋大學祥豐校門">海洋大學祥豐校門</option>\
+                            　<option value="中正路加油站">中正路加油站</option>\
+                            　<option value="基隆市立圖書館">基隆市立圖書館</option>\
+                            　<option value="長榮桂冠">長榮桂冠</option>\
+                            　<option value="基隆市政府">基隆市政府</option>\
+                            　<option value="海洋廣場">海洋廣場</option>\
+                            　<option value="基隆火車站">基隆火車站</option>\
+                            　<option value="廟口">廟口</option>\
+                            　<option value="基隆女子高級中學">基隆女子高級中學</option>\
+                            　<option value="微笑台北">微笑台北</option>\
+                            　<option value="深溪路愛買">深溪路愛買</option>\
+                            　<option value="海中天">海中天</option>\
+                            　<option value="巴賽隆納">巴賽隆納</option>\
+                            　<option value="海洋世界">海洋世界</option>\
+                            　<option value="新豐麥當勞">新豐麥當勞</option>\
+                            　<option value="和平島和平國小">和平島和平國小</option>\
+                            　<option value="基隆海事">基隆海事</option>\
+                            　<option value="祥豐市場">祥豐市場</option>\
+                          </select>\
+                        </div>\
+                        <div class="w3-section">\
+                          <label>目的地</label>\
+                          <select class="w3-input w3-border" type="text" name="post_goto" required id="des" style="background-color: #3c3c44;">\
+                            　<option value="瑞芳車站">瑞芳車站</option>\
+                            　<option value="山海觀">山海觀</option>\
+                            　<option value="海洋大學體育館">海洋大學體育館</option>\
+                            　<option value="海洋大學濱海校門">海洋大學濱海校門</option>\
+                            　<option value="海洋大學祥豐校門">海洋大學祥豐校門</option>\
+                            　<option value="中正路加油站">中正路加油站</option>\
+                            　<option value="基隆市立圖書館">基隆市立圖書館</option>\
+                            　<option value="長榮桂冠">長榮桂冠</option>\
+                            　<option value="基隆市政府">基隆市政府</option>\
+                            　<option value="海洋廣場">海洋廣場</option>\
+                            　<option value="基隆火車站">基隆火車站</option>\
+                            　<option value="廟口">廟口</option>\
+                            　<option value="基隆女子高級中學">基隆女子高級中學</option>\
+                            　<option value="微笑台北">微笑台北</option>\
+                            　<option value="深溪路愛買">深溪路愛買</option>\
+                            　<option value="海中天">海中天</option>\
+                            　<option value="巴賽隆納">巴賽隆納</option>\
+                            　<option value="海洋世界">海洋世界</option>\
+                            　<option value="新豐麥當勞">新豐麥當勞</option>\
+                            　<option value="和平島和平國小">和平島和平國小</option>\
+                            　<option value="基隆海事">基隆海事</option>\
+                            　<option value="祥豐市場">祥豐市場</option>\
+                          </select>\
+                        </div>\
+                        <button type="button" class="mybutton" onclick="clearSearch()" style="width: 15%;">取消</button>';
 
       $('#searchBar').append(popContent);
       //return newNode;
@@ -256,8 +295,7 @@ function submitSearch(){
   var i;
   var j = 0;
   console.log(document.getElementById("loc").value);
-  console.log(document.getElementById("goto").value);
-  var mySearch = [];
+  console.log(document.getElementById("des").value);
   var temp = [];
   for(i = 0;i < allPostList.length;i++){
     if(allPostList[i].post_goto == document.getElementById("goto").value)
@@ -271,6 +309,10 @@ function submitSearch(){
   displayPost(mySearch);
 }
 
+function clearSearch(){
+  $('#searchBar').empty();
+  displayPost(allPostList);
+}
 
   </script>
 
