@@ -300,13 +300,13 @@ def getRequests():
                 result={
                     'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
                     'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
-                    'Location' : Post['post_goto'],
+                    'Location' : Post['post_location'],
                     'Goto' : Post['post_goto'],
-                    'getonTime' : requ['post_getOnTime'],
+                    'getonTime' : Post['post_getOnTime'],
                     'driver_id' : str(requ['dri_id']),
                     'passenger_id' : str(requ['pas_id']),
                     'user_id'   :   str(user['_id']),
-                    'notice'    :   Post['post_id'],
+                    'notice'    :   Post['post_notice'],
                     'state'     :   requ['_state']
                 }
                 results.insert(0,result)
@@ -327,9 +327,10 @@ def getMyRequests():
             if requ['sender_id'] != user['_id']:
                 Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
                 result={
+                    'requ_id'   :   str(requ['_id'])
                     'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
                     'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
-                    'Location' : Post['post_goto'],
+                    'Location' : Post['post_location'],
                     'Goto' : Post['post_goto'],
                     'getonTime' : Post['post_getOnTime'],
                     'driver_id' : str(requ['dri_id']),
@@ -382,11 +383,11 @@ def getHistory():
     histories = user['_matchHistory']
     for his in histories:
         history = requestCol.find_one({'_id':ObjectId(his)})
-        result={'_id':str(history['_id'])}##
+        result={'_id':str(history['_id'])}
         tmp = postCol.find_one({'_id':history['post_id']})
         tmp['_id'] = str(tmp['_id'])
         tmp['owner_id'] = str(tmp['owner_id'])
-        result['_post'] = tmp##
+        result['_post'] = tmp
         tmp= userCol.find_one({'_id' : history['pas_id']})
         result['passenger'] = {'_name' : tmp['_name'], '_id' : str(tmp['_id'])}##
         tmp= userCol.find_one({'_id' : history['dri_id']})
