@@ -167,8 +167,14 @@
     }
 
     function submit() {
-      var time2 = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" + /*date.getHours()*/'00' + ":" + date.getMinutes() + ":" + "00+00:00";
-      console.log(time2);
+      var dateControl = document.getElementById("tem_date").value;
+      var timeControl = document.querySelector('input[type="time"]').value;
+      console.log(dateControl);
+      console.log(timeControl);
+
+      var time2 = dateControl + "T" + timeControl + ":" + "00+00:00";
+      console.log(typeof(time2));
+      //console.log(time2);
       var location = document.getElementById("loc").value;
       var goto = document.getElementById("des").value;
       var notice = document.getElementById("noti").value;
