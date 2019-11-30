@@ -257,7 +257,8 @@ def sendRequest():
                 'dri_rate' : False,
                 '_state' : 'waiting',
                 '_uptime': datetime.datetime.now(),
-                'chat_record' : ''
+                'chat_record' : '',
+                'anser_msg':''
                 } #請求資料初始
         if post['post_type'] == 'pas':  #如果請求人是駕駛
             info['dri_id'] = user['_id']
@@ -307,7 +308,8 @@ def getRequests():
                     'passenger_id' : str(requ['pas_id']),
                     'user_id'   :   str(user['_id']),
                     'notice'    :   Post['post_notice'],
-                    'state'     :   requ['_state']
+                    'state'     :   requ['_state'],
+                    'answer_msg':   requ['answer_msg']
                 }
                 results.insert(0,result)
         else:
@@ -328,7 +330,7 @@ def getMyRequests():
                 Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
                 result={
                     'requ_id'   :   str(requ['_id']),
-                    'driverName':  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
+                    'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
                     'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
                     'Location' : Post['post_location'],
                     'Goto' : Post['post_goto'],
@@ -337,7 +339,8 @@ def getMyRequests():
                     'passenger_id' : str(requ['pas_id']),
                     'user_id'   :   str(user['_id']),
                     'notice'    :   Post['post_notice'],
-                    'state'     :   requ['_state']
+                    'state'     :   requ['_state'],
+                    'answer_msg':   requ['answer_msg']
                 }
                 results.insert(0,result)
         else:
