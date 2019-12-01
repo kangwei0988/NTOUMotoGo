@@ -356,8 +356,14 @@ def replyRequest():
     post = postCol.find_one({'_id' : requ['post_id']})
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
     sender = userCol.find_one({'_id' : post['owner_id']})
+    
+    print(requ[reply['type'] +'_ok'])
+    print(type(requ[reply['type'] +'_ok']))
+
     if requ and post['post_getOnTime'] > datetime.datetime.now() and post['post_matched'] != True:
-        requ.update({'_id':requ['_id']},{'$set' : {requ['type']+'_ok' : reply['accept_ok'], 'answer_msg' : reply['answer_msg']}})
+        requestCol.update_one({'_id':requ['_id']},{'$set' : {'answer_msg' : reply['answer_msg']}})
+        requestCol.update_one({'_id':requ['_id']},{'$set' : {reply['type'] +'_ok': reply['accept_ok']}})
+        print("ok")
         if reply['accept_ok']:
             requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'macthed'}})
             postCol.update_one({'_id':post['_id']},{'$set' : {'post_matched' : True}})
@@ -443,5 +449,7 @@ def getUserData():
     userData = {'_name':user['_name'],'_mail': user['_mail'],'_gender':user['_gender'],'_motoplate':user['_motoplate'],'_rateHistory':rate,'_phone':user['_phone']}
     
     return jsonify(userData)
+
+
 
 
