@@ -427,3 +427,21 @@ def sendRate():
     userCol.update_one({'_id' : tmp['receiver_id']}, {"$set": {'_rateHistory' : receiverRateTmp}})
 
     return '成功'
+
+#個人頁面拿資料
+@app.route('/getUserData',methods=['GET','POST'])
+def getUserData():
+    #tmp = request.get_json(silent=True)
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    rate = []
+
+    for rateId in user['_rateHistory']:#將每個評價的星數裝進陣列
+        rateObj = rateCol.find_one({'_id' : rateId })
+        rateNum = rateObj['rate_range']
+        rate.append(rateNum)
+
+    userData = {'_name':user['_name'],'_mail': user['_mail'],'_gender':user['_gender'],'_motoplate':user['_motoplate'],'_rateHistory':rate,'_phone':user['_phone']}
+    
+    return jsonify(userData)
+
+
