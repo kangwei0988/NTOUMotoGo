@@ -143,17 +143,27 @@
               }
               else
               {
-                if(requestarray[i].user_id == requestarray[i].pas_id)
-                  box.innerHTML+=
-                  "<a class='button style2 fit'>配對成功</a>\
-                  \<a class='button style2 fit' onclick=''>已完成</a>\
-                  \<a class='button style2 fit' onclick=''>未完成</a>\
-                  \<a class='button style3 fit' onclick=''>聊天</a>"
-                else
+                if(requestarray[i].matched == "matched")
+                {
+                  console.log("SDFs");
+                  if(requestarray[i].user_id == requestarray[i].pas_id)
+                    box.innerHTML+=
+                    "<a class='button style2 fit'>配對成功</a>\
+                    \<a class='button style2 fit' onclick=''>已完成</a>\
+                    \<a class='button style2 fit' onclick=''>未完成</a>\
+                    \<a class='button style3 fit' onclick=''>聊天</a>"
+                  else 
+                  {
+                    box.innerHTML+=
+                    "<a class='button style2 fit'>配對成功</a>\
+                    \<a class='button style3 fit' onclick=''>聊天</a>"
+                  }
+                  
+                }
+                else if(requestarray[i].matched == "refuse")
                 {
                   box.innerHTML+=
-                  "<a class='button style2 fit'>配對成功</a>\
-                  \<a class='button style3 fit' onclick=''>聊天</a>"
+                  "<a class='button style2 fit'>已拒絕</a>"
                 }
               }
         }
@@ -260,11 +270,27 @@
       {
         $.ajax({
         type: 'POST',
-        url: "",
+        url: "/replyRequest",
         data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok': false, 'type' : 'dri', 'answer_msg' : message}),
         contentType: 'application/json; charset=utf-8',
         success: function(data) {
           if (data) {
+            var id = "list"+i;
+            var box=document.getElementById("list"+i);
+            box.innerHTML="";
+            box.innerHTML +=
+                "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+                <div class='inner'>\
+                  <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+                  <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
+                  <p>上車時間:" + requestarray[i].time + "</p>\
+                  <p>上車地點:" + requestarray[i].starting + "</p>\
+                  <p>目的地:" + requestarray[i].destination + "</p>\
+                  <p>備註:" + requestarray[i].note + "</p>\
+                    <a class='button style2 fit' onclick='accept_api("+i+")'>已拒絕</a>\
+                    \<a class='button style2 fit' onclick=''>聊天</a>\
+                </div>\
+              </div>";
           }
         }
         });
@@ -272,11 +298,27 @@
       else{
         $.ajax({
         type: 'POST',
-        url: "",
+        url: "/replyRequest",
         data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok': false, 'type' : 'pas', 'answer_msg' : message}),
         contentType: 'application/json; charset=utf-8',
         success: function(data) {
           if (data) {
+            var id = "list"+i;
+            var box=document.getElementById("list"+i);
+            box.innerHTML="";
+            box.innerHTML +=
+                "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+                <div class='inner'>\
+                  <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+                  <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
+                  <p>上車時間:" + requestarray[i].time + "</p>\
+                  <p>上車地點:" + requestarray[i].starting + "</p>\
+                  <p>目的地:" + requestarray[i].destination + "</p>\
+                  <p>備註:" + requestarray[i].note + "</p>\
+                    <a class='button style2 fit' onclick='accept_api("+i+")'>已拒絕</a>\
+                    \<a class='button style2 fit' onclick=''>聊天</a>\
+                </div>\
+              </div>";
           }
         }
         });
