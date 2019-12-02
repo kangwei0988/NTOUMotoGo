@@ -365,7 +365,7 @@ def replyRequest():
         requestCol.update_one({'_id':requ['_id']},{'$set' : {reply['type'] +'_ok': reply['accept_ok']}})
         print("ok")
         if reply['accept_ok']:
-            requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'macthed'}})
+            requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'matched'}})
             postCol.update_one({'_id':post['_id']},{'$set' : {'post_matched' : True}})
             thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '答應'+sender['_name']+'的請求成功'])    #呼叫通知函示，回報被請求者
             thr.start()
@@ -449,6 +449,19 @@ def getUserData():
     userData = {'_name':user['_name'],'_mail': user['_mail'],'_gender':user['_gender'],'_motoplate':user['_motoplate'],'_rateHistory':rate,'_phone':user['_phone']}
     
     return jsonify(userData)
+
+#修改個人頁面資料
+@app.route('/modifyUserData',methods=['GET','POST'])
+def modifyUserData():
+    tmp = request.get_json(silent=True)
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+
+    userCol.update_one({'_id':user['_id']},{'$set':{'_phone' : tmp['_phone']}})
+    userCol.update_one({'_id':user['_id']},{'$set':{'_motoplate' : tmp['_motoplate']}})
+    userCol.update_one({'_id':user['_id']},{'$set':{'_new_notifications' : tmp['_new_notifications']}})
+    userCol.update_one({'_id':user['_id']},{'$set':{'_want_mail' : tmp['_want_mail']}})
+
+    return '成功'
 
 
 
