@@ -213,6 +213,9 @@ def postBoard():
         result['owner_id'] = str(result['owner_id'])
         result['post_name'] = userCol.find_one({'_id' : ObjectId(post['owner_id'])})['_name']
         results.append(result)
+
+    myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
+    results.append(str(myId))
     return jsonify(results)
 
 
@@ -450,6 +453,18 @@ def getUserData():
     
     return jsonify(userData)
 
+#個人刊登資訊
+@app.route('/getSelfPost',methods=['GET','POST'])
+def getSelfPost():
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    post = []
+
+    for postId in user['_postHistory']:#將每個post裝進陣列
+        postObj = postCol.find_one({'_id' : ObjectId(postId) })
+        post.append(postObj)
+    
+    return jsonify(post)
+
 #修改個人頁面資料
 @app.route('/modifyUserData',methods=['GET','POST'])
 def modifyUserData():
@@ -459,10 +474,9 @@ def modifyUserData():
     userCol.update_one({'_id':user['_id']},{'$set':{'_phone' : tmp['_phone']}})
     userCol.update_one({'_id':user['_id']},{'$set':{'_motoplate' : tmp['_motoplate']}})
     userCol.update_one({'_id':user['_id']},{'$set':{'_new_notifications' : tmp['_new_notifications']}})
-    userCol.update_one({'_id':user['_id']},{'$set':{'_want_mail' : tmp['_want_mail']}})
+    userCol.update_one({'_id':user['_id']},{'$set':{'_want_ mail' : tmp['_want_mail']}})
 
     return '成功'
-
 
 
 
