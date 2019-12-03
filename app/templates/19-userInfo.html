@@ -38,18 +38,19 @@
   <!-- Sidebar/menu -->
   <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
     style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
-    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a> 
-    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
-    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a> 
+    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a>
+    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a>
+    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
     <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
     <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
-  
+
   </nav>
 
   <!-- Top menu on small screens -->
   <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
     <span class="w3-center w3-padding w3-text-light-grey">個人資訊</span>
-    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
+    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey"
+      onclick="w3_open()">&#9776;</a>
   </header>
 
   <!-- Overlay effect when opening sidebar on small screens -->
@@ -61,35 +62,72 @@
 
     <div class="w3-container w3-padding-32 w3-padding-large" id="contact">
       <div class="w3-content  w3-text-light-grey" style="max-width:600px">
-        <form action="/action_page.php" target="_blank">
-          <div class="w3-section">
-            <label>姓名</label>
-            <input class="w3-input w3-border" type="text" name="name" required>
-          </div>
-          <div class="w3-section">
-            <label>性別</label>
-            <select class="w3-input w3-border" type="text" name="account number" required>
-              　<option value="man">男</option>
-              　<option value="woman">女</option>
-                <option value="mid">人妖</option>
-            </select>
-          </div>
-          <div class="w3-section">
-            <label>聯或電話</label>
-            <input class="w3-input w3-border" type="text" name="name" required>
-          </div>
-          <div class="w3-section">
-            <label>車牌</label>
-            <input class="w3-input w3-border" type="text" name="name" required>
-          </div>
-          <div class="w3-section">
-            <label>email</label>
-            <input class="w3-input w3-border" type="text" name="name" required>
-          </div>
-          <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
-            style="background-color: #7f92cf;">確定</button>
-          <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
-            style="background-color: lightcoral;">取消</button>
+
+        <form action="/somewhere/to/upload" enctype="multipart/form-data">
+
+          <input type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img"
+            accept="image/gif, image/jpeg, image/png"/>
+
+          <img id="preview_progressbarTW_img" src="#" />
+
+        </form>
+
+        <!-- JavaScript part -->
+
+        <script>
+
+          function readURL(input) {
+
+            if (input.files && input.files[0]) {
+
+              var imageTagID = input.getAttribute("targetID");
+
+              var reader = new FileReader();
+
+              reader.onload = function (e) {
+
+                var img = document.getElementById(imageTagID);
+
+                img.setAttribute("src", e.target.result)
+
+              }
+
+              reader.readAsDataURL(input.files[0]);
+
+            }
+
+          }
+
+        </script>
+
+        <div class="w3-section">
+          <label>姓名</label>
+          <input class="w3-input w3-border" type="text" name="name" required>
+        </div>
+        <div class="w3-section">
+          <label>性別</label>
+          <select class="w3-input w3-border" type="text" name="account number" required>
+            　<option value="man">男</option>
+            　<option value="woman">女</option>
+            <option value="mid">人妖</option>
+          </select>
+        </div>
+        <div class="w3-section">
+          <label>聯或電話</label>
+          <input class="w3-input w3-border" type="text" name="name" required>
+        </div>
+        <div class="w3-section">
+          <label>車牌</label>
+          <input class="w3-input w3-border" type="text" name="name" required>
+        </div>
+        <div class="w3-section">
+          <label>email</label>
+          <input class="w3-input w3-border" type="text" name="name" required>
+        </div>
+        <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
+          style="background-color: #7f92cf;">確定</button>
+        <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
+          style="background-color: lightcoral;">取消</button>
 
         </form>
       </div>
@@ -105,8 +143,9 @@
   </div>
 
   <script src="static/assets/js/jquery.min.js"></script>
-  <script src="static/assets/js/getCoords.js" ></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap" async defer></script>
+  <script src="static/assets/js/getCoords.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap"
+    async defer></script>
   <script src="static/assets/js/jquery.scrolly.min.js"></script>
   <script src="static/assets/js/skel.min.js"></script>
   <script src="static/assets/js/util.js"></script>
@@ -116,7 +155,14 @@
   <!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
 
 
+  <script src="https://code.jquery.com/jquery-3.1.0.js">
+
+  </script>
+
+
+
   <script>
+
     // Script to open and close sidebar
     function w3_open() {
       document.getElementById("mySidebar").style.display = "block";
