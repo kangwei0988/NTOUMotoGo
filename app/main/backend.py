@@ -128,6 +128,10 @@ def MapPage():
 def notice():
     userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_new_notifications' : False}})
     return render_template('21-notice.html')
+#跳轉頁面到23-myPost.html
+@app.route('/myPost')
+def myPost():
+    return render_template('23-myPost.html')
 @app.route('/chatRoom')
 def chatRoom():
     return render_template('22-chat.html')
@@ -135,6 +139,7 @@ def chatRoom():
 @app.route('/test')
 def test():
     return render_template('test.html')
+
 
 ##############################
 ############功能api###########
@@ -457,13 +462,17 @@ def getUserData():
 @app.route('/getSelfPost',methods=['GET','POST'])
 def getSelfPost():
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
-    post = []
-
-    for postId in user['_postHistory']:#將每個post裝進陣列
-        postObj = postCol.find_one({'_id' : ObjectId(postId) })
-        post.append(postObj)
+    results = []
+    Posts = postCol.find({'owner_id':user['_id'],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
     
-    return jsonify(post)
+    for post in Posts:
+        print(post)
+        result = post
+        result['_id'] = str(result['_id'])
+        result['owner_id'] = str(result['owner_id'])
+        result['post_name'] = userCol.find_one({'_id' : ObjectId(post['owner_id'])})['_name']
+        results.append(result)
+    return jsonify(results)
 
 #修改個人頁面資料
 @app.route('/modifyUserData',methods=['GET','POST'])
