@@ -210,6 +210,7 @@ def postBoard():
     post_type = request.get_json()['post_type']
     print(post_type)
     posts = postCol.find({'post_type':post_type,'post_matched':False,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
+    myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
     results = []
     for post in posts:
         print(post)
@@ -217,10 +218,8 @@ def postBoard():
         result['_id'] = str(result['_id'])
         result['owner_id'] = str(result['owner_id'])
         result['post_name'] = userCol.find_one({'_id' : ObjectId(post['owner_id'])})['_name']
+        result['yourID'] = str(myId)
         results.append(result)
-
-    myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
-    results.append(str(myId))
     return jsonify(results)
 
 

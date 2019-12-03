@@ -83,11 +83,18 @@ function w3_close() {
 }
 
 function displayPosts(postResult){
+  var thisType;
+  var note;
   var popContent="";
-        for(var i=0;i<postResult.length;i++){      
+        for(var i=0;i<postResult.length;i++){
+          thisType = postResult[i].post_type;
+          if(thisType == 'dri')
+            note = '的後座空空的覺得好寂寞';
+          else
+            note = '是邊緣人需要別人載他';
           popContent +='<div class="box">\
                           <div class="inner">\
-                            <h3 id="post'+i+'" onclick="posterInfo(this)">'+ postResult[i].post_name  +'</h3>\
+                            <h3 id="post'+i+'">'+ postResult[i].post_name + note +'</h3>\
                             <div id="posterInfo'+i+'"></div>\
                             <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
           if(postResult[i].post_haveHat==true)
@@ -102,7 +109,10 @@ function displayPosts(postResult){
           if(postResult[i].post_matched)
             popContent+='<button class="button style2 fit">已配對</button>';
           else
+          {
             popContent+='<button class="button style2 fit">未配對</button>';
+            popContent+='<button class="button style2 fit">刪除此刊登</button>';
+          }
             popContent+='</div></div>';           
         }
   document.getElementById("myPostList").innerHTML = popContent;

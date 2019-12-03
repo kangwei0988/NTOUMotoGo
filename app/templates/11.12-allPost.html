@@ -68,7 +68,7 @@
   <!-- Top menu on small screens -->
   <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
     <span class="w3-center w3-padding w3-text-light-grey">
-      <span id="myType"></span> 
+      <span id="myType"></span>
       <span style="text-decoration:none; background-color:blue;" onclick="changeType()">切換身分</span>
       <button type="button" class="mybutton" id="search" onclick="inputSearch()" style="width: 15%;">搜尋</button>
     </span>
@@ -81,6 +81,7 @@
     <div id = "searchBar"></div>
     <div class="inner">
 
+      
       <!--Post Section  --> 
       <div class="thumbnails" id="allPost"></div> 
     </div>
@@ -109,12 +110,12 @@
     // Script to open and close sidebar
     function w3_open() {
       document.getElementById("mySidebar").style.display = "block";
-      document.getElementById("myOverlay").style.display = "block";
+      // document.getElementById("myOverlay").style.display = "block";
     }
 
     function w3_close() {
       document.getElementById("mySidebar").style.display = "none";
-      document.getElementById("myOverlay").style.display = "none";
+      // document.getElementById("myOverlay").style.display = "none";
     }
 
     // Modal Image Gallery
@@ -171,7 +172,12 @@
     }
 
     function displayPost(postResult){
-      console.log(postResult)
+      console.log(postResult);
+      var note;
+      if (myType == 'dri')
+        note = '是邊緣人需要別人載他';
+      else
+        note = '的後座空空的覺得好寂寞';
       allPostList = postResult;
       if(postResult.length)
       {
@@ -180,7 +186,7 @@
         for(var i=0;i<postResult.length;i++){      
           popContent +='<div class="box">\
                           <div class="inner">\
-                            <h3 id="post'+i+'" onclick="posterInfo(this)">'+ postResult[i].post_name  +'</h3>\
+                            <h3 id="post'+i+'" onclick="posterInfo(this)">'+ postResult[i].post_name+'<span style:"position:relative; top:5px;">'+note+'</span>'+'</h3>\
                             <div id="posterInfo'+i+'"></div>\
                             <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
           if(postResult[i].post_haveHat==true)

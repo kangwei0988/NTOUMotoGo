@@ -48,7 +48,7 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
         <!-- Boxes -->
         <div class="thumbnails" id="historyList"></div>
       </div>
-    </div>
+  </div>
 
   <!-- Footer -->
   
@@ -138,14 +138,14 @@ function jsonToStruct(myStrings){
   var i;
   for(i = 0;i < strings.length;i++){
     historyArray.push({pictrue:"static/images/lillard.jpg", driver:"", passenger:"", starting:"", destination:"", date:"", time:"", sendRating:"", receiveRating:"", post_id:""});
-    historyArray[i].driver = myStrings[historyArray.length - 1].driver._name;
-    historyArray[i].passenger = myStrings[historyArray.length - 1].passenger._name;
-    historyArray[i].starting = myStrings[historyArray.length - 1]._post.post_goto;
-    historyArray[i].destination = myStrings[historyArray.length - 1]._post.post_location;
-    historyArray[i].time = myStrings[historyArray.length - 1]._post.post_time;
+    historyArray[i].driver = myStrings[i].driver._name;
+    historyArray[i].passenger = myStrings[i].passenger._name;
+    historyArray[i].starting = myStrings[i]._post.post_goto;
+    historyArray[i].destination = myStrings[i]._post.post_location;
+    historyArray[i].time = myStrings[i]._post.post_time;
     historyArray[i].sendRating ="FALSE";
     historyArray[i].receiveRating ="FALSE";
-    historyArray[i].post_id = myStrings[historyArray.length - 1]._post._id;
+    historyArray[i].post_id = myStrings[i]._post._id;
   }
 }
 
