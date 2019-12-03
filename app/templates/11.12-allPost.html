@@ -77,14 +77,15 @@
   
   <!-- Main -->
   <br><br><br><br>
-  <div>
+  <div id="main">
     <div id = "searchBar"></div>
     <div class="inner">
 
       <!--Post Section  --> 
-      <div class="inner" id="allPost"></div> 
+      <div class="thumbnails" id="allPost"></div> 
     </div>
   </div>
+
 
   <script src="static/assets/js/jquery.min.js"></script>
   <script src="static/assets/js/getCoords.js" ></script>
@@ -104,6 +105,7 @@
     var mySearch = [];
     var myType;
     var searchType;
+    var myID;
     // Script to open and close sidebar
     function w3_open() {
       document.getElementById("mySidebar").style.display = "block";
@@ -170,10 +172,10 @@
 
     function displayPost(postResult){
       console.log(postResult)
-      $("#allPost").empty();
       allPostList = postResult;
       if(postResult.length)
       {
+        myID = postResult[0].yourID;
         var popContent="";
         for(var i=0;i<postResult.length;i++){      
           popContent +='<div class="box">\
@@ -190,13 +192,16 @@
           else 
             popContent+='<br>雨衣 : 無';
           popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
-          popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button></div> </div>';
+          if(postResult[i].owner_id != myID)
+            popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button>\
+                          </div>\
+                        </div>';
         }
         //console.log(typeof(postResult[0]._id));
-        $("#allPost").append(popContent);
+        document.getElementById("allPost").innerHTML = popContent;
       }
       else
-        $("#allPost").append("目前沒有刊登資訊");
+        document.getElementById("allPost").innerHTML = "目前沒有刊登資訊";
     }
     
     //是否要已送出過就無法再按
