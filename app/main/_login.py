@@ -39,6 +39,8 @@ def newAccount():
         newUser['_notifications'] = []
         newUser['_new_notifications'] = True
         newUser['_want_mail'] = True
+        newUser['_user_photo'] = '#'
+        newUser['_license_photo'] = '#'
         userid = userCol.insert_one(newUser).inserted_id
         if userid:
             title = "海大機車共乘系統註冊通知"

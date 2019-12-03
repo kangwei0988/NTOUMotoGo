@@ -1,3 +1,4 @@
+import os
 from .. import app
 from .backend import userCol
 from flask import request,session
@@ -20,5 +21,11 @@ def setInfo():
         if file and allowed_file(file.filename):
             fileName = datetime.datetime.now()
             file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+userCol['Account_name'], str(datetime.datetime.now(fileName))+".jpg"))
-            userCol.update_one({'_id',user['_id']},{'$set',{'user_photo' : str(fileName)+".jpg"}})
+            userCol.update_one({'_id',user['_id']},{'$set',{'_user_photo' : str(fileName)+".jpg"}})
+    if 'user_photo' in request.files:
+        file = request.files['user_photo']
+        if file and allowed_file(file.filename):
+            fileName = datetime.datetime.now()
+            file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+userCol['Account_name'], str(datetime.datetime.now(fileName))+".jpg"))
+            userCol.update_one({'_id',user['_id']},{'$set',{'_license_photo' : str(fileName)+".jpg"}})
 
