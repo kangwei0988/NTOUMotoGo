@@ -14,7 +14,7 @@ app.config['BCRYPT_LOG_ROUNDS'] = 10
 app.jinja_env.auto_reload = True
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.permanent_session_lifetime = datetime.timedelta(days=1) #登入時效
-#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = 'static/userPhoto'
 
 socketio = SocketIO(app, async_mode='threading')
 
