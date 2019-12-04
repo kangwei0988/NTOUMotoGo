@@ -6,32 +6,95 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
-<style>
-  @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
 
-  body,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5 {
-    font-family: "Noto Sans TC", "Raleway", sans-serif
-  }
+<head>
+  <style>
+    @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
 
-  .w3-quarter img {
-    margin-bottom: -6px;
-    cursor: pointer
-  }
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-family: "Noto Sans TC", "Raleway", sans-serif
+    }
 
-  .w3-quarter img:hover {
-    opacity: 0.6;
-    transition: 0.3s
-  }
+    .w3-quarter img {
+      margin-bottom: -6px;
+      cursor: pointer
+    }
 
-  #name {
-    font-size: 50px;
-  }
-</style>
+    .w3-quarter img:hover {
+      opacity: 0.6;
+      transition: 0.3s
+    }
+
+    #name {
+      font-size: 50px;
+    }
+
+    input[type="file"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .custom-file-upload {
+      background-color: cadetblue;
+      border: 1px solid #ccc;
+      display: inline-block;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    #preview_progressbarTW_img1 {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      top: auto;
+    }
+
+    #preview_progressbarTW_img2 {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      top: auto;
+    }
+  </style>
+
+  <script>
+
+    function readURL(input) {
+
+      if (input.files && input.files[0]) {
+
+        var imageTagID = input.getAttribute("targetID");
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+
+          var img = document.getElementById(imageTagID);
+
+          img.setAttribute("src", e.target.result)
+
+        }
+
+        reader.readAsDataURL(input.files[0]);
+
+      }
+
+    }
+
+  </script>
+
+</head>
 
 <body style="background-color: #202024">
 
@@ -59,77 +122,60 @@
 
   <!-- !PAGE CONTENT! -->
   <div class="w3-main w3-content" style="max-width:1600px;margin-top:100px">
-
     <div class="w3-container w3-padding-32 w3-padding-large" id="contact">
       <div class="w3-content  w3-text-light-grey" style="max-width:600px">
 
-        <form action="/somewhere/to/upload" enctype="multipart/form-data">
+        <form enctype="multipart/form-data" action="/set Info" method="POST">
 
-          <input type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img"
-            accept="image/gif, image/jpeg, image/png"/>
+          <div class="w3-section">
+            <label for="file-upload1" class="custom-file-upload">
+              <i></i> 上傳大頭貼
+            </label>
+            <input id="file-upload1" type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img1"
+              accept="image/gif, image/jpeg, image/png" />
+            <img id="preview_progressbarTW_img1" name = "_user_photo"/>
+          </div>
 
-          <img id="preview_progressbarTW_img" src="#" />
+          <div class="w3-section">
+            <label for="file-upload2" class="custom-file-upload">
+              <i></i> 請上傳駕照
+            </label>
+            <input id="file-upload2" type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img2"
+              accept="image/gif, image/jpeg, image/png" />
+            <img id="preview_progressbarTW_img2" name = "_license_photo"/>
+          </div>
 
+          <!-- JavaScript part -->
+          <div class="w3-section">
+            <label>姓名</label>
+            <input class="w3-input w3-border" type="text" name="_name" required>
+          </div>
+
+          <div class="w3-section">
+            <label>性別</label>
+            <select class="w3-input w3-border" type="text" name = false required>
+              　<option value="man">男</option>
+              　<option value="woman">女</option>
+              <option value="mid">人妖</option>
+            </select>
+          </div>
+
+          <div class="w3-section">
+            <label>聯或電話</label>
+            <input class="w3-input w3-border" type="text" name="_phone" required>
+          </div>
+
+          <div class="w3-section">
+            <label>email</label>
+            <input class="w3-input w3-border" type="text" name="_mail" required>
+          </div>
+
+          <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
+            style="background-color: #7f92cf;">確定</button>
         </form>
 
-        <!-- JavaScript part -->
-
-        <script>
-
-          function readURL(input) {
-
-            if (input.files && input.files[0]) {
-
-              var imageTagID = input.getAttribute("targetID");
-
-              var reader = new FileReader();
-
-              reader.onload = function (e) {
-
-                var img = document.getElementById(imageTagID);
-
-                img.setAttribute("src", e.target.result)
-
-              }
-
-              reader.readAsDataURL(input.files[0]);
-
-            }
-
-          }
-
-        </script>
-
-        <div class="w3-section">
-          <label>姓名</label>
-          <input class="w3-input w3-border" type="text" name="name" required>
-        </div>
-        <div class="w3-section">
-          <label>性別</label>
-          <select class="w3-input w3-border" type="text" name="account number" required>
-            　<option value="man">男</option>
-            　<option value="woman">女</option>
-            <option value="mid">人妖</option>
-          </select>
-        </div>
-        <div class="w3-section">
-          <label>聯或電話</label>
-          <input class="w3-input w3-border" type="text" name="name" required>
-        </div>
-        <div class="w3-section">
-          <label>車牌</label>
-          <input class="w3-input w3-border" type="text" name="name" required>
-        </div>
-        <div class="w3-section">
-          <label>email</label>
-          <input class="w3-input w3-border" type="text" name="name" required>
-        </div>
-        <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
-          style="background-color: #7f92cf;">確定</button>
-        <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
-          style="background-color: lightcoral;">取消</button>
-
-        </form>
+        <a href="3-index.html"> <intput type = "button"class="w3-button w3-block w3-margin-bottom w3-round-large"
+          style="background-color: lightcoral;">取消</a>
       </div>
     </div>
 
