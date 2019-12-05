@@ -134,7 +134,7 @@
                 box.innerHTML+=
                 "\<a class='button style3 fit' onclick='accept_api("+i+")'>接受</a>\
                 \<a class='button style3 fit' onclick='reject("+i+")'>拒絕</a>\
-                \<a class='button style3 fit' onclick=''>聊天</a>"
+                \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
               else if(requestarray[i].matched == "due")
               {
@@ -151,12 +151,12 @@
                     "<a class='button style2 fit'>配對成功</a>\
                     \<a class='button style2 fit' onclick='complete("+i+")'>已完成</a>\
                     \<a class='button style2 fit' onclick='uncomplete("+i+")'>未完成</a>\
-                    \<a class='button style3 fit' onclick=''>聊天</a>"
+                    \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
                   else 
                   {
                     box.innerHTML+=
                     "<a class='button style2 fit'>配對成功</a>\
-                    \<a class='button style3 fit' onclick='javascript:location.href='chatRoom?requestarray[i].requ_id''>聊天</a>"
+                    \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
                   }
                   
                 }
@@ -164,6 +164,11 @@
                 {
                   box.innerHTML+=
                   "<a class='button style2 fit'>已拒絕</a>"
+                }
+                else if(requestarray[i].matched == "completed")
+                {
+                  box.innerHTML+=
+                  "<a class='button style2 fit'>已完成</a>"
                 }
               }
         }
@@ -174,7 +179,7 @@
       document.getElementById("RequestList").innerHTML +=
         '<a class="button style fit" onclick="location.reload()">重新整理</a>';
       }
-
+     
     function jsonToStruct(){
       var i;
       
@@ -198,7 +203,9 @@
     }
     function Delete(i)
     {
-      $.ajax({
+      if(requestarray[i].state == "completed" | requestarray[i].state == "uncompleted" || requestarray[i].state == "rejected")
+      {
+        $.ajax({
             type: 'POST',
             url: "/deleteRequest",
             data: JSON.stringify({'requ_id': requestarray[i].requ_id}),
@@ -208,6 +215,9 @@
               window.alert("ASDF");
             }
             });
+      }
+      else
+        window.alert("You can't anything!!");
     }
     
     function complete(i)
@@ -219,6 +229,7 @@
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
               window.alert("ASDF");
+              window.location.href="homepage";
             }
             });
     }

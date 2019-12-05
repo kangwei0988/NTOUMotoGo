@@ -161,7 +161,8 @@
               {
                 box.innerHTML+=
                 "\<a class='button style3 fit' onclick='accept("+i+")'>等待回應</a>\
-                \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>"
+                \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
+                \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
               else if(requestarray[i].state == "rejected")
               {
@@ -174,7 +175,7 @@
                 box.innerHTML+=
                 "\<a class='button style3 fit' onclick='accept("+i+")'>已接受</a>\
                 \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
-                \<a class='button style3 fit' onclick=''>聊天</a>"
+                \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
               else if(requestarray[i].state == "due")
               {
@@ -216,7 +217,8 @@
           'pas_id' : string[i].passenger_id,
           'user_id' : string[i].user_id,
           'note' : string[i].notice,
-          'state' : string[i].state
+          'state' : string[i].state,
+          'requ_id' : string[i].requ_id
         };
         
         requestarray.push(list);
@@ -224,8 +226,9 @@
     }
     function Delete(i)
     {
-      if(requestarray[i].state=="matched" | requestarray[i].state=="reject" | requestarray[i].state=="")
-      showrequests(i);
+      if(requestarray[i].state=="completed" | requestarray[i].state=="reject")
+      {
+        showrequests(i);
       $.ajax({
         type: 'POST',
         url: "",
@@ -237,6 +240,9 @@
           }
         }
       });
+      }
+      else
+        window.alert("SDFsf"); 
     }
   </script>
 
