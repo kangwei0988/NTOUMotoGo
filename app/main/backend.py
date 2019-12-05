@@ -132,6 +132,10 @@ def notice():
 @app.route('/myPost')
 def myPost():
     return render_template('23-myPost.html')
+#跳轉頁面到24-matchedProcess.html
+@app.route('/matchedPost')
+def matchedPost():
+    return render_template('24-matchedProcess.html')
 @app.route('/chatRoom')
 def chatRoom():
     return render_template('22-chat.html')
@@ -390,13 +394,13 @@ def replyRequest():
                                                                                                              
             thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '答應'+sender['_name']+'的請求成功'])    #呼叫通知函示，回報被請求者
             thr.start()
-            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', user['_name']+'已答應你的請求'])        #呼叫通知函示，回報請求者
+            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', sender['_name']+'已答應你的請求'])        #呼叫通知函示，回報請求者
             thr2.start()
         else:
             requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'refuse'}})
             thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '已拒絕'+sender['_name']+'的請求'])     #呼叫通知函示，回報被請求者
             thr.start()
-            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', '對'+ user['_name']+'的請求被拒絕'])  #呼叫通知函示，回報請求者
+            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', '對'+ sender['_name']+'的請求被拒絕'])  #呼叫通知函示，回報請求者
             thr2.start()
     else:
         thr = Thread(target=notifation, args=[app, user['_id'], False, 'requ', '回復請求失敗，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
@@ -507,6 +511,23 @@ def modifyUserData():
     userCol.update_one({'_id':user['_id']},{'$set':{'_want_ mail' : tmp['_want_mail']}})
 
     return '成功'
+
+#配對成功測試
+@app.route('/getMatchedPost',methods=['GET','POST'])
+def getMatchedPost():
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    results = []
+    Posts = postCol.find({'owner_id':user['_id'],'post_matched':True,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
+    myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
+    for post in Posts:
+        print(post)
+        result = post
+        result['_id'] = str(result['_id'])
+        result['owner_id'] = str(result['owner_id'])
+        result['post_name'] = userCol.find_one({'_id' : ObjectId(post['owner_id'])})['_name']
+        result['yourID'] = str(myId)
+        results.append(result)
+    return jsonify(results)
 
 
 
