@@ -514,6 +514,7 @@ def modifyUserData():
 
     return '成功'
 
+
 #配對成功測試
 @app.route('/getMatchedPost',methods=['GET','POST'])
 def getMatchedPost():
@@ -528,9 +529,12 @@ def getMatchedPost():
         result['sender_id'] = str(result['sender_id'])
         result['pas_id'] = str(result['pas_id'])
         result['dri_id'] = str(result['dri_id'])
-        results.append(result)
+        Post = postCol.find_one({'_id' : ObjectId(result['post_id'])})
+        print(type(Post))
+        Post['_id'] = str(result['_id'])
+        Post['owner_id'] = str(Post['owner_id'])
+        Post['post_name'] = userCol.find_one({'_id' : ObjectId(Post['owner_id'])})['_name']
+        result.update({'post':Post})
     
+        results.append(result)
     return jsonify(results)
-
-
-
