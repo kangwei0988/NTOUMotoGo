@@ -123,60 +123,7 @@
   <!-- !PAGE CONTENT! -->
   <div class="w3-main w3-content" style="max-width:1600px;margin-top:100px">
     <div class="w3-container w3-padding-32 w3-padding-large" id="contact">
-      <div class="w3-content  w3-text-light-grey" style="max-width:600px">
 
-        <form enctype="multipart/form-data" action="/set Info" method="POST">
-
-          <div class="w3-section">
-            <label for="file-upload1" class="custom-file-upload">
-              <i></i> 上傳大頭貼
-            </label>
-            <input id="file-upload1" type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img1"
-              accept="image/gif, image/jpeg, image/png" />
-            <img id="preview_progressbarTW_img1" name = "_user_photo"/>
-          </div>
-
-          <div class="w3-section">
-            <label for="file-upload2" class="custom-file-upload">
-              <i></i> 請上傳駕照
-            </label>
-            <input id="file-upload2" type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img2"
-              accept="image/gif, image/jpeg, image/png" />
-            <img id="preview_progressbarTW_img2" name = "_license_photo"/>
-          </div>
-
-          <!-- JavaScript part -->
-          <div class="w3-section">
-            <label>姓名</label>
-            <input class="w3-input w3-border" type="text" name="_name" required>
-          </div>
-
-          <div class="w3-section">
-            <label>性別</label>
-            <select class="w3-input w3-border" type="text" name = false required>
-              　<option value="man">男</option>
-              　<option value="woman">女</option>
-              <option value="mid">人妖</option>
-            </select>
-          </div>
-
-          <div class="w3-section">
-            <label>聯或電話</label>
-            <input class="w3-input w3-border" type="text" name="_phone" required>
-          </div>
-
-          <div class="w3-section">
-            <label>email</label>
-            <input class="w3-input w3-border" type="text" name="_mail" required>
-          </div>
-
-          <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"
-            style="background-color: #7f92cf;">確定</button>
-        </form>
-
-        <a href="3-index.html"> <intput type = "button"class="w3-button w3-block w3-margin-bottom w3-round-large"
-          style="background-color: lightcoral;">取消</a>
-      </div>
     </div>
 
     <!-- Footer -->
@@ -227,7 +174,81 @@
       var captionText = document.getElementById("caption");
       captionText.innerHTML = element.alt;
     }
+    var strings;
+    window.onload = function () {
+      $.ajax({
+        type: 'POST',
+        url: "/getUserData",
+        data: "",
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          if (data) {
+            // data.redirect contains the string URL to redirect to
+            strings = data;
+          }
+          console.log(data);
+        }
+      });
 
+      var hisGrade = 0;
+      for (var i = 0; i < strings[_rateHistory].length; i++) {
+        hisGrade += strings[_rateHistory][i];
+      }
+      hisGrade /= i;
+      console.log("ssssssssssssss");
+
+      //{driverName:"name", passengerName:"name",Location :"post_location", 
+      //Goto:"post_goto",getonTime:"pos_getOnTime", driver_id:"_id", passenger_id:"id", user_id:"_id", notice:"post_notice"}
+      document.getElementById("contact").innerHTML +=
+        '<div class="w3-content  w3-text-light-grey" style="max-width:600px">\
+              <form enctype="multipart/form-data" action="/set Info" method="POST">\
+                <div class="w3-section">\
+                  <label for="file-upload1" class="custom-file-upload">\
+                    <i></i> 上傳大頭貼\
+                  </label>\
+                  <input id="file-upload1" type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img1"\
+                    accept="image/gif, image/jpeg, image/png" />\
+                  <img src = "' + strings["_user_photo"] + '" id="preview_progressbarTW_img1" name="_user_photo" />\
+                </div>\
+                <div class="w3-section">\
+                  <label for="file-upload2" class="custom-file-upload">\
+                    <i></i> 請上傳駕照\
+                  </label>\
+                  <input id="file-upload2" type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img2"\
+                    accept="image/gif, image/jpeg, image/png" />\
+                  <img src = "' + strings["_license_photo"] + '" id="preview_progressbarTW_img2" name="_license_photo" />\
+                </div>\
+                <div class="w3-section">\
+                  <label>姓名</label>\
+                  <input class="w3-input w3-border" type="text" name="_name" required value = "'+ strings["_name"] + '">\
+                </div>\
+                <div class="w3-section">\
+                    <label>性別</label>\
+                    <select class="w3-input w3-border" type="text" name="_gender" required value = "'+ strings["_gender"] + '">\
+                      <option value="man">男</option>\
+                      <option value="woman">女</option>\
+                    </select>\
+                </div>\
+                <div class="w3-section">\
+                    <label>聯或電話</label>\
+                    <input class="w3-input w3-border" type="text" name="_phone" required value = "'+ strings["_photo"] + '">\
+                </div>\
+                <div class="w3-section">\
+                  <label>email</label>\
+                  <input class="w3-input w3-border" type="text" name="_mail" required value = "'+ strings["_mail"] + '">\
+                </div>\
+                  <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"\
+                  style="background-color: #7f92cf;">確定</button>\
+                </form>\
+                <div class="w3-section">\
+                  評價分數:'+ hisGrade + '\
+                </div>\
+               <a href="3-index.html">\
+                  <intput type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
+                  style="background-color: lightcoral;">取消\
+                </a>\
+            </div>'
+    }        
   </script>
 
 
