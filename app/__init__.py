@@ -18,4 +18,4 @@ app.config['UPLOAD_FOLDER'] = 'app/static/userPhotos'
 
 socketio = SocketIO(app, async_mode='threading')
 
-from .main import backend, _socket, _login, _userInfo
+from .main import backend, _socket, _login, _userInfo,_error
