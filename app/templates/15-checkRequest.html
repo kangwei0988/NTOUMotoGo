@@ -110,15 +110,12 @@
         }
       });
     }
-    function showrequests(index=-1){
+    function showrequests(){
       var i;
-      console.log("SDFS");
       if (requestarray.length) {
         var requestlist=document.getElementById("RequestList");
         requestlist.innerHTML="";
         for (i = 0; i < requestarray.length; i++) {
-            if(i==index)
-              continue;
             var id = "list"+i;
             requestlist.innerHTML +=
             "\<div class='box' id="+id+">\
@@ -152,14 +149,14 @@
                   if(requestarray[i].user_id == requestarray[i].pas_id)
                     box.innerHTML+=
                     "<a class='button style2 fit'>配對成功</a>\
-                    \<a class='button style2 fit' onclick=''>已完成</a>\
-                    \<a class='button style2 fit' onclick=''>未完成</a>\
+                    \<a class='button style2 fit' onclick='complete("+i+")'>已完成</a>\
+                    \<a class='button style2 fit' onclick='uncomplete("+i+")'>未完成</a>\
                     \<a class='button style3 fit' onclick=''>聊天</a>"
                   else 
                   {
                     box.innerHTML+=
                     "<a class='button style2 fit'>配對成功</a>\
-                    \<a class='button style3 fit' onclick=''>聊天</a>"
+                    \<a class='button style3 fit' onclick='javascript:location.href='chatRoom?requestarray[i].requ_id''>聊天</a>"
                   }
                   
                 }
@@ -201,7 +198,41 @@
     }
     function Delete(i)
     {
-      showrequests(i);
+      $.ajax({
+            type: 'POST',
+            url: "/deleteRequest",
+            data: JSON.stringify({'requ_id': requestarray[i].requ_id}),
+            contentType: 'application/json; charset=utf-8',
+            success: function(data) {
+              window.location.reload();
+              window.alert("ASDF");
+            }
+            });
+    }
+    
+    function complete(i)
+    {
+      $.ajax({
+            type: 'POST',
+            url: "/requComplete",
+            data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'ok' : true}),
+            contentType: 'application/json; charset=utf-8',
+            success: function(data) {
+              window.alert("ASDF");
+            }
+            });
+    }
+    function uncomplete(i)
+    {
+      $.ajax({
+            type: 'POST',
+            url: "/requComplete",
+            data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'ok' : false}),
+            contentType: 'application/json; charset=utf-8',
+            success: function(data) {
+              window.alert("ASDF");
+            }
+            });
     }
     function accept(i)
     {
