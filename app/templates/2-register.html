@@ -47,6 +47,13 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
           <input class="w3-input w3-border" type="text" name="_name" required value = {{fault._name}}>
         </div>
         <div class="w3-section">
+          <label>性別</label>
+          <select class="w3-input w3-border" type="text" name = "_gender" required>
+            　<option value=1 >男</option>
+            　<option value=0 >女</option>
+          </select>
+        </div>
+        <div class="w3-section">
           <label>電話</label>
           <input class="w3-input w3-border" type="tel" name="_phone" required value = {{fault._phone}}>
           <p class="w3-text-red">{{fault.fault_phone}}</p>

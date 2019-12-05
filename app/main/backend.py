@@ -453,7 +453,15 @@ def getUserData():
         rateNum = rateObj['rate_range']
         rate.append(rateNum)
 
-    userData = {'_name':user['_name'],'_mail': user['_mail'],'_gender':user['_gender'],'_motoplate':user['_motoplate'],'_rateHistory':rate,'_phone':user['_phone']}
+    userData = {
+        '_name':user['_name'],
+        '_mail': user['_mail'],
+        '_gender':user['_gender'],
+        '_motoplate':user['_motoplate'],
+        '_rateHistory':rate,
+        '_phone':user['_phone'],
+        '_user_photo':user['_user_photo'],
+        '_license_photo':user['_license_photo']}
     
     return jsonify(userData)
 
