@@ -363,6 +363,7 @@ def replyRequest():
     post = postCol.find_one({'_id' : requ['post_id']})
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
     sender = userCol.find_one({'_id' : post['owner_id']})
+    matchHistory = []
     
     print(requ[reply['type'] +'_ok'])
     print(type(requ[reply['type'] +'_ok']))
@@ -374,6 +375,9 @@ def replyRequest():
         if reply['accept_ok']:
             requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'matched'}})
             postCol.update_one({'_id':post['_id']},{'$set' : {'post_matched' : True}})
+            matchHistory.append(reply['requ_id'])
+            userCol.update_one({'Account_name':session['NTOUmotoGoUser']},{'$set' : {'_matchHistory' :  matchHistory}})
+            
             thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '答應'+sender['_name']+'的請求成功'])    #呼叫通知函示，回報被請求者
             thr.start()
             thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', user['_name']+'已答應你的請求'])        #呼叫通知函示，回報請求者
