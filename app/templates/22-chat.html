@@ -15,8 +15,8 @@
                         socket.emit('joined', {'room' : url});
                 });
                 socket.on('status', function(data) {
-                    $('#shit').val($('#shit').val() + data.tarName);
-                    $('#chat').val($('#chat').val()  + data.msg);
+                    $('#shit').text("正在與:"+data.tarName+" 聊天");
+                    $('#chat').val(data.msg);
                     $('#chat').scrollTop($('#chat')[0].scrollHeight);
                 });
                 socket.on('message', function(data) {
@@ -36,17 +36,19 @@
                 });
             });
             function leave_room() {
-                socket.emit('left', {}, function() {
+                var url = location.href;
+                url = url.split('?')[1];
+                socket.emit('left', {'room': url}, function() {
                     socket.disconnect();
 
                     // go back to the login page
-                    window.location.href = 'http://' + document.domain + ':' + location.port + '/home';
+                    window.location.href = 'http://' + document.domain + '/home';
                 });
             }
         </script>
     </head>
     <body>
-        <h1 id='shit'>Flask-SocketIO-Chat: </h1>
+        <h1 id='shit'> </h1>
         <textarea id="chat" cols="80" rows="20"></textarea><br><br>
         <input id="text" size="80" placeholder="Enter your message here"><br><br>
         <a href="#" onclick="leave_room();">Leave this room</a>

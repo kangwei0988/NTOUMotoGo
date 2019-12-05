@@ -142,7 +142,16 @@ def matchedPost():
     return render_template('24-matchedProcess.html')
 @app.route('/chatRoom')
 def chatRoom():
-    return render_template('22-chat.html')
+    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+    url = request.url.split('?')
+    if len(url)>1: #判斷?後有無data
+        if len(url[1]) == 24: #判斷data是否長度為24
+            requ = requestCol.find_one({'_id':ObjectId(url[1])})
+            if requ and user: #判斷是否有該requ
+                if requ['pas_id'] == user['_id'] or requ['dri_id'] == user['_id']: #判斷用戶是否為該requ腳色
+                    return render_template('22-chat.html')
+    return redirect(url_for('homePage'))
+    
 #跳轉頁面到test.html
 @app.route('/test')
 def test():
