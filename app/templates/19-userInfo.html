@@ -209,17 +209,17 @@
                   <label for="file-upload1" class="custom-file-upload">\
                     <i></i> 上傳大頭貼\
                   </label>\
-                  <input id="file-upload1" type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img1"\
+                  <input id="file-upload1" type="file" onchange="readURL(this)" name="_user_photo" targetID="preview_progressbarTW_img1"\
                     accept="image/gif, image/jpeg, image/png" />\
-                  <img src = "' + strings["_user_photo"] + '" id="preview_progressbarTW_img1" name="_user_photo" />\
+                  <img src = "static/userPhotos/' + strings["Account_name"]+'/'+strings["_user_photo"] + '" id="preview_progressbarTW_img1"  />\
                 </div>\
                 <div class="w3-section">\
                   <label for="file-upload2" class="custom-file-upload">\
                     <i></i> 請上傳駕照\
                   </label>\
-                  <input id="file-upload2" type="file" onchange="readURL(this)" targetID="preview_progressbarTW_img2"\
+                  <input id="file-upload2" type="file" onchange="readURL(this)" name="_license_photo" targetID="preview_progressbarTW_img2"\
                     accept="image/gif, image/jpeg, image/png" />\
-                  <img src = "' + strings["_license_photo"] + '" id="preview_progressbarTW_img2" name="_license_photo" />\
+                  <img src = "static/userPhotos/' + strings["Account_name"]+'/'+strings["_license_photo"] + '" id="preview_progressbarTW_img2"  />\
                 </div>\
                 <div class="w3-section">\
                   <label>姓名</label>\
