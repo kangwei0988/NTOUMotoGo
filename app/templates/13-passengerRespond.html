@@ -202,16 +202,21 @@
       }
       function cancel(i)
       {
-        $.ajax({
-              type: 'POST',
-              url: "/cancelRequest",
-              data: JSON.stringify({'cancel_id': requestarray[i].requ_id}),
-              contentType: 'application/json; charset=utf-8',
-              success: function(data) {
-                window.location.reload();
-              }
-              });
+        if(requestarray[i].state=="waiting")
+        {
+          $.ajax({
+                type: 'POST',
+                url: "/cancelRequest",
+                data: JSON.stringify({'cancel_id': requestarray[i].requ_id}),
+                contentType: 'application/json; charset=utf-8',
+                success: function(data) {
+                  window.location.reload();
+                }
+                });
         }
+        else
+          window.alert("取消失敗，已完成配對!!");
+      }
     function jsonToStruct(){
       var i;
       
@@ -249,7 +254,7 @@
             });
       }
       else
-        window.alert("You can't anything!!"); 
+        window.alert("刪除失敗，發出請求者才能刪除請求!!"); 
     }
   </script>
 

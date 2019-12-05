@@ -203,7 +203,7 @@
     }
     function Delete(i)
     {
-      if(requestarray[i].matched == "completed" | requestarray[i].matched == "uncompleted" || requestarray[i].matched == "rejected")
+      if(requestarray[i].matched == "completed" | requestarray[i].matched == "uncompleted" || requestarray[i].matched == "rejected" || requestarray[i].matched == "cancelled")
       {
         $.ajax({
             type: 'POST',
@@ -217,7 +217,7 @@
             });
       }
       else
-        window.alert("You can't anything!!");
+        window.alert("刪除失敗，該請求尚未被回覆!!");
     }
     
     function complete(i)
