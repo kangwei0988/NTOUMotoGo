@@ -22,7 +22,7 @@ def newAccount():
         newUser["fault_phone"] = '電話已被註冊'
     # if userCol.find_one({"_mail":newUser['_mail']}):
     #     newUser["fault_mail"] = 'email已被註冊'
-    if len(newUser) > 5 :
+    if len(newUser) > 6 :
         return render_template('2-register.html',fault=newUser)
     else:
         pshash = bcrypt.hashpw(newUser['_password'].encode('utf-8'), bcrypt.gensalt())#密碼加密 編碼:UTF-8
