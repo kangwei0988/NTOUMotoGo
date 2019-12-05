@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>海大共乘go</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="static/assets/css/main.css" />
+<link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
+<style>
+@import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
+.w3-quarter img{margin-bottom: -6px; cursor: pointer}
+.w3-quarter img:hover{opacity: 0.6; transition: 0.3s}
+
+
+
+</style>
+<body  style="background-color: #202024">
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large" style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
+  <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a> 
+  <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
+  <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a> 
+  <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
+  <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
+ 
+</nav>
+
+<!-- Top menu on small screens -->
+<header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
+  <span class="w3-center w3-padding w3-text-light-grey">已配對刊登</span>
+  <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
+</header>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main w3-content" style="max-width:1600px;margin-top:100px">
+  
+  <!-- Main -->
+  <div id="main">
+      <div class="inner">
+        <!-- Boxes -->
+        <div class="thumbnails" id="myPostList"></div>
+      </div>
+  </div>
+
+  <!-- Footer -->
+  
+  <div class="w3-center w3-padding-24 w3-text-white" style="background-color: #3c3c44;">Made by <a href="https://youtu.be/NL2e8U0hays" title="W3.CSS" target="_blank" class="w3-hover-opacity">山海關快打旋風程門雞蛋糕猜猜幾把刀</a></div>
+
+<!-- End page content -->
+</div>
+
+<script src="static/assets/js/jquery.min.js"></script>
+<script src="static/assets/js/getCoords.js" ></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap" async defer></script>
+<script src="static/assets/js/jquery.scrolly.min.js"></script>
+<script src="static/assets/js/skel.min.js"></script>
+<script src="static/assets/js/util.js"></script>
+<script src="static/assets/js/main.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+<script src="static/assets/js/notifation.js"></script>
+<!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
+
+<script>
+//identity
+
+var strings = [];
+
+// Script to open and close sidebar
+function w3_open() {
+  document.getElementById("mySidebar").style.display = "block";
+  document.getElementById("myOverlay").style.display = "block";
+}
+
+function w3_close() {
+  document.getElementById("mySidebar").style.display = "none";
+  document.getElementById("myOverlay").style.display = "none";
+}
+
+function displayPosts(postResult){
+  var thisType;
+  var note;
+  var popContent="";
+        for(var i=0;i<postResult.length;i++){
+          thisType = postResult[i].post_type;
+          if(thisType == 'dri')
+            note = '的後座空空的覺得好寂寞';
+          else
+            note = '是邊緣人需要別人載他';
+          popContent +='<div class="box">\
+                          <div class="inner">\
+                            <h3 id="post'+i+'">'+ postResult[i].post_name + note +'</h3>\
+                            <div id="posterInfo'+i+'"></div>\
+                            <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
+          if(postResult[i].post_haveHat==true)
+            popContent+='<br>安全帽 : 有';
+          else 
+            popContent+='<br>安全帽 : 無';
+          if(postResult[i].post_raincoat==true)
+            popContent+='<br>雨衣 : 有';
+          else 
+            popContent+='<br>雨衣 : 無';
+          popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
+///////////////////////////////////////////////////////////////////////////////////
+
+          popContent+='<button class="button style2 fit">已完成</button>';
+          popContent+='<button class="button style2 fit">未完成</button>';
+          popContent+='<button class="button style2 fit">地圖</button>';
+          popContent+='<button class="button style2 fit">聊天室</button>';
+///////////////////////////////////////////////////////////////////////////////////
+          if(postResult[i].post_matched)
+            popContent+='<button class="button style2 fit">已配對</button>';
+          else
+          {
+            popContent+='<button class="button style2 fit">未配對</button>';
+            popContent+='<button class="button style2 fit">刪除此刊登</button>';
+          }
+            popContent+='</div></div>';           
+        }
+  document.getElementById("myPostList").innerHTML = popContent;
+}
+
+window.onload = function(){
+  $.ajax({
+    type: 'POST',
+    url: "/getMatchedPost",
+    data: "",
+    contentType: 'application/json; charset=utf-8',
+    success: function(data) {
+      if (data) {
+      // data.redirect contains the string URL to redirect to
+        console.log(data);
+        displayPosts(data)
+      }
+      else{
+        document.getElementById("myPostList").innerHTML = "目前沒有您的刊登"
+      }
+    }
+  });
+}
+
+</script>
+
+
+</body>
+</html>
