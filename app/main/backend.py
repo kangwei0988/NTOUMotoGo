@@ -352,7 +352,7 @@ def getMyRequests():
                     'Location' : Post['post_location'],
                     'Goto' : Post['post_goto'],
                     'getonTime' : Post['post_getOnTime'],
-                    'driver_id' : str(requ['dri_id']),
+                    'driwver_id' : str(requ['dri_id']),
                     'passenger_id' : str(requ['pas_id']),
                     'user_id'   :   str(user['_id']),
                     'notice'    :   Post['post_notice'],
@@ -372,9 +372,10 @@ def replyRequest():
     requ = requestCol.find_one({'_id' : ObjectId(reply['requ_id'])})
     post = postCol.find_one({'_id' : requ['post_id']})
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
-    sender = userCol.find_one({'_id' : post['owner_id']})
+    sender = userCol.find_one({'_id' : requ['sender_id']})
+
     umatchHistory = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_matchHistory']
-    smatchHistory = userCol.find_one({'_id' : post['owner_id']})['_matchHistory']
+    smatchHistory = userCol.find_one({'_id' : requ['sender_id']})['_matchHistory']
     
     print(requ[reply['type'] +'_ok'])
     print(type(requ[reply['type'] +'_ok']))
@@ -390,17 +391,17 @@ def replyRequest():
             umatchHistory.insert(0,reply['requ_id'])
             smatchHistory.insert(0,reply['requ_id'])
             userCol.update_one({'Account_name':session['NTOUmotoGoUser']},{'$set' : {'_matchHistory' : umatchHistory}})
-            userCol.update_one({'_id' : post['owner_id']},{'$set' : {'_matchHistory' : smatchHistory}})
+            userCol.update_one({'_id' : requ['sender_id']},{'$set' : {'_matchHistory' : smatchHistory}})
                                                                                                              
             thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '答應'+sender['_name']+'的請求成功'])    #呼叫通知函示，回報被請求者
             thr.start()
-            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', sender['_name']+'已答應你的請求'])        #呼叫通知函示，回報請求者
+            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', user['_name']+'已答應你的請求'])        #呼叫通知函示，回報請求者
             thr2.start()
         else:
             requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'refuse'}})
             thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '已拒絕'+sender['_name']+'的請求'])     #呼叫通知函示，回報被請求者
             thr.start()
-            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', '對'+ sender['_name']+'的請求被拒絕'])  #呼叫通知函示，回報請求者
+            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', '對'+ user['_name']+'的請求被拒絕'])  #呼叫通知函示，回報請求者
             thr2.start()
     else:
         thr = Thread(target=notifation, args=[app, user['_id'], False, 'requ', '回復請求失敗，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
