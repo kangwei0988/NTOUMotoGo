@@ -43,7 +43,7 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
   <div id="main">
       <div class="inner">
         <div class="thumbnails">
-          <button id="searchButton" class='button style2 fit' onclick="searchHistory()">搜尋</button>
+          <!-- <button id="searchButton" class='button style2 fit' onclick="searchHistory()">搜尋</button> -->
         </div>
         <!-- Boxes -->
         <div class="thumbnails" id="historyList"></div>
@@ -73,8 +73,6 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 //identity
 
 var myID;
-var strings = [];
-var historyArray = [];
 
 // Script to open and close sidebar
 function w3_open() {
@@ -87,65 +85,43 @@ function w3_close() {
   document.getElementById("myOverlay").style.display = "none";
 }
 
-function searchHistory(){
+function searchHistory(strings){
   var i;
   var myIdentity;
-  jsonToStruct(strings);
-  localStorage.setItem("notogo_id",strings[0]._id);
   document.getElementById("historyList").innerHTML="";
-  if(historyArray.length)
+  if(strings.length)
   {    
-    for(i = 0; i < historyArray.length;i++)
+    for(i = 0; i < strings.length;i++)
     {
       var showName;
-      if(myID == strings[i].driver._id)
-        showName = historyArray[i].passenger;
-      else
-        showName = historyArray[i].driver;
-
-      if(historyArray[i].receiveRating = "FALSE"){
-        document.getElementById("historyList").innerHTML +="\
-                    <div class='box'>\
-                      <div class='inner'>\
-                        <img src="+historyArray[i].pictrue+" width='90%'>\
-                        <h2>"+showName+"</h2>\
-                        <p>Time:"+historyArray[i].time+"</p>\
-                        <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
-                        <button href='/rate' id='button"+i+"' class='button style2 fit' onclick='toRate(this)'>評價</button>\
-                      </div>\
-                    </div>"
+      var ifRate;
+      var note;
+      var popContent;
+      if(myID == strings[i].driver._id){
+        showName = strings[i].passenger._name;
+        ifRate = strings[i].dri_rate;
+        note = '被你載'
       }
       else{
-        document.getElementById("historyList").innerHTML +="\
-                    <div class='box'>\
-                      <div class='inner'>\
-                        <img src="+historyArray[i].pictrue+" width='90%'>\
-                        <h2>"+showName+"</h2>\
-                        <p>Time:"+historyArray[i].time+"</p>\
-                        <p>"+historyArray[i].starting+" 到 "+historyArray[i].destination+"</p>\
-                      </div>\
-                    </div>"
+        showName = strings[i].driver._name;
+        ifRate = strings[i].pas_rate;
+        note ='載你';
       }
+      popContent = "<div class='box'>\
+                      <div class='inner'>\
+                        <img src='' width='90%'>\
+                        <h2>"+showName+note+"</h2>\
+                        <p>Time:"+strings[i]._post.post_getOnTime+"</p>\
+                        <p>"+strings[i]._post.post_location+" 到 "+strings[i]._post.post_goto+"</p>";
+      if(ifRate)
+        popContent += "<button href='/rate' id='button"+i+"' class='button style2 fit' onclick='toRate(this)'>評價</button>";
+      popContent += '</div></div>';
+      document.getElementById("historyList").innerHTML += popContent;
     }
   }
   else
   {
     document.getElementById("historyList").innerHTML += "沒有歷史資訊"
-  }
-}
-
-function jsonToStruct(myStrings){
-  var i;
-  for(i = 0;i < strings.length;i++){
-    historyArray.push({pictrue:"static/images/lillard.jpg", driver:"", passenger:"", starting:"", destination:"", date:"", time:"", sendRating:"", receiveRating:"", post_id:""});
-    historyArray[i].driver = myStrings[i].driver._name;
-    historyArray[i].passenger = myStrings[i].passenger._name;
-    historyArray[i].starting = myStrings[i]._post.post_goto;
-    historyArray[i].destination = myStrings[i]._post.post_location;
-    historyArray[i].time = myStrings[i]._post.post_time;
-    historyArray[i].sendRating ="FALSE";
-    historyArray[i].receiveRating ="FALSE";
-    historyArray[i].post_id = myStrings[i]._post._id;
   }
 }
 
@@ -170,8 +146,9 @@ window.onload = function(){
       // data.redirect contains the string URL to redirect to
         strings = data;
         if(strings.length)
-          myID = strings[0]._id;
+          myID = strings[0].user_id;
         console.log(data);
+        searchHistory(strings);
       }
     }
   });
