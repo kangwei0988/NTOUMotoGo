@@ -4,6 +4,8 @@ from .backend import userCol, homePage
 from flask import request,session,redirect,jsonify,url_for
 from werkzeug.utils import secure_filename
 import datetime
+from ._socket import notifation
+from threading import Thread
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
@@ -13,13 +15,14 @@ def allowed_file(filename):
 
 @app.route('/setInfo',methods = ['GET','POST'])
 def setInfo():
-    print('set')
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     if user:
         info = request.values.to_dict()
         print(info)
         print(type(info))
         userCol.update({'_id':user['_id']},{'$set': {'_name' : info['_name'], '_gender' : info['_gender'],'_phone' : info['_phone'], '_mail' : info['_mail']}})
+        thr = Thread(target=notifation, args=[app, user['_id'], user['_id'], 'user', '個人資料修改成功']) #呼叫通知函示
+        thr.start()
         print(request.files)
         if '_user_photo' in request.files:
             file = request.files['_user_photo']
