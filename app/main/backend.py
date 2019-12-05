@@ -238,25 +238,47 @@ def postBoard():
 @app.route('/deleteRequest',methods=['GET','POST'])
 def deleteRequest():
     deleteID = request.get_json(silent=True)
-    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     temp = user['_requestHistory']
     for eachRequest in temp:
-        requ = requestCol.find_one({'_id':ObjectId(eachRequest)})
-        if eachRequest == deleteID['requ_id']:
-            if user['_id'] == requ['sender_id']:#requ_id配合front end
-                temp.remove(deleteID['requ_id'])
-                userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_requestHistory' : temp}})       
-                requestCol.delete_one({'_id':ObjectId(deleteID['requ_id'])})
-                thr = Thread(target=notifation, args=[app, user['_id'], eachRequest, 'requ', '刪除請求紀錄成功']) #呼叫通知函式，回報刪除成功
-                thr.start()
-                return redirect(request.url)
-            else:
-                thr = Thread(target=notifation, args=[app, user['_id'], eachRequest, 'requ', '刪除失敗，發出請求者才有權限刪除該請求']) #呼叫通知函式，回報刪除失敗
-                thr.start()        
-                return redirect(request.url)
-    thr = Thread(target=notifation, args=[app, user['_id'], eachRequest, 'requ', '刪除失敗，該請求紀錄可能已被刪除，或請重新嘗試']) #呼叫通知函式，回報刪除失敗
+        if eachRequest == deleteID['delete_id']:#delete_id配合front end
+            temp.remove(deleteID['delete_id'])
+            userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_requestHistory' : temp}})       
+            thr = Thread(target=notifation, args=[app, user['_id'], deleteID['delete_id'], 'requ', '刪除請求紀錄成功']) #呼叫通知函式，回報刪除成功
+            thr.start()
+            return redirect(request.url)
+    thr = Thread(target=notifation, args=[app, user['_id'], deleteID['delete_id'], 'requ', '刪除失敗，該請求紀錄可能已被刪除']) #呼叫通知函式，回報刪除失敗
     thr.start()        
     return redirect(request.url)
+
+#取消請求
+@app.route('/cancelRequest',methods=['GET','POST'])
+def cancelRequest():
+    cancelID = request.get_json(silent=True)
+    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+    requcancel = requestCol.find_one({'_id':ObjectId(cancelID['cancel_id'])})#cancel_id配合front end
+    if requcancel is None:
+            thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '找不到該請求']) #呼叫通知函式，回報取消失敗
+            thr.start()        
+            return redirect(request.url)
+    if user['_id'] == requcancel['sender_id']:
+        if requcancel['_state'] == "cancelled":
+            thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '取消失敗，該請求已被取消']) #呼叫通知函式，回報取消失敗
+            thr.start()        
+            return redirect(request.url)
+        elif requcancel['_state'] == "waiting":    
+            requestCol.update({'_id':ObjectId(cancelID['cancel_id'])},{"$set": {'_state' : "cancelled"}})
+            thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '取消請求成功']) #呼叫通知函式，回報取消成功
+            thr.start()
+            return redirect(request.url)
+        else:
+            thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '該請求無法取消']) #呼叫通知函式，回報取消失敗
+            thr.start()        
+            return redirect(request.url)
+    else:
+        thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '發出請求者才有權限取消該請求']) #呼叫通知函式，回報取消失敗
+        thr.start()        
+        return redirect(request.url)
 
 #駕駛乘客發出請求
 @app.route('/sendRequest',methods=['GET','POST'])
