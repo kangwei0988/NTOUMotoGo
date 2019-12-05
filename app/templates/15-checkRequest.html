@@ -168,7 +168,7 @@
                 else if(requestarray[i].matched == "completed")
                 {
                   box.innerHTML+=
-                  "<a class='button style2 fit'>已完成</a>"
+                  "<a class='button style2 fit'>已完成共乘系統</a>"
                 }
               }
         }
@@ -203,12 +203,12 @@
     }
     function Delete(i)
     {
-      if(requestarray[i].state == "completed" | requestarray[i].state == "uncompleted" || requestarray[i].state == "rejected")
+      if(requestarray[i].matched == "completed" | requestarray[i].matched == "uncompleted" || requestarray[i].matched == "rejected")
       {
         $.ajax({
             type: 'POST',
             url: "/deleteRequest",
-            data: JSON.stringify({'requ_id': requestarray[i].requ_id}),
+            data: JSON.stringify({'delete_id': requestarray[i].requ_id}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
               window.location.reload();
@@ -242,6 +242,7 @@
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
               window.alert("ASDF");
+              window.location.href="homepage";
             }
             });
     }

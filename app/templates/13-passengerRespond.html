@@ -160,20 +160,20 @@
               if(requestarray[i].state == "waiting")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit' onclick='accept("+i+")'>等待回應</a>\
+                "\<a class='button style2 fit' onclick='accept("+i+")'>等待回應</a>\
                 \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
                 \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
               else if(requestarray[i].state == "rejected")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit' onclick='accept("+i+")'>已被拒絕</a>\
-                \<a class='button style3 fit' onclick='reject("+i+")'>理由:"+request[i].answer_msg+"</a>"
+                "\<a class='button style2 fit' onclick='accept("+i+")'>已被對方拒絕</a>\
+                \<a class='button style2 fit' onclick='reject("+i+")'>理由:"+request[i].answer_msg+"</a>"
               }
-              else if(requestarray[i].state == "accepted")
+              else if(requestarray[i].state == "matched")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit' onclick='accept("+i+")'>已接受</a>\
+                "\<a class='button style2 fit' onclick='accept("+i+")'>已被對方接受</a>\
                 \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
                 \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
