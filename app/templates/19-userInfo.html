@@ -184,17 +184,20 @@
         success: function (data) {
           if (data) {
             // data.redirect contains the string URL to redirect to
+            console.log(data);
             strings = data;
+            display();
           }
-          console.log(data);
+          
         }
       });
-
-      var hisGrade = 0;
-      for (var i = 0; i < strings[_rateHistory].length; i++) {
-        hisGrade += strings[_rateHistory][i];
-      }
-      hisGrade /= i;
+    }
+  function display(){
+    var hisGrade = 0;
+    //   for (var i = 0; i < strings[_rateHistory].length; i++) {
+    //     hisGrade += strings[_rateHistory][i];
+    //   }
+    //   hisGrade /= i;
       console.log("ssssssssssssss");
 
       //{driverName:"name", passengerName:"name",Location :"post_location", 
@@ -231,7 +234,7 @@
                 </div>\
                 <div class="w3-section">\
                     <label>聯或電話</label>\
-                    <input class="w3-input w3-border" type="text" name="_phone" required value = "'+ strings["_photo"] + '">\
+                    <input class="w3-input w3-border" type="text" name="_phone" required value = "'+ strings["_phone"] + '">\
                 </div>\
                 <div class="w3-section">\
                   <label>email</label>\
@@ -241,14 +244,14 @@
                   style="background-color: #7f92cf;">確定</button>\
                 </form>\
                 <div class="w3-section">\
-                  評價分數:'+ hisGrade + '\
+                   評價分數:'+ hisGrade + '\
                 </div>\
                <a href="3-index.html">\
                   <intput type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
                   style="background-color: lightcoral;">取消\
                 </a>\
             </div>'
-    }        
+  }
   </script>
 
 
