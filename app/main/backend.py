@@ -480,7 +480,8 @@ def getUserData():
         '_rateHistory':rate,
         '_phone':user['_phone'],
         '_user_photo':user['_user_photo'],
-        '_license_photo':user['_license_photo']}
+        '_license_photo':user['_license_photo'],
+        'Account_name':session['NTOUmotoGoUser']}
     
     return jsonify(userData)
 
@@ -517,17 +518,18 @@ def modifyUserData():
 @app.route('/getMatchedPost',methods=['GET','POST'])
 def getMatchedPost():
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    matchHistory = user['_matchHistory']
     results = []
-    Posts = postCol.find({'owner_id':user['_id'],'post_matched':True,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
-    myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
-    for post in Posts:
-        print(post)
-        result = post
+
+    for requestId in matchHistory:
+        result = requestCol.find_one({'_id':ObjectId(requestId)})
         result['_id'] = str(result['_id'])
-        result['owner_id'] = str(result['owner_id'])
-        result['post_name'] = userCol.find_one({'_id' : ObjectId(post['owner_id'])})['_name']
-        result['yourID'] = str(myId)
+        result['post_id'] = str(result['post_id'])
+        result['sender_id'] = str(result['sender_id'])
+        result['pas_id'] = str(result['pas_id'])
+        result['dri_id'] = str(result['dri_id'])
         results.append(result)
+    
     return jsonify(results)
 
 
