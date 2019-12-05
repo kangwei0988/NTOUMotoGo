@@ -27,7 +27,7 @@ def newAccount():
     else:
         pshash = bcrypt.hashpw(newUser['_password'].encode('utf-8'), bcrypt.gensalt())#密碼加密 編碼:UTF-8
         newUser['_password'] = str(pshash, encoding = "utf-8")
-        newUser['_gender'] = False
+        newUser['_gender'] = newUser['_gender']
         newUser['_motoplate'] = ''
         newUser['_matchHistory'] = []
         newUser['_postHistory'] = []
