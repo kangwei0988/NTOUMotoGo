@@ -173,7 +173,7 @@
               else if(requestarray[i].state == "matched")
               {
                 box.innerHTML+=
-                "\<a class='button style2 fit' onclick='accept("+i+")'>已被對方接受</a>\
+                "\<a class='button style2 fit' onclick='accept("+i+")'>已被對方接受，尚未完成共乘系統</a>\
                 \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
                 \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
@@ -182,11 +182,21 @@
                 box.innerHTML+=
                 "\<a class='button style3 fit'>該要求已過期</a>"
               }
+              else if(requestarray[i].state == "cancelled")
+              {
+                box.innerHTML+=
+                "\<a class='button style2 fit'>該要求已取消</a>"
+              }
+              else if(requestarray[i].state == "completed")
+              {
+                box.innerHTML+=
+                "\<a class='button style2 fit'>已完成共乘系統</a>"
+              }
         }
       }
-      else {
-        document.getElementById("RequestList").innerHTML += "尚未發出請求";
-      }
+        else {
+          document.getElementById("RequestList").innerHTML += "尚未發出請求";
+        }
       document.getElementById("RequestList").innerHTML +=
         '<a class="button style fit" onclick="location.reload()">重新整理</a>';
       }
@@ -195,14 +205,13 @@
         $.ajax({
               type: 'POST',
               url: "/cancelRequest",
-              data: JSON.stringify({'requ_id': requestarray[i].requ_id}),
+              data: JSON.stringify({'cancel_id': requestarray[i].requ_id}),
               contentType: 'application/json; charset=utf-8',
               success: function(data) {
                 window.location.reload();
-                window.alert("ASDF");
               }
               });
-      }
+        }
     function jsonToStruct(){
       var i;
       
@@ -226,23 +235,21 @@
     }
     function Delete(i)
     {
-      if(requestarray[i].state=="completed" | requestarray[i].state=="reject")
+      if(requestarray[i].state=="completed" | requestarray[i].state=="reject" || requestarray[i].state=="cancelled")
       {
-        showrequests(i);
-      $.ajax({
-        type: 'POST',
-        url: "",
-        data: JSON.stringify({"request_id": 'token'}),
-        contentType: 'application/json; charset=utf-8',
-        success: function(data) {
-          if (data) {
-            window.location.reload();
-          }
-        }
-      });
+        $.ajax({
+            type: 'POST',
+            url: "/deleteRequest",
+            data: JSON.stringify({'delete_id': requestarray[i].requ_id}),
+            contentType: 'application/json; charset=utf-8',
+            success: function(data) {
+              window.location.reload();
+              window.alert("ASDF");
+            }
+            });
       }
       else
-        window.alert("SDFsf"); 
+        window.alert("You can't anything!!"); 
     }
   </script>
 
