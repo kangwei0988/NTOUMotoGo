@@ -29,7 +29,7 @@ body,h1,h2,h3,h4,h5 {font-family: "Noto Sans TC","Raleway", sans-serif}
 
 <!-- Top menu on small screens -->
 <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
-  <span class="w3-center w3-padding w3-text-light-grey">已配對刊登</span>
+  <span class="w3-center w3-padding w3-text-light-grey">已配對</span>
   <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
 </header>
 
@@ -108,7 +108,7 @@ function displayPosts(matchedPosts){
           popContent+='<br>備註 :'+ matchedPosts[i].post.post_notice +'</p>';
 ///////////////////////////////////////////////////////////////////////////////////
 
-          popContent+='<button class="button style2 fit">已完成</button>';
+          popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="complete(this)">已完成</button>';
           popContent+='<button class="button style2 fit">未完成</button>';
           popContent+='<button class="button style2 fit">地圖</button>';
           popContent+='<button class="button style2 fit">聊天室</button>';
@@ -125,6 +125,20 @@ function displayPosts(matchedPosts){
   document.getElementById("myPostList").innerHTML = popContent;
 }
 
+function complete(clickButton){
+  var str = clickButton.id;
+  var i = str.charAt(6);
+  $.ajax({
+    type: 'POST',
+    url: "/requComplete",
+    data: JSON.stringify({'requ_id': strings[i]._id, 'ok' : true}),
+    contentType: 'application/json; charset=utf-8',
+    // success: function(data) {
+    //   console.log(strings[i]._id);
+    // }
+  });
+}
+
 window.onload = function(){
   $.ajax({
     type: 'POST',
@@ -135,6 +149,7 @@ window.onload = function(){
       if (data) {
       // data.redirect contains the string URL to redirect to
         console.log(data);
+        strings = data;
         displayPosts(data)
       }
       else{
