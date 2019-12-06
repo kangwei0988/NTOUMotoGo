@@ -128,9 +128,9 @@
             requestlist.innerHTML +=
             "\<div class='box' id="+id+" style='position:relative'>";
             var box=document.getElementById("list"+i);
-            if(requestarray[i].matched != "waiting")
+            if(requestarray[i].matched == "completed" || requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
             {
-              box.innerHTML+="<img class='Delete' src='static/images/123_burned.jpg' width=16px z-index=2' onclick=Delete("+i+") >"
+              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=16px z-index=2' onclick=Delete("+i+") >"
             }
             box.innerHTML+=
             "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
@@ -152,7 +152,7 @@
               else if(requestarray[i].matched == "due")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit')>此要求已過期</a>"
+                "\<a class='button style3 fit') disabled=true>此要求已過期</a>"
               }
               else
               {
@@ -161,14 +161,14 @@
                   console.log("SDFs");
                   if(requestarray[i].user_id == requestarray[i].pas_id)
                     box.innerHTML+=
-                    "<a class='button style2 fit'>配對成功</a>\
+                    "<button class='button style2 fit' disabled=true>配對成功</button>\
                     \<a class='button style2 fit' onclick='complete("+i+")'>已完成</a>\
                     \<a class='button style2 fit' onclick='uncomplete("+i+")'>未完成</a>\
                     \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
                   else 
                   {
                     box.innerHTML+=
-                    "<a class='button style2 fit'>配對成功</a>\
+                    "<button class='button style2 fit' disabled=true>配對成功</button>\
                     \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
                   }
                   
@@ -176,22 +176,22 @@
                 else if(requestarray[i].matched == "refuse")
                 {
                   box.innerHTML+=
-                  "<a class='button style2 fit'>已拒絕</a>"
+                  "<button class='button style2 fit' disabled=true>已拒絕</button>"
                 }
                 else if(requestarray[i].matched == "completed")
                 {
                   box.innerHTML+=
-                  "<a class='button style2 fit'>已完成共乘系統</a>"
+                  "<button class='button style2 fit' disabled=true>已完成共乘系統</button>"
                 }
                 else if(requestarray[i].matched == "cancelled")
                 {
                   box.innerHTML+=
-                  "<a class='button style2 fit'>已取消</a>"
+                  "<button class='button style2 fit' disabled=true>已取消</button>"
                 }
                 else if(requestarray[i].state == "due")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit'>該要求已過期</a>"
+                "\<button class='button style3 fit' disabled=true>該要求已過期</button>"
               }
               }
         }
@@ -274,8 +274,7 @@
         var box=document.getElementById("list"+i);
         box.innerHTML="";
         box.innerHTML +=
-        "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
-        <div class='inner'>\
+        "<div class='inner'>\
           <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
           <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
           <p>上車時間:" + requestarray[i].time + "</p>\

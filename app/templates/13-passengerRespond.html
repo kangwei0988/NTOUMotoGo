@@ -63,7 +63,7 @@
   </nav>
 
   <!-- Top menu on small screens -->
-  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
+  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44; z-index:30">
     <span class="w3-center w3-padding w3-text-light-grey">請求狀態</span>
     <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
   </header>
@@ -154,11 +154,11 @@
             console.log("DFSAf");
             var id = "list"+i;
             requestlist.innerHTML +=
-            "\<div class='box' id="+id+">"
+            "\<div class='box' id="+id+" style='position:relative'>"
             var box=document.getElementById("list"+i);
             if(requestarray[i].matched != "waiting")
             {
-              box.innerHTML+="<img class='Delete' src='static/images/123_burned.jpg' width=16px z-index=2' onclick=Delete("+i+") >"
+              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=16px z-index=2' onclick=Delete("+i+") >"
             }
             box.innerHTML+=
             "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
@@ -173,37 +173,37 @@
               if(requestarray[i].state == "waiting")
               {
                 box.innerHTML+=
-                "\<a class='button style2 fit' onclick='accept("+i+")'>等待回應</a>\
+                "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>等待回應中...</button>\
                 \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
                 \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
               else if(requestarray[i].state == "rejected")
               {
                 box.innerHTML+=
-                "\<a class='button style2 fit' onclick='accept("+i+")'>已被對方拒絕</a>\
+                "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方拒絕</button>\
                 \<a class='button style2 fit' onclick='reject("+i+")'>理由:"+request[i].answer_msg+"</a>"
               }
               else if(requestarray[i].state == "matched")
               {
                 box.innerHTML+=
-                "\<a class='button style2 fit' onclick='accept("+i+")'>已被對方接受，尚未完成共乘系統</a>\
+                "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
                 \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
                 \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
               else if(requestarray[i].state == "due")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit'>該要求已過期</a>"
+                "\<button class='button style3 fit' disabled=true>該要求已過期</button>"
               }
               else if(requestarray[i].state == "cancelled")
               {
                 box.innerHTML+=
-                "\<a class='button style2 fit'>該要求已取消</a>"
+                "\<button class='button style2 fit' disabled=true>該要求已取消</button>"
               }
               else if(requestarray[i].state == "completed")
               {
                 box.innerHTML+=
-                "\<a class='button style2 fit'>已完成共乘系統</a>"
+                "\<button class='button style2 fit' disabled=true>已完成共乘系統</button>"
               }
         }
       }
