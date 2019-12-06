@@ -156,7 +156,7 @@
             requestlist.innerHTML +=
             "\<div class='box' id="+id+">"
             var box=document.getElementById("list"+i);
-            if(requestarray[i].matched == "waiting")
+            if(requestarray[i].matched != "waiting")
             {
               box.innerHTML+="<img class='Delete' src='static/images/123_burned.jpg' width=16px z-index=2' onclick=Delete("+i+") >"
             }
@@ -253,7 +253,7 @@
     }
     function Delete(i)
     {
-      if(requestarray[i].state=="completed" | requestarray[i].state=="reject" || requestarray[i].state=="cancelled")
+      if(requestarray[i].state=="completed" || requestarray[i].state=="refuse" || requestarray[i].state=="cancelled" || requestarray[i].state=="uncompleted")
       {
         $.ajax({
             type: 'POST',
