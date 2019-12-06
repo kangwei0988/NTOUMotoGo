@@ -39,6 +39,13 @@
     color:yellow;
     cursor: pointer;
   }
+  .Delete{
+    position:absolute;
+    left:335px;
+    top:0px;
+    z-index:1;
+    cursor: pointer;
+  }
 </style>
 
 <body style="background-color: #202024">
@@ -147,9 +154,14 @@
             console.log("DFSAf");
             var id = "list"+i;
             requestlist.innerHTML +=
-            "\<div class='box' id="+id+">\
-              <img class='userinfo' src='static/images/123_burned.jpg' width=16px style='left:10px position:absolute' onclick=Delete("+i+") z-index=2>\
-            <img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            "\<div class='box' id="+id+">"
+            var box=document.getElementById("list"+i);
+            if(requestarray[i].matched == "waiting")
+            {
+              box.innerHTML+="<img class='Delete' src='static/images/123_burned.jpg' width=16px z-index=2' onclick=Delete("+i+") >"
+            }
+            box.innerHTML+=
+            "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
             <div class='inner'>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
