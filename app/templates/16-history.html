@@ -133,7 +133,7 @@ function toRate(myObj){
     receiver_id = strings[str].passenger._id;
   else
     receiver_id = strings[str].driver._id;
-  window.location.replace('/rate?' + strings[0].request_id + '&' + receiver_id);
+  window.location.replace('/rate?' + strings[0]._id + '&' + receiver_id);
 }
 
 window.onload = function(){

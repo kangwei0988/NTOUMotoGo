@@ -9,7 +9,7 @@
             $(document).ready(function(){
                 var url = location.href;
                 url = url.split('?')[1];
-                socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
+                socket = io.connect('https://' + document.domain + '/chat');
                 socket.on('connect', function() {
                     if(url != '')
                         socket.emit('joined', {'room' : url});
@@ -42,7 +42,7 @@
                     socket.disconnect();
 
                     // go back to the login page
-                    window.location.href = 'http://' + document.domain + '/home';
+                    window.location.href = 'https://' + document.domain + '/home';
                 });
             }
         </script>

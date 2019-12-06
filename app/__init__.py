@@ -16,6 +16,6 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.permanent_session_lifetime = datetime.timedelta(days=1) #登入時效
 app.config['UPLOAD_FOLDER'] = 'app/static/userPhotos'
 
-socketio = SocketIO(app, async_mode='threading')
+socketio = SocketIO(app)
 
 from .main import backend, _socket, _login, _userInfo,_error

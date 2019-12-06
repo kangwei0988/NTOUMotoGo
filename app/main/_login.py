@@ -54,7 +54,7 @@ def newAccount():
         userid = userCol.insert_one(newUser).inserted_id
         if userid:
             title = "海大機車共乘系統註冊驗證"
-            msg = "前往頁面填寫密碼以激活帳號 \n ntoumotogo.kangs.idv.tw/verify?id="+str(userid)+"&token="+str(pshash,encoding="utf-8") #激活網址
+            msg = "前往頁面填寫密碼以激活帳號 \n https://ntoumotogo.kangs.idv.tw/verify?id="+str(userid)+"&token="+str(pshash,encoding="utf-8") #激活網址
             thr = Thread(target=sendMail, args=[app, title,msg,newUser['_mail']]) #寄送驗證信
             thr.start()
         return redirect(url_for('checkAccountStatus'))
@@ -97,7 +97,6 @@ def verify():
         user = userCol.find_one({'_id':ObjectId(user_id)})
         if user:
             if user['_password'] == token:
-                print('set session')
                 newtoken = random.random()
                 session['NTOUmotoGoUser'] = user['Account_name'] #建立session
                 session['NTOUmotoGoToken'] = newtoken
@@ -109,14 +108,27 @@ def verify():
 
 @app.route('/setPsw',methods=['GET','POST'])
 def setPsw():
-    print('call setPsw')
     info = request.values.to_dict()
-    print(info)
     psw = info['_password']
-    print(request.url)
     pshash = bcrypt.hashpw(str(psw).encode('utf-8'), bcrypt.gensalt())#密碼加密 編碼:UTF-8
-    userCol.update_one({'Account_name':session['NTOUmotoGoUser']},{'$set':{'_password':str(pshash,encoding="utf-8")}})
-    return redirect(url_for('checkAccountStatus'))
+    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+    if user:
+        userCol.update_one({'_id':user['_id']},{'$set':{'_password':str(pshash,encoding="utf-8")}})
+        title = "海大機車共乘系統註冊通知"
+        msg = "感謝您的註冊，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+user["_name"]+"\n帳號:"+user["Account_name"]+"\n電話:"+user["_phone"]
+        thr = Thread(target=sendMail, args=[app, title,msg,user['_mail']]) #寄送郵件
+        thr.start()
+        thr2 = Thread(target=notifation, args=[app, user['_id'], user['_id'], 'system', '帳號創建成功~']) #呼叫通知
+        thr2.start()
+        token = 0
+        while token == user['_token']:
+            token = random.random()
+        userCol.update({'_id' : user['_id']}, {"$set": {'_token' : token, '_lastLogin' : datetime.datetime.now()}}) #修改登入時間，登入狀態
+        session['NTOUmotoGoUser'] = user['Account_name'] #建立session
+        session['NTOUmotoGoToken'] = token
+        session.permanent = True #設定session時效
+        return redirect(url_for('homePage'))
+    return '錯誤'
             
 
 @app.route('/checkAccountStatus')
@@ -125,10 +137,5 @@ def checkAccountStatus():
 
 
 
-    # title = "海大機車共乘系統註冊通知"
-    #         msg = "感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+"\n電話:"+newUser["_phone"]
-    #         thr = Thread(target=sendMail, args=[app, title,msg,newUser['_mail']]) #呼叫通知函示
-    #         thr.start()
-    #         thr2 = Thread(target=notifation, args=[app, userid, userid, 'system', '帳號創建成功~']) #呼叫通知函示
-    #         thr2.start()
+    
 

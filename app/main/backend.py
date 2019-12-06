@@ -423,6 +423,9 @@ def getMyRequests():
 @app.route('/replyRequest',methods=['GET','POST'])
 def replyRequest():
     reply = request.get_json(silent=True)
+    print(reply)
+    print(request.url)
+    print(request.endpoint)
     requ = requestCol.find_one({'_id' : ObjectId(reply['requ_id'])})
     post = postCol.find_one({'_id' : requ['post_id']})
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
@@ -430,14 +433,10 @@ def replyRequest():
 
     umatchHistory = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_matchHistory']
     smatchHistory = userCol.find_one({'_id' : requ['sender_id']})['_matchHistory']
-    
-    print(requ[reply['type'] +'_ok'])
-    print(type(requ[reply['type'] +'_ok']))
 
     if requ and post['post_getOnTime'] > datetime.datetime.now() and post['post_matched'] != True:
         requestCol.update_one({'_id':requ['_id']},{'$set' : {'answer_msg' : reply['answer_msg']}})
         requestCol.update_one({'_id':requ['_id']},{'$set' : {reply['type'] +'_ok': reply['accept_ok']}})
-        print("ok")
         if reply['accept_ok']:
             requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'matched'}})
             postCol.update_one({'_id':post['_id']},{'$set' : {'post_matched' : True}})
@@ -460,7 +459,7 @@ def replyRequest():
     else:
         thr = Thread(target=notifation, args=[app, user['_id'], False, 'requ', '回復請求失敗，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
         thr.start()
-    return redirect(request.url)
+    return 'hehe'
 ######################################################################
 
 
@@ -503,15 +502,23 @@ def getNotifation():
 @app.route('/sendRate',methods=['GET','POST'])
 def sendRate():
     tmp = request.get_json(silent=True)
+    print(tmp)
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
-    receiver = userCol.find_one({'_id' : tmp['receiver_id']})
-    info = {'request_id':tmp['request_id'],'rater_id': user['_id'],'receiver_id':tmp['receiver_id'],'rate_range':tmp['rate_range'],'rate_note':tmp['rate_note']}
+    receiver = userCol.find_one({'_id' : ObjectId(tmp['receiver_id'])})
+    requ = requestCol.find_one({'_id':ObjectId(tmp['request_id'])})
+    info = {'request_id':ObjectId(tmp['request_id']),'rater_id': ObjectId(user['_id']),'receiver_id':ObjectId(tmp['receiver_id']),'rate_range':tmp['rate_range'],'rate_note':tmp['rate_note']}
     rate_id = rateCol.insert_one(info).inserted_id
-    userRateTmp = user['_rateHistory'].append(rate_id)
-    receiverRateTmp = receiver['_rateHistory'].append(rate_id)
-    userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_rateHistory' : userRateTmp}})
+    userRateTmp = user['_rateHistory']
+    userRateTmp.append(str(rate_id))
+    receiverRateTmp = receiver['_rateHistory']
+    receiverRateTmp.append(str(rate_id))
+    userCol.update_one({'_id' : user['_id']}, {"$set": {'_rateHistory' : userRateTmp}})
     userCol.update_one({'_id' : tmp['receiver_id']}, {"$set": {'_rateHistory' : receiverRateTmp}})
-
+    if requ['pas_id'] == user['_id']:
+        requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'pas_ok':True}})
+    else:
+        requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'dri_ok':True}})
+    
     return '成功'
 
 #個人頁面拿資料

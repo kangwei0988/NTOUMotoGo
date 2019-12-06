@@ -37,18 +37,11 @@
     color:yellow;
     cursor: pointer;
   }
-  .Delete{
-    position:absolute;
-    left:335px;
-    top:0px;
-    z-index:1;
-    cursor: pointer;
-  }
 </style>
 
 <body id="top">
 
-    <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44; z-index:10">
+    <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
       <span class="w3-center w3-padding w3-text-light-grey">查看邀請訊息</span>
       <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
     </header>
@@ -126,14 +119,9 @@
         for (i = 0; i < requestarray.length; i++) {
             var id = "list"+i;
             requestlist.innerHTML +=
-            "\<div class='box' id="+id+" style='position:relative'>";
-            var box=document.getElementById("list"+i);
-            if(requestarray[i].matched == "completed" || requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
-            {
-              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=16px z-index=2' onclick=Delete("+i+") >"
-            }
-            box.innerHTML+=
-            "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            "\<div class='box' id="+id+">\
+              <img class='userinfo' src='static/images/123_burned.jpg' width=16px style='left:10px position:absolute' onclick=Delete("+i+") z-index=2>\
+            <img class='image fit' src='static/images/pic01.jpg' alt='' />\
             <div class='inner'>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
@@ -141,7 +129,7 @@
               <p>上車地點:" + requestarray[i].starting + "</p>\
               <p>目的地:" + requestarray[i].destination + "</p>\
               <p>備註:" + requestarray[i].note + "</p></div></div>";
-              
+              var box=document.getElementById("list"+i);
               if(requestarray[i].matched == "waiting")
               {
                 box.innerHTML+=
@@ -152,7 +140,7 @@
               else if(requestarray[i].matched == "due")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit') disabled=true>此要求已過期</a>"
+                "\<a class='button style3 fit')>此要求已過期</a>"
               }
               else
               {
@@ -161,14 +149,14 @@
                   console.log("SDFs");
                   if(requestarray[i].user_id == requestarray[i].pas_id)
                     box.innerHTML+=
-                    "<button class='button style2 fit' disabled=true>配對成功</button>\
+                    "<a class='button style2 fit'>配對成功</a>\
                     \<a class='button style2 fit' onclick='complete("+i+")'>已完成</a>\
                     \<a class='button style2 fit' onclick='uncomplete("+i+")'>未完成</a>\
                     \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
                   else 
                   {
                     box.innerHTML+=
-                    "<button class='button style2 fit' disabled=true>配對成功</button>\
+                    "<a class='button style2 fit'>配對成功</a>\
                     \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
                   }
                   
@@ -176,23 +164,13 @@
                 else if(requestarray[i].matched == "refuse")
                 {
                   box.innerHTML+=
-                  "<button class='button style2 fit' disabled=true>已拒絕</button>"
+                  "<a class='button style2 fit'>已拒絕</a>"
                 }
                 else if(requestarray[i].matched == "completed")
                 {
                   box.innerHTML+=
-                  "<button class='button style2 fit' disabled=true>已完成共乘系統</button>"
+                  "<a class='button style2 fit'>已完成共乘系統</a>"
                 }
-                else if(requestarray[i].matched == "cancelled")
-                {
-                  box.innerHTML+=
-                  "<button class='button style2 fit' disabled=true>已取消</button>"
-                }
-                else if(requestarray[i].state == "due")
-              {
-                box.innerHTML+=
-                "\<button class='button style3 fit' disabled=true>該要求已過期</button>"
-              }
               }
         }
       }
@@ -220,12 +198,13 @@
           'matched' : string[i].state,
           'requ_id' : string[i].requ_id
         };
+        
         requestarray.push(list);
       }
     }
     function Delete(i)
     {
-      if(requestarray[i].matched == "completed" || requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled")
+      if(requestarray[i].matched == "completed" | requestarray[i].matched == "uncompleted" || requestarray[i].matched == "rejected" || requestarray[i].matched == "cancelled")
       {
         $.ajax({
             type: 'POST',
@@ -274,7 +253,8 @@
         var box=document.getElementById("list"+i);
         box.innerHTML="";
         box.innerHTML +=
-        "<div class='inner'>\
+        "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+        <div class='inner'>\
           <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
           <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
           <p>上車時間:" + requestarray[i].time + "</p>\
@@ -296,7 +276,8 @@
             data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok' : true, 'type' : 'dri', 'answer_msg' : ''}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
-              accept(i);
+              //accept(i);
+              window.reload();
             }
             });
           }
@@ -307,7 +288,8 @@
             data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'accept_ok' : true, 'type' : 'pas', 'answer_msg' : ''}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
-              accept(i);
+              //accept(i);
+              window.location.reload();
             }
             });
           }
