@@ -57,7 +57,7 @@ def newAccount():
             msg = "前往頁面填寫密碼以激活帳號 \n ntoumotogo.kangs.idv.tw/verify?id="+str(userid)+"&token="+str(pshash,encoding="utf-8") #激活網址
             thr = Thread(target=sendMail, args=[app, title,msg,newUser['_mail']]) #寄送驗證信
             thr.start()
-        return redirect(url_for('checkAccountCreat'))
+        return redirect(url_for('checkAccountStatus'))
 #使用者登入
 @app.route('/loginAPI',methods=['GET','POST'])
 def login():
@@ -97,6 +97,11 @@ def verify():
         user = userCol.find_one({'_id':ObjectId(user_id)})
         if user:
             if user['_password'] == token:
+                print('set session')
+                newtoken = random.random()
+                session['NTOUmotoGoUser'] = user['Account_name'] #建立session
+                session['NTOUmotoGoToken'] = newtoken
+                session.permanent = True #設定session時效
                 return render_template('26-setPassword.html')
     return redirect(url_for('homePage'))
 
@@ -104,16 +109,18 @@ def verify():
 
 @app.route('/setPsw',methods=['GET','POST'])
 def setPsw():
+    print('call setPsw')
     info = request.values.to_dict()
+    print(info)
     psw = info['_password']
-    user_id = request.args['id']
+    print(request.url)
     pshash = bcrypt.hashpw(str(psw).encode('utf-8'), bcrypt.gensalt())#密碼加密 編碼:UTF-8
-    userCol.update_one({'_id':ObjectId(user_id)},{'$set':{'_password':str(pshash,encoding="utf-8")}})
-    return redirect(url_for('homePage'))
+    userCol.update_one({'Account_name':session['NTOUmotoGoUser']},{'$set':{'_password':str(pshash,encoding="utf-8")}})
+    return redirect(url_for('checkAccountStatus'))
             
 
 @app.route('/checkAccountStatus')
-def checkAccountCreat():
+def checkAccountStatus():
     return render_template('25-checkAccountCreat.html')
 
 

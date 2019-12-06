@@ -30,7 +30,7 @@ from ._socket import notifation
 @app.before_request
 def before_request():
     #除了註冊，登入功能api及其頁面的請求外，才去判斷登入狀態
-    if request.endpoint not in ['newAccount','register','loginPage','login','verify','checkAccountCreat']:
+    if request.endpoint not in ['newAccount','register','loginPage','login','verify','checkAccountStatus','setPsw','static']:
         if 'NTOUmotoGoUser' in session and 'NTOUmotoGoToken' in session:#如果已登入and 'NTOUmotoGoToken' in session
             # print(session['NTOUmotoGoUser'])
             # print(session['NTOUmotoGoToken'])
@@ -42,6 +42,8 @@ def before_request():
                     if user['_new_notifications']:
                         socketio.emit('news', {'num' : 1}, room = user['Account_name'])
                 else:
+                    print(request.endpoint)
+                    print('clr session')
                     session.clear()
                     return redirect(url_for('loginPage'))
             else:
