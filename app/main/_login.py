@@ -47,17 +47,17 @@ def newAccount():
         if '_studentCard' in request.files:
             file = request.files['_studentCard']
             if file and allowed_file(file.filename):
-                if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
-                    os.mkdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'])
-                file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], user['Account_name']+"_studentCard.jpg"))
-                newUser['_studentCard'] = user['Account_name']+"_studentCard.jpg"
+                if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+newUser['Account_name']):
+                    os.mkdir(app.config['UPLOAD_FOLDER']+'/'+newUser['Account_name'])
+                file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+newUser['Account_name'], newUser['Account_name']+"_studentCard.jpg"))
+                newUser['_studentCard'] = newUser['Account_name']+"_studentCard.jpg"
         userid = userCol.insert_one(newUser).inserted_id
         if userid:
             title = "海大機車共乘系統註冊驗證"
             msg = "前往頁面填寫密碼以激活帳號 \n ntoumotogo.kangs.idv.tw/verify?id="+str(userid)+"&token="+str(pshash,encoding="utf-8") #激活網址
             thr = Thread(target=sendMail, args=[app, title,msg,newUser['_mail']]) #寄送驗證信
             thr.start()
-        return redirect(url_for('loginPage'))
+        return redirect(url_for('checkAccountCreat'))
 #使用者登入
 @app.route('/loginAPI',methods=['GET','POST'])
 def login():
@@ -112,7 +112,9 @@ def setPsw():
     return redirect(url_for('homePage'))
             
 
-
+@app.route('/checkAccountStatus')
+def checkAccountCreat():
+    return render_template('25-checkAccountCreat.html')
 
 
 
