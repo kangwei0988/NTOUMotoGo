@@ -7,7 +7,9 @@ import bcrypt
 from threading import Thread
 from ._socket import notifation
 from ._mail import sendMail
-
+from bson.objectid import ObjectId
+import os
+from ._userInfo import allowed_file
 
 
 
@@ -22,10 +24,11 @@ def newAccount():
         newUser["fault_phone"] = '電話已被註冊'
     # if userCol.find_one({"_mail":newUser['_mail']}):
     #     newUser["fault_mail"] = 'email已被註冊'
-    if len(newUser) > 6 :
+    if len(newUser) > 5 :
         return render_template('2-register.html',fault=newUser)
     else:
-        pshash = bcrypt.hashpw(newUser['_password'].encode('utf-8'), bcrypt.gensalt())#密碼加密 編碼:UTF-8
+        token = random.random()
+        pshash = bcrypt.hashpw(str(token).encode('utf-8'), bcrypt.gensalt())#密碼加密 編碼:UTF-8
         newUser['_password'] = str(pshash, encoding = "utf-8")
         newUser['_gender'] = newUser['_gender']
         newUser['_motoplate'] = ''
@@ -41,18 +44,24 @@ def newAccount():
         newUser['_want_mail'] = True
         newUser['_user_photo'] = '#'
         newUser['_license_photo'] = '#'
+        if '_studentCard' in request.files:
+            file = request.files['_studentCard']
+            if file and allowed_file(file.filename):
+                if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
+                    os.mkdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'])
+                file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], user['Account_name']+"_studentCard.jpg"))
+                newUser['_studentCard'] = user['Account_name']+"_studentCard.jpg"
         userid = userCol.insert_one(newUser).inserted_id
         if userid:
-            title = "海大機車共乘系統註冊通知"
-            msg = "感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+"\n電話:"+newUser["_phone"]
-            thr = Thread(target=sendMail, args=[app, title,msg,newUser['_mail']]) #呼叫通知函示
+            title = "海大機車共乘系統註冊驗證"
+            msg = "前往頁面填寫密碼以激活帳號 \n ntoumotogo.kangs.idv.tw/verify?id="+str(userid)+"&token="+str(pshash,encoding="utf-8") #激活網址
+            thr = Thread(target=sendMail, args=[app, title,msg,newUser['_mail']]) #寄送驗證信
             thr.start()
-            thr2 = Thread(target=notifation, args=[app, userid, userid, 'system', '帳號創建成功~']) #呼叫通知函示
-            thr2.start()
         return redirect(url_for('loginPage'))
 #使用者登入
 @app.route('/loginAPI',methods=['GET','POST'])
 def login():
+    
     user = request.values.to_dict()
     login_user = userCol.find_one({'Account_name' : user['Account_name']})
     if login_user:
@@ -78,4 +87,39 @@ def logout():
     userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}})
     session.clear()
     return redirect(url_for('homePage'))
-########################################################################
+
+
+@app.route('/verify') #帳號激活頁面
+def verify():
+    user_id = request.args['id']
+    token = request.args['token']
+    if token and user_id:
+        user = userCol.find_one({'_id':ObjectId(user_id)})
+        if user:
+            if user['_token'].encode('utf-8') == token:
+                return render_template('26-setPassword.html')
+    return redirect(url_for('homePage'))
+
+
+
+@app.route('/setPsw',methods=['GET','POST'])
+def setPsw():
+    info = request.values.to_dict()
+    psw = info['_password']
+    user_id = request.args['id']
+    pshash = bcrypt.hashpw(str(psw).encode('utf-8'), bcrypt.gensalt())#密碼加密 編碼:UTF-8
+    userCol.update_one({'_id':ObjectId(user_id)},{'$set':{'_password':str(pshash,encoding="utf-8")}})
+    return redirect(url_for('homePage'))
+            
+
+
+
+
+
+    # title = "海大機車共乘系統註冊通知"
+    #         msg = "感謝您的使用，請注意交通安全，平安回家，學業順遂，寫程式不會遇到bug\n姓名:"+newUser["_name"]+"\n帳號:"+newUser["Account_name"]+"\n電話:"+newUser["_phone"]
+    #         thr = Thread(target=sendMail, args=[app, title,msg,newUser['_mail']]) #呼叫通知函示
+    #         thr.start()
+    #         thr2 = Thread(target=notifation, args=[app, userid, userid, 'system', '帳號創建成功~']) #呼叫通知函示
+    #         thr2.start()
+
