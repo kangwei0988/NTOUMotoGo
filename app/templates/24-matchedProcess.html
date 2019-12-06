@@ -110,12 +110,12 @@ function displayPosts(matchedPosts){
 ///////////////////////////////////////////////////////////////////////////////////
 
           popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="complete(this)">已完成</button>';
-          popContent+='<button class="button style2 fit">未完成</button>';
+          popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="uncomplete(this)">未完成</button>';
           popContent+='<button class="button style2 fit">地圖</button>';
           popContent+='<button class="button style2 fit">聊天室</button>';
 ///////////////////////////////////////////////////////////////////////////////////
           if(matchedPosts[i].post.post_matched)
-            popContent+='<button class="button style2 fit">已配對</button>';
+            popContent+='<button class="button style2 fit" >已配對</button>';
           else
           {
             popContent+='<button class="button style2 fit">未配對</button>';
@@ -139,7 +139,20 @@ function complete(clickButton){
     // }
   });
 }
-
+    function uncomplete(clickButton)
+    {
+      var str = clickButton.id;
+  var i = str.charAt(6);
+  $.ajax({
+    type: 'POST',
+    url: "/requComplete",
+    data: JSON.stringify({'requ_id': strings[i]._id, 'ok' : false}),
+    contentType: 'application/json; charset=utf-8',
+    // success: function(data) {
+    //   console.log(strings[i]._id);
+    // }
+  });
+    }
 window.onload = function(){
   $.ajax({
     type: 'POST',
