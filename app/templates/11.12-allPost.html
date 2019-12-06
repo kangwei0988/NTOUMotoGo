@@ -45,6 +45,18 @@
     text-align: center;
 
   }
+  .mybutton2{
+    background-color:blueviolet; /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    text-align: center;
+
+  }
 
   .wrapper {
     text-align: center;
@@ -70,8 +82,8 @@
   <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
     <span class="w3-center w3-padding w3-text-light-grey">
       <span id="myType"></span>
-      <span style="text-decoration:none; background-color:blue;" onclick="changeType()">切換身分</span>
-      <button type="button" class="mybutton" id="search" onclick="inputSearch()" style="width: 15%;">搜尋</button>
+      <button class = "mybutton2" onclick="changeType()">切換身分</button>
+      <button type="button" class="mybutton" id="search" onclick="inputSearch()" style="width: 10%;">搜尋</button>
     </span>
     <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
   </header>
@@ -200,8 +212,13 @@
             popContent+='<br>雨衣 : 無';
           popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
           if(postResult[i].owner_id != myID)
-            popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button>';
-          popContent+='</div></div>';
+            popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button>\
+                          </div>\
+                        </div>';
+          else
+          popContent+='<button class="button style2 fit" type="button" disabled=true)" >這是您的刊登資訊</button>\
+                          </div>\
+                        </div>';
         }
         //console.log(typeof(postResult[0]._id));
         document.getElementById("allPost").innerHTML = popContent;
