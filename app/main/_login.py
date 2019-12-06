@@ -24,7 +24,7 @@ def newAccount():
         newUser["fault_phone"] = '電話已被註冊'
     # if userCol.find_one({"_mail":newUser['_mail']}):
     #     newUser["fault_mail"] = 'email已被註冊'
-    if len(newUser) > 5 :
+    if len(newUser) > 6 :
         return render_template('2-register.html',fault=newUser)
     else:
         token = random.random()
@@ -96,7 +96,7 @@ def verify():
     if token and user_id:
         user = userCol.find_one({'_id':ObjectId(user_id)})
         if user:
-            if user['_token'].encode('utf-8') == token:
+            if user['_password'] == token:
                 return render_template('26-setPassword.html')
     return redirect(url_for('homePage'))
 
