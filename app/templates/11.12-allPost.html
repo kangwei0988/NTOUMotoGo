@@ -200,9 +200,8 @@
             popContent+='<br>雨衣 : 無';
           popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
           if(postResult[i].owner_id != myID)
-            popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button>\
-                          </div>\
-                        </div>';
+            popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button>';
+          popContent+='</div></div>';
         }
         //console.log(typeof(postResult[0]._id));
         document.getElementById("allPost").innerHTML = popContent;
