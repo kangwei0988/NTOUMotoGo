@@ -123,19 +123,19 @@
 
 
       if (data["_type"] == "requ") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>' + displaystr;
+        displaystr += '<div class="box"><div class="inner"><a href="http://' + document.domain + '/checkRequestt" class="button fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>';
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "post") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>' + displaystr;
+        displaystr += '<div class="box"><div class="inner"><a href="http://' + document.domain + '/allPost" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>';
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "rate") {
-        displaystr = '<div class="box"><div class="inner"><a href="https://tronclass.ntou.edu.tw/" class="button style3 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>' + displaystr;
+        displaystr += '<div class="box"><div class="inner"><a href="http://' + document.domain + '/rate" class="button style3 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>';
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "system") {
-        displaystr = '<div class="box"><div class="inner"><a class="button style4 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>' + displaystr;
+        displaystr += '<div class="box"><div class="inner"><a class="button style4 fit">' + data["_msg"] + '<span class="timestyle">' + data["_msgTime"] + ' </a></div></div>';
         displayobj.innerHTML = displaystr;
       }
 
