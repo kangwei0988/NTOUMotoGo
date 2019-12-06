@@ -225,16 +225,32 @@ def driPost():
 @app.route('/postBoard',methods=['GET','POST'])
 def postBoard():
     post_type = request.get_json()['post_type']
-    print(post_type)
-    posts = postCol.find({'post_type':post_type,'post_matched':False,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
+
+    requIds = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_requestHistory']
+    not_postsId =[]
+    postId = []
+
+    for requId in requIds:
+        p = str(requestCol.find_one({'_id' : ObjectId(requId)})['post_id'])
+        not_postsId.append(p)
+
+    posts = postCol.find({'post_type':post_type,'post_matched':False,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+    
+    print(posts)
+    for i in posts:
+        postId.append(str(i['_id']))
+
+    not_postsId = set(not_postsId)
+    postId = set(postId)
+    postId = list(postId.difference(not_postsId))
+    
     myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
     results = []
-    for post in posts:
-        print(post)
-        result = post
+    for id in postId:
+        result = postCol.find_one({'_id' : ObjectId(id)})
         result['_id'] = str(result['_id'])
         result['owner_id'] = str(result['owner_id'])
-        result['post_name'] = userCol.find_one({'_id' : ObjectId(post['owner_id'])})['_name']
+        result['post_name'] = userCol.find_one({'_id' : ObjectId(result['owner_id'])})['_name']
         result['yourID'] = str(myId)
         results.append(result)
     return jsonify(results)
