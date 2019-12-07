@@ -120,9 +120,9 @@ function searchHistory(strings){
       console.log(rateType);
       if(ifRate == undefined)
         popContent += "<button href='/rate' id='button"+i+"' class='button style2 fit' onclick='toRate(this)'>評價</button>";
-      // else
-      //   popContent += "<p>對方給我的評價:"+strings[i].rateType.rate_note+"</p>\
-      //                  <p>你拿到了"+strings[i].rateType.rate_range+"顆星</p>";
+      else
+        popContent += "<p>對方給我的評價:"+strings[i][rateType].rate_note+"</p>\
+                       <p>你拿到了"+strings[i][rateType].rate_range+"顆星</p>";
       popContent += '</div></div>';
       document.getElementById("historyList").innerHTML += popContent;
     }

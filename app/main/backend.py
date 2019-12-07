@@ -236,7 +236,6 @@ def postBoard():
 
     posts = postCol.find({'post_type':post_type,'post_matched':False,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
     
-    print(posts)
     for i in posts:
         postId.append(str(i['_id']))
 
@@ -469,11 +468,11 @@ def getHistory():
             result['driver']    = {'_name' : pasUser['_name'], '_id' : str(driUser['_id'])} #填入乘客資料
             result['pas_ok'] = history['pas_ok']
             result['dri_ok'] = history['dri_ok']
-            if history['pas_rate'] in user['_rateHistory']: #如果乘客有寫評價且被評價者為自己
+            if str(history['pas_rate']) in user['_rateHistory']: #如果乘客有寫評價且被評價者為自己
                 pasRate = rateCol.find_one({'_id':ObjectId(history['pas_rate'])})
                 if pasRate: #如果該評價存在
                     result['pas_rate'] = {'_name' : pasUser['_name'] , 'rate_range' : pasRate['rate_range'], 'rate_note' : pasRate['rate_note']} #加入乘客評價
-            if history['dri_rate'] in user['_rateHistory']: #如果駕駛有寫評價且被評價者為自己
+            if str(history['dri_rate']) in user['_rateHistory']: #如果駕駛有寫評價且被評價者為自己
                 pasRate = rateCol.find_one({'_id':ObjectId(history['dri_rate'])})
                 if pasRate: #如果該評價存在
                     result['dri_rate'] = {'_name' : pasUser['_name'] , 'rate_range' : pasRate['rate_range'], 'rate_note' : pasRate['rate_note']} #加入駕駛評價
@@ -581,19 +580,22 @@ def getMatchedPost():
 
     for requestId in matchHistory:
         result = requestCol.find_one({'_id':ObjectId(requestId)})
-        result['_id'] = str(result['_id'])
-        result['post_id'] = str(result['post_id'])
-        result['sender_id'] = str(result['sender_id'])
-        result['pas_id'] = str(result['pas_id'])
-        result['dri_id'] = str(result['dri_id'])
-        Post = postCol.find_one({'_id' : ObjectId(result['post_id'])})
-        print(type(Post))
-        Post['_id'] = str(result['_id'])
-        Post['owner_id'] = str(Post['owner_id'])
-        Post['post_name'] = userCol.find_one({'_id' : ObjectId(Post['owner_id'])})['_name']
-        result.update({'post':Post})
-    
-        results.append(result)
+        if result['_state'] == 'matched':
+            result['_id'] = str(result['_id'])
+            result['post_id'] = str(result['post_id'])
+            result['sender_id'] = str(result['sender_id'])
+            result['pas_id'] = str(result['pas_id'])
+            result['dri_id'] = str(result['dri_id'])
+            if type(result['pas_rate']) is not bool:
+                result['pas_rate'] = str(result['pas_rate'])
+            if type(result['dri_rate']) is not bool:
+                result['dri_rate'] = str(result['dri_rate'])
+            Post = postCol.find_one({'_id' : ObjectId(result['post_id'])})
+            Post['_id'] = str(Post['_id'])
+            Post['owner_id'] = str(Post['owner_id'])
+            Post['post_name'] = userCol.find_one({'_id' : ObjectId(Post['owner_id'])})['_name']
+            result.update({'post':Post})
+            results.append(result)
     return jsonify(results)
 
 #已完成配對
