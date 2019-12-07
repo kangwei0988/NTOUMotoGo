@@ -42,8 +42,6 @@ def before_request():
                     if user['_new_notifications']:
                         socketio.emit('news', {'num' : 1}, room = user['Account_name'])
                 else:
-                    print(request.endpoint)
-                    print('clr session')
                     session.clear()
                     return redirect(url_for('loginPage'))
             else:
@@ -450,29 +448,37 @@ def replyRequest():
 ######################################################################
 
 
-#回傳歷史紀錄(包含已完成共乘)
+#回傳歷史紀錄(包含已完成共乘及對方給予評價)
 @app.route('/getHistory', methods=['POST'])
 def getHistory():
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     results = []
     histories = user['_matchHistory']
+
     for his in histories:
         history = requestCol.find_one({'_id':ObjectId(his)})
-        result={'_id':str(history['_id'])}
-        tmp = postCol.find_one({'_id':history['post_id']})
-        tmp['_id'] = str(tmp['_id'])
-        tmp['owner_id'] = str(tmp['owner_id'])
-        result['_post'] = tmp
-        tmp= userCol.find_one({'_id' : history['pas_id']})
-        result['passenger'] = {'_name' : tmp['_name'], '_id' : str(tmp['_id'])}##
-        tmp= userCol.find_one({'_id' : history['dri_id']})
-        result['driver'] = {'_name' : tmp['_name'], '_id' : str(tmp['_id'])}##
-        result['pas_ok'] = history['pas_ok']
-        result['dri_ok'] = history['dri_ok']
-        result['pas_rate'] = str(history['pas_rate'])
-        result['dri_rate'] = str(history['dri_rate'])
-        result['user_id'] = str(user['_id'])
-        results.append(result)
+        if history:
+            result={'_id':str(history['_id'])}
+            tmpPost = postCol.find_one({'_id':history['post_id']})
+            tmpPost['_id'] = str(tmpPost['_id'])
+            tmpPost['owner_id'] = str(tmpPost['owner_id'])
+            result['_post'] = tmpPost
+            pasUser= userCol.find_one({'_id' : history['pas_id']})
+            result['passenger'] = {'_name' : pasUser['_name'], '_id' : str(pasUser['_id'])} #填入駕駛資料
+            driUser= userCol.find_one({'_id' : history['dri_id']})
+            result['driver']    = {'_name' : pasUser['_name'], '_id' : str(driUser['_id'])} #填入乘客資料
+            result['pas_ok'] = history['pas_ok']
+            result['dri_ok'] = history['dri_ok']
+            if history['pas_rate'] in user['_rateHistory']: #如果乘客有寫評價且被評價者為自己
+                pasRate = rateCol.find_one({'_id':ObjectId(history['pas_rate'])})
+                if pasRate: #如果該評價存在
+                    result['pas_rate'] = {'_name' : pasUser['_name'] , 'rate_range' : pasRate['rate_range'], 'rate_note' : pasRate['rate_note']} #加入乘客評價
+            if history['dri_rate'] in user['_rateHistory']: #如果駕駛有寫評價且被評價者為自己
+                pasRate = rateCol.find_one({'_id':ObjectId(history['dri_rate'])})
+                if pasRate: #如果該評價存在
+                    result['dri_rate'] = {'_name' : pasUser['_name'] , 'rate_range' : pasRate['rate_range'], 'rate_note' : pasRate['rate_note']} #加入駕駛評價
+            result['user_id'] = str(user['_id']) #回傳自己id
+            results.append(result)
     return jsonify(results)
     
 #回傳通知
@@ -489,22 +495,24 @@ def getNotifation():
 @app.route('/sendRate',methods=['GET','POST'])
 def sendRate():
     tmp = request.get_json(silent=True)
-    print(tmp)
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     receiver = userCol.find_one({'_id' : ObjectId(tmp['receiver_id'])})
     requ = requestCol.find_one({'_id':ObjectId(tmp['request_id'])})
-    info = {'request_id':ObjectId(tmp['request_id']),'rater_id': ObjectId(user['_id']),'receiver_id':ObjectId(tmp['receiver_id']),'rate_range':tmp['rate_range'],'rate_note':tmp['rate_note']}
+    info = {'request_id'  : ObjectId(tmp['request_id']),
+            'rater_id'    : ObjectId(user['_id']),
+            'receiver_id' : ObjectId(tmp['receiver_id']),
+            'rate_range'  : tmp['rate_range'],
+            'rate_note'   : tmp['rate_note']
+            }
     rate_id = rateCol.insert_one(info).inserted_id
-    userRateTmp = user['_rateHistory']
-    userRateTmp.append(str(rate_id))
-    receiverRateTmp = receiver['_rateHistory']
-    receiverRateTmp.append(str(rate_id))
-    userCol.update_one({'_id' : user['_id']}, {"$set": {'_rateHistory' : userRateTmp}})
-    userCol.update_one({'_id' : ObjectId(tmp['receiver_id'])}, {"$set": {'_rateHistory' : receiverRateTmp}})
-    if requ['pas_id'] == user['_id']:
-        requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'pas_ok':True}})
-    else:
-        requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'dri_ok':True}})
+    if rate_id and receiver and requ:
+        receiverRateTmp = receiver['_rateHistory']
+        receiverRateTmp.append(str(rate_id))
+        userCol.update_one({'_id' : ObjectId(tmp['receiver_id'])}, {"$set": {'_rateHistory' : receiverRateTmp}})#在接收者的_rateHistory新增被評價紀錄
+        if requ['pas_id'] == user['_id']:   #如果評價者是乘客，填入乘客評價id
+            requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'pas_rate':rate_id}})
+        else:                               #如果評價者是駕駛，填入駕駛評價id
+            requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'dri_rate':rate_id}})
     
     return '成功'
 
@@ -529,7 +537,8 @@ def getUserData():
         '_phone':user['_phone'],
         '_user_photo':user['_user_photo'],
         '_license_photo':user['_license_photo'],
-        'Account_name':session['NTOUmotoGoUser']}
+        'Account_name':session['NTOUmotoGoUser']
+        }
     
     return jsonify(userData)
 

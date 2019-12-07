@@ -30,16 +30,16 @@ def disconnect():
 # 用以下方式呼叫
 # thr = Thread(target=notifation, args=[app, notiid, targetId, Type, msg) #呼叫通知函示
 # thr.start()
-def notifation(app, notiid, targetId, Type, msg):#(app:context上下文， notiid:對象id,string or objectid型態都行， targetId:相關事件的id， Type:'post,requ,rate,system'， msg:要顯示訊息)
-    with app.app_context():
-        target = userCol.find_one({'_id' : ObjectId(notiid)})
-        notifications = target['_notifications']
-        notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
-        userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications}})
-        if target['_want_mail'] and Type != 'system':
-            title = '你在海大機車共乘系統中有一則新信息'
-            sendMail(app,title,msg,target['_mail'])
-        socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
+def notifation(app,notiid, targetId, Type, msg):#(app:context上下文， notiid:對象id,string or objectid型態都行， targetId:相關事件的id， Type:'post,requ,rate,system'， msg:要顯示訊息)
+    target = userCol.find_one({'_id' : ObjectId(notiid)})
+    notifications = target['_notifications']
+    notifications.insert(0,{'_target':str(targetId),'_type':Type,'_msg':msg,'_msgTime':datetime.datetime.now()})
+    userCol.update({'_id' : target['_id']}, {"$set": {'_notifications' : notifications, '_new_notifications' : True}})
+    if target['_want_mail'] and Type != 'system':
+        title = '你在海大機車共乘系統中有一則新信息'
+        thr = Thread(target=sendMail,args=[app,title,msg,target['_mail']])
+        thr.start()
+    socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
 ###########################################################################
 
 #############################聊天室功能#####################################
