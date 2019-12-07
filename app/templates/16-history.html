@@ -114,8 +114,11 @@ function searchHistory(strings){
                         <h2>"+showName+note+"</h2>\
                         <p>Time:"+strings[i]._post.post_getOnTime+"</p>\
                         <p>"+strings[i]._post.post_location+" 到 "+strings[i]._post.post_goto+"</p>";
-      if(ifRate)
+      console.log(ifRate);
+      if(ifRate == undefined)
         popContent += "<button href='/rate' id='button"+i+"' class='button style2 fit' onclick='toRate(this)'>評價</button>";
+      else
+        popContent += "這裡顯示對方給我的評價";
       popContent += '</div></div>';
       document.getElementById("historyList").innerHTML += popContent;
     }
