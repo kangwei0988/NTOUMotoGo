@@ -138,9 +138,10 @@ function complete(clickButton){
     url: "/requComplete",
     data: JSON.stringify({'requ_id': strings[i]._id, 'ok' : true}),
     contentType: 'application/json; charset=utf-8',
-    // success: function(data) {
-    //   console.log(strings[i]._id);
-    // }
+     success: function(data) {
+       window.location.reload();
+       //console.log(strings[i]._id);
+   }
   });
 }
     function uncomplete(clickButton)
@@ -152,9 +153,9 @@ function complete(clickButton){
     url: "/requComplete",
     data: JSON.stringify({'requ_id': strings[i]._id, 'ok' : false}),
     contentType: 'application/json; charset=utf-8',
-    // success: function(data) {
-    //   console.log(strings[i]._id);
-    // }
+     success: function(data) {
+      window.location.reload();
+   }
   });
     }
 window.onload = function(){
