@@ -130,7 +130,7 @@
             var box=document.getElementById("list"+i);
             if(requestarray[i].matched == "completed" || requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
             {
-              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=16px z-index=2' onclick=Delete("+i+") >"
+              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=2' onclick=Delete("+i+") >"
             }
             box.innerHTML+=
             "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
@@ -202,7 +202,16 @@
       document.getElementById("RequestList").innerHTML +=
         '<a class="button style fit" onclick="location.reload()">重新整理</a>';
       }
-     
+    function convertion()
+    {
+      if (requestarray.length) {
+        for (i = 0; i < requestarray.length; i++) {
+          month=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          Month=["一月","二月"];
+          console.log(requestarray[i].time);
+        }
+      }
+    }
     function jsonToStruct(){
       var i;
       
