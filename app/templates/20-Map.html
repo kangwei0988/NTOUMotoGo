@@ -104,7 +104,7 @@
       captionText.innerHTML = element.alt;
     }
 
-    var map, marker, lat, lng, other_lat = 25.150600, other_lng = 121.776085, other_id = "5de8b2e9ddf8cef7fae4272d";
+    var map, marker, lat, lng, other_lat = 25.150600, other_lng = 121.776085, other_id;
     var pos = {
       "lat": lat,
       "lng": lng
@@ -142,36 +142,34 @@
           position: { lat: other_pos.other_lat, lng: other_pos.other_lng },
           map: map
         });
-
-        //console.log(JSON.stringify(pos));
         $.ajax({
           url: "/getLocation",
           type: 'POST',
           data: JSON.stringify(pos),
           contentType: 'application/json; charset=utf-8',
-          success: function () {
-            //console.log("return pos success");
-          },
-          error: function () {
-            //console.log("return pos fail");
-          }
         })
       });
     }
 
     function getOtherPos() {
-      //console.log(JSON.stringify({ "other_id": other_id }));
+      var strUrl = location.search;
+      if (strUrl.indexOf("=") != -1){
+          other_id = strUrl.split("=")[1];
+      }
+      else{
+        other_id='self';
+      } 
       $.ajax({
         url: "/returnLocation",
         type: 'POST',
-        data: JSON.stringify({ "other_id": other_id }),
+        data: JSON.stringify({"other_id" : other_id }),
         contentType: 'application/json; charset=utf-8',
         success: function (got_pos) {
-          //console.log("get other pos success");
+          console.log("get other pos success");
           other_pos = got_pos;
         },
         error: function () {
-          //console.log("return other_id fail");
+          console.log("return other_id fail");
         }
       })
     }

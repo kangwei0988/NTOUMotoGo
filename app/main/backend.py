@@ -163,7 +163,7 @@ def test():
 ##############################
 
 
-#取得座標位置
+#回傳google Map 要顯示的對方座標位置
 @app.route('/getLocation',methods=['GET','POST'])
 def getLocation():
     pos = request.get_json(silent=True)
@@ -173,9 +173,14 @@ def getLocation():
 #回傳google Map 要顯示的對方座標位置
 @app.route('/returnLocation',methods=['GET','POST'])
 def returnLocation():
-    other_id = request.get_json(silent=True)
-    other_user = userCol.find_one({'_id' : ObjectId(other_id['other_id'])})
-    other_pos = {'other_lat': other_user['_lastLocation']['lat'], 'other_lng': other_user['_lastLocation']['lng']}
+    tmp = request.get_json(silent=True)
+    other_id = tmp['other_id']
+    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    other_pos = {'other_lat': user['_lastLocation']['lat'], 'other_lng': user['_lastLocation']['lng']}
+    if other_id and len(other_id) == 24:
+        other_user = userCol.find_one({'_id' : ObjectId(other_id)})
+        if other_user:
+            other_pos = {'other_lat': other_user['_lastLocation']['lat'], 'other_lng': other_user['_lastLocation']['lng']}
     return jsonify(other_pos)
 
 
@@ -581,6 +586,11 @@ def getMatchedPost():
     for requestId in matchHistory:
         result = requestCol.find_one({'_id':ObjectId(requestId)})
         if result['_state'] == 'matched':
+            if user['_id'] == result['pas_id']: #設定map要看的目標
+                result.update({'target_id':str(result['dri_id'])})
+            if user['_id'] == result['dri_id']: #設定map要看的目標
+                result.update({'target_id':str(result['pas_id'])})
+
             result['_id'] = str(result['_id'])
             result['post_id'] = str(result['post_id'])
             result['sender_id'] = str(result['sender_id'])

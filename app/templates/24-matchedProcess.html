@@ -111,8 +111,8 @@ function displayPosts(matchedPosts){
 
           popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="complete(this)">已完成</button>';
           popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="uncomplete(this)">未完成</button>';
-          popContent+='<button class="button style2 fit" href="map?'+strings[i].target_id+'">地圖</button>';
-          popContent+='<button class="button style2 fit" href="chatRoom?'+strings[i].target_id+'">聊天室</button>';
+          popContent+='<a class="button style2 fit" href="Map?id='+strings[i].target_id+'">地圖</a>';
+          popContent+='<a class="button style2 fit" href="chatRoom?'+strings[i]._id+'">聊天室</a>';
 ///////////////////////////////////////////////////////////////////////////////////
           if(matchedPosts[i].post.post_matched)
             popContent+='<button class="button style2 fit" >已配對</button>';
