@@ -97,15 +97,18 @@ function searchHistory(strings){
       var showName;
       var ifRate;
       var note;
+      var rateType;
       var popContent;
       if(myID == strings[i].driver._id){
         showName = strings[i].passenger._name;
-        ifRate = strings[i].dri_rate;
+        ifRate = strings[i].pas_rate;
+        rateType = 'pas_rate';
         note = '被你載'
       }
       else{
         showName = strings[i].driver._name;
-        ifRate = strings[i].pas_rate;
+        ifRate = strings[i].dri_rate;
+        rateType = 'dri_rate';
         note ='載你';
       }
       popContent = "<div class='box'>\
@@ -118,7 +121,8 @@ function searchHistory(strings){
       if(ifRate == undefined)
         popContent += "<button href='/rate' id='button"+i+"' class='button style2 fit' onclick='toRate(this)'>評價</button>";
       else
-        popContent += "這裡顯示對方給我的評價";
+        popContent += "<p>對方給我的評價:"+strings[i].rateType.rate_note+"</p>\
+                       <p>你拿到了"+strings[i].rateType.rate_range+"顆星</p>";
       popContent += '</div></div>';
       document.getElementById("historyList").innerHTML += popContent;
     }
