@@ -197,11 +197,13 @@ def pasPost():
     if post_id:
         login_user['_postHistory'].insert(0,str(post_id))
         userCol.update_one({'_id' : login_user['_id']}, {"$set": {'_postHistory' : login_user['_postHistory']}})
-        thr = Thread(target=notifation, args=[app, login_user['_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
-        thr.start()
+        # thr = Thread(target=notifation, args=[app, login_user['_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
+        # thr.start()
+        socketio.start_background_task(notifation, app, login_user['_id'], post_id, 'post', '刊登成功')
     else:
-        thr = Thread(target=notifation, args=[app, login_user['_id'], False, 'post', '刊登失敗']) #呼叫通知函示
-        thr.start()
+        # thr = Thread(target=notifation, args=[app, login_user['_id'], False, 'post', '刊登失敗']) #呼叫通知函示
+        # thr.start()
+        socketio.start_background_task(notifation, app, login_user['_id'], False, 'post', '刊登失敗')
     return redirect(url_for('allPost'))
 #駕駛刊登
 @app.route('/driPost',methods=['GET','POST'])
@@ -217,11 +219,9 @@ def driPost():
     if post_id:
         login_user['_postHistory'].insert(0,str(post_id))
         userCol.update_one({'_id' : login_user['_id']}, {"$set": {'_postHistory' : login_user['_postHistory']}})
-        thr = Thread(target=notifation, args=[app, login_user['_id'], post_id, 'post', '刊登成功']) #呼叫通知函示
-        thr.start()
+        socketio.start_background_task(notifation, app, login_user['_id'], post_id, 'post', '刊登成功')
     else:
-        thr = Thread(target=notifation, args=[app, login_user['_id'], False, 'post', '刊登失敗']) #呼叫通知函示
-        thr.start()
+        socketio.start_background_task(notifation, app, login_user['_id'], False, 'post', '刊登失敗')
     return redirect(url_for('allPost'))
 #駕駛乘客刊登資訊頁面
 @app.route('/postBoard',methods=['GET','POST'])
@@ -271,11 +271,13 @@ def deleteRequest():
         if eachRequest == deleteID['delete_id']:#delete_id配合front end
             temp.remove(deleteID['delete_id'])
             userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_requestHistory' : temp}})       
-            thr = Thread(target=notifation, args=[app, user['_id'], deleteID['delete_id'], 'requ', '刪除請求紀錄成功']) #呼叫通知函式，回報刪除成功
-            thr.start()
+            # thr = Thread(target=notifation, args=[app, user['_id'], deleteID['delete_id'], 'requ', '刪除請求紀錄成功']) #呼叫通知函式，回報刪除成功
+            # thr.start()
+            socketio.start_background_task(notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除請求紀錄成功')
             return redirect(request.url)
-    thr = Thread(target=notifation, args=[app, user['_id'], deleteID['delete_id'], 'requ', '刪除失敗，該請求紀錄可能已被刪除']) #呼叫通知函式，回報刪除失敗
-    thr.start()        
+    # thr = Thread(target=notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除失敗，該請求紀錄可能已被刪除') #呼叫通知函式，回報刪除失敗
+    # thr.start()        
+    socketio.start_background_task(notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除失敗，該請求紀錄可能已被刪除')
     return redirect(request.url)
 
 #取消請求
@@ -285,26 +287,21 @@ def cancelRequest():
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
     requcancel = requestCol.find_one({'_id':ObjectId(cancelID['cancel_id'])})#cancel_id配合front end
     if requcancel is None:
-            thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '找不到該請求']) #呼叫通知函式，回報取消失敗
-            thr.start()        
+            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '找不到該請求')      
             return redirect(request.url)
     if user['_id'] == requcancel['sender_id']:
-        if requcancel['_state'] == "cancelled":
-            thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '取消失敗，該請求已被取消']) #呼叫通知函式，回報取消失敗
-            thr.start()        
+        if requcancel['_state'] == "cancelled":   
+            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '取消失敗，該請求已被取消')
             return redirect(request.url)
         elif requcancel['_state'] == "waiting":    
             requestCol.update({'_id':ObjectId(cancelID['cancel_id'])},{"$set": {'_state' : "cancelled"}})
-            thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '取消請求成功']) #呼叫通知函式，回報取消成功
-            thr.start()
+            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '取消請求成功')
             return redirect(request.url)
         else:
-            thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '該請求無法取消']) #呼叫通知函式，回報取消失敗
-            thr.start()        
+            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '該請求無法取消')     
             return redirect(request.url)
     else:
-        thr = Thread(target=notifation, args=[app, user['_id'], requcancel['_id'], 'requ', '發出請求者才有權限取消該請求']) #呼叫通知函式，回報取消失敗
-        thr.start()        
+        socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '發出請求者才有權限取消該請求')    
         return redirect(request.url)
 
 #駕駛乘客發出請求
@@ -313,8 +310,7 @@ def sendRequest():
     tmp = request.get_json(silent=True)
     post = postCol.find_one({'_id':ObjectId(tmp['post_id'])})#postCol.find_one({'_id':tmp['post_id']})
     if post['post_matched']:
-        thr = Thread(target=notifation, args=[app, post['owner_id'], False, 'requ', '發出請求失敗，該刊登已消失']) #呼叫通知函示
-        thr.start()
+        socketio.start_background_task(notifation, app, post['owner_id'], False, 'requ', '發出請求失敗，該刊登已消失')
     else:
         user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
         info = {'post_id' : post['_id'],
@@ -348,13 +344,10 @@ def sendRequest():
             userRequHis = userCol.find_one({'_id' : user['_id']})['_requestHistory']             #更改被請求者請求歷史紀錄
             userRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : user['_id']},{'$set' : {'_requestHistory' : userRequHis}})
-            thr = Thread(target=notifation, args=[app, post['owner_id'], request_id, 'requ', '新的請求']) #呼叫通知函示，通知被請求者
-            thr.start()
-            thr2 = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '成功發出請求']) #呼叫通知函示，回報請求者發出成功
-            thr2.start()
+            socketio.start_background_task(notifation, app, post['owner_id'], request_id, 'requ', '新的請求')
+            socketio.start_background_task(notifation, app, user['_id'], request_id, 'requ', '成功發出請求')
         else:
-            thr = Thread(target=notifation, args=[app, user['_id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次']) #呼叫通知函示，回報請求者發出失敗
-            thr.start()
+            socketio.start_background_task(notifation, app, user['_id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次')
     return redirect(url_for('allPost'))
 
 #回傳使用者發出的要求
@@ -440,22 +433,16 @@ def replyRequest():
         if reply['accept_ok']:
             requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'matched'}})
             postCol.update_one({'_id':post['_id']},{'$set' : {'post_matched' : True}})
-
             umatchHistory.insert(0,reply['requ_id'])
             smatchHistory.insert(0,reply['requ_id'])
             userCol.update_one({'Account_name':session['NTOUmotoGoUser']},{'$set' : {'_matchHistory' : umatchHistory}})
             userCol.update_one({'_id' : requ['sender_id']},{'$set' : {'_matchHistory' : smatchHistory}})
-                                                                                                             
-            thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '答應'+sender['_name']+'的請求成功'])    #呼叫通知函示，回報被請求者
-            thr.start()
-            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', user['_name']+'已答應你的請求'])        #呼叫通知函示，回報請求者
-            thr2.start()
+            socketio.start_background_task(notifation, app, user['_id'], requ['_id'], 'requ', '答應'+sender['_name']+'的請求成功')  #呼叫通知函示，回報被請求者
+            socketio.start_background_task(notifation, app, sender['_id'], requ['_id'], 'requ', user['_name']+'已答應你的請求')     #呼叫通知函示，回報請求者
         else:
             requestCol.update_one({'_id':requ['_id']},{'$set' : {'_state' : 'refuse'}})
-            thr = Thread(target=notifation, args=[app, user['_id'], requ['_id'], 'requ', '已拒絕'+sender['_name']+'的請求'])     #呼叫通知函示，回報被請求者
-            thr.start()
-            thr2 = Thread(target=notifation, args=[app, sender['_id'], requ['_id'], 'requ', '對'+ user['_name']+'的請求被拒絕'])  #呼叫通知函示，回報請求者
-            thr2.start()
+            socketio.start_background_task(notifation, app, user['_id'], requ['_id'], 'requ', '已拒絕'+sender['_name']+'的請求')#呼叫通知函示，回報被請求者
+            socketio.start_background_task(notifation, app, sender['_id'], requ['_id'], 'requ', '對'+ user['_name']+'的請求被拒絕') #呼叫通知函示，回報請求者
     else:
         thr = Thread(target=notifation, args=[app, user['_id'], False, 'requ', '回復請求失敗，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
         thr.start()
@@ -513,7 +500,7 @@ def sendRate():
     receiverRateTmp = receiver['_rateHistory']
     receiverRateTmp.append(str(rate_id))
     userCol.update_one({'_id' : user['_id']}, {"$set": {'_rateHistory' : userRateTmp}})
-    userCol.update_one({'_id' : tmp['receiver_id']}, {"$set": {'_rateHistory' : receiverRateTmp}})
+    userCol.update_one({'_id' : ObjectId(tmp['receiver_id'])}, {"$set": {'_rateHistory' : receiverRateTmp}})
     if requ['pas_id'] == user['_id']:
         requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'pas_ok':True}})
     else:
@@ -529,7 +516,7 @@ def getUserData():
     rate = []
 
     for rateId in user['_rateHistory']:#將每個評價的星數裝進陣列
-        rateObj = rateCol.find_one({'_id' : rateId })
+        rateObj = rateCol.find_one({'_id' : ObjectId(rateId) })
         rateNum = rateObj['rate_range']
         rate.append(rateNum)
 

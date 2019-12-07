@@ -1,6 +1,6 @@
 var socket;
 $(document).ready(function () {
-  socket = io.connect('https://' + document.domain, { 'reconnect': true });
+  socket = io.connect('https://' + document.domain);
   socket.on('news', function (data) {
     console.log(data.num)
     alertnotice();
