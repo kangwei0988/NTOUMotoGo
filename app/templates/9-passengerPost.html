@@ -163,8 +163,8 @@
     var date = new Date();
     window.onload = function () {
       var message = "<label>搭車時間</label><input type='datetime-local'>";
-      document.getElementById("time").innerHTML = "日期:<input type='date' id = 'tem_date' value = '" + date.getFullYear() + "-" + (date.getMonth() + 1)
-        + "-" + date.getDate() + "'> 時間: <input type = 'time'  id = 'tem_time' value = '" + date.getHours() + ":" + date.getMinutes() + "'>";
+      document.getElementById("time").innerHTML = "日期:<input type='date' id = 'tem_date' required value = '" + date.getFullYear() + "-" + (date.getMonth() + 1)
+        + "-" + date.getDate() + "'> 時間: <input type = 'time'  id = 'tem_time' required value = '" + date.getHours() + ":" + date.getMinutes() + "'>";
 
     }
 
