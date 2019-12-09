@@ -186,20 +186,10 @@
               }
               else if(requestarray[i].state == "matched")
               {
-                if(requestarray[i].user_id == requestarray[i].pas_id)
-                {
                   box.innerHTML+=
                   "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
                   \<a class='button style3 fit' onclick='javascript:location.href='/matchedProcess''>前往查看</a>\
-                  \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
                   \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
-                }
-                else{
-                  box.innerHTML+=
-                  "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
-                  \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
-                  \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
-                }
               }
               else if(requestarray[i].state == "due")
               {
@@ -214,7 +204,8 @@
               else if(requestarray[i].state == "completed")
               {
                 box.innerHTML+=
-                "\<button class='button style2 fit' disabled=true>已完成共乘系統</button>"
+                "\<button class='button style2 fit' disabled=true>已完成共乘系統</button>\
+                \<a class='button style3 fit' onclick='javascript:location.href='/history''>前往查看</a>";
               }
         }
       }
