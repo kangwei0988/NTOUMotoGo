@@ -269,32 +269,7 @@
       }
       console.log(TT);
     }
-    function complete(i)
-    {
-      $.ajax({
-            type: 'POST',
-            url: "/requComplete",
-            data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'ok' : true}),
-            contentType: 'application/json; charset=utf-8',
-            success: function(data) {
-              window.alert("ASDF");
-              window.location.href = 'http://' + document.domain + '/home';
-            }
-            });
-    }
-    function uncomplete(i)
-    {
-      $.ajax({
-            type: 'POST',
-            url: "/requComplete",
-            data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'ok' : false}),
-            contentType: 'application/json; charset=utf-8',
-            success: function(data) {
-              window.alert("ASDF");
-              window.location.href = 'http://' + document.domain + '/home';
-            }
-            });
-    }
+    
     function jsonToStruct(){
       var i;
       

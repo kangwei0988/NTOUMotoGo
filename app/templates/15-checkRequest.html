@@ -169,7 +169,7 @@
                   {
                     box.innerHTML+=
                     "<button class='button style2 fit' disabled=true>配對成功，尚未完成完成共乘系統</button>\
-                    \<a class='button style3 fit' onclick='javascript:location.href='/matchedProcess''>前往查看</a>\
+                    \<a class='button style3 fit' onclick='javascript:location.href='/matchedProcess'>前往查看</a>\
                     \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
                   }
                   
@@ -270,32 +270,7 @@
         window.alert("刪除失敗，該請求尚未被回覆!!");
     }
     
-    function complete(i)
-    {
-      $.ajax({
-            type: 'POST',
-            url: "/requComplete",
-            data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'ok' : true}),
-            contentType: 'application/json; charset=utf-8',
-            success: function(data) {
-              window.alert("ASDF");
-              window.location.href = 'http://' + document.domain + '/home';
-            }
-            });
-    }
-    function uncomplete(i)
-    {
-      $.ajax({
-            type: 'POST',
-            url: "/requComplete",
-            data: JSON.stringify({'requ_id': requestarray[i].requ_id, 'ok' : false}),
-            contentType: 'application/json; charset=utf-8',
-            success: function(data) {
-              window.alert("ASDF");
-              window.location.href = 'http://' + document.domain + '/home';
-            }
-            });
-    }
+  
     function accept(i)
     {
         var id = "list"+i;
@@ -309,10 +284,9 @@
           <p>上車地點:" + requestarray[i].starting + "</p>\
           <p>目的地:" + requestarray[i].destination + "</p>\
           <p>備註:" + requestarray[i].note + "</p>\
-          <a class='button style2 fit'>配對成功</a>\
-          \<a class='button style2 fit' onclick=''>已完成</a>\
-          \<a class='button style2 fit' onclick=''>未完成</a>\
-          \<a class='button style3 fit' onclick=''>聊天</a></div></div>";
+          <button class='button style2 fit' disabled=true>配對成功，尚未完成完成共乘系統</button>\
+          <a class='button style3 fit' onclick='javascript:location.href='/matchedProcess'>前往查看</a>\
+          <a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
     }
     function accept_api(i)
     {

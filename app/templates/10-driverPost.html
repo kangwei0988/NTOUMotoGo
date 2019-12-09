@@ -215,7 +215,10 @@
           url: "/driPost",
           data: JSON.stringify(list),
           contentType: 'application/json; charset=utf-8',
-        });
+          success: function() {
+                  window.location.href='https://' + document.domain + '/myPost';
+                }
+          });
 
       }
 

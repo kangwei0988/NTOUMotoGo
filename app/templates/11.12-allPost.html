@@ -262,10 +262,10 @@
         url: "/sendRequest",
         data: JSON.stringify({'post_id' : postID}),
         contentType: 'application/json; charset=utf-8',
-        success: function(){
-          window.location.reload();
-        }
-      });
+        success: function() {
+                  window.location.href='https://' + document.domain + '/passengerRespond';
+                }
+          });
     }      
 
     //刊登人個人資訊 
