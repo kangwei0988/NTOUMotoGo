@@ -85,10 +85,38 @@ function w3_close() {
   document.getElementById("mySidebar").style.display = "none";
   document.getElementById("myOverlay").style.display = "none";
 }
-
+var TT=[]
+function convertion(requestarray)
+{
+  if (requestarray.length) {
+    for (i = 0; i < requestarray.length; i++) {
+      month=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      Month=["1","2","3","4","5","6","7","8","9","10","11","12"];
+      week=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      Week=["禮拜一","禮拜二","禮拜三","禮拜四","禮拜五","禮拜六","禮拜日"];
+      var tmp1=requestarray[i]._post.post_getOnTime;
+      var tmp=tmp1.split(",");
+      var tmp2=tmp1.split(" ");
+      console.log(tmp1);
+      var output="";
+      output+=tmp2[3]+"/";
+      for(i=0;i<12;i++)
+        if(tmp2[2]==month[i])
+          output+=Month[i]+"/";
+      output+=tmp2[1]+" ";
+      for(i=0;i<7;i++)
+        if(tmp[0]==week[i])
+          output+=Week[i]+" ";
+      output+=tmp2[4];
+      TT.push(output);
+    }
+  }
+  console.log(TT);
+}
 function searchHistory(strings){
   var i;
   var myIdentity;
+
   document.getElementById("historyList").innerHTML="";
   if(strings.length)
   {    
@@ -99,6 +127,7 @@ function searchHistory(strings){
       var note;
       var rateType;
       var popContent;
+      convertion(strings);
       if(myID == strings[i].driver._id){
         showName = strings[i].passenger._name;
         ifRate = strings[i].pas_rate;
@@ -115,7 +144,7 @@ function searchHistory(strings){
                       <div class='inner'>\
                         <img src='' width='90%'>\
                         <h2>"+showName+note+"</h2>\
-                        <p>Time:"+strings[i]._post.post_getOnTime+"</p>\
+                        <p>Time:"+TT[i]+"</p>\
                         <p>"+strings[i]._post.post_location+" 到 "+strings[i]._post.post_goto+"</p>";
       console.log(rateType);
       if(ifRate == undefined)

@@ -140,6 +140,7 @@
             console.log(data);
             string = data;
             jsonToStruct();
+            convertion();
             showrequests();
           }
         }
@@ -165,7 +166,7 @@
             <div class='inner'>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-              <p>上車時間:" + requestarray[i].time + "</p>\
+              <p>上車時間:" + TT[i] + "</p>\
               <p>上車地點:" + requestarray[i].starting + "</p>\
               <p>目的地:" + requestarray[i].destination + "</p>\
               <p>備註:" + requestarray[i].note + "</p></div></div>";
@@ -189,8 +190,7 @@
                 {
                   box.innerHTML+=
                   "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
-                  \<a class='button style2 fit' onclick='complete("+i+")'>已完成</a>\
-                  \<a class='button style2 fit' onclick='uncomplete("+i+")'>未完成</a>\
+                  \<a class='button style3 fit' onclick='javascript:location.href='/matchedProcess''>前往查看</a>\
                   \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
                   \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
                 }
@@ -241,6 +241,34 @@
         else
           window.alert("取消失敗，已完成配對!!");
       }
+    var TT=[]
+    function convertion()
+    {
+      if (requestarray.length) {
+        for (i = 0; i < requestarray.length; i++) {
+          month=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          Month=["1","2","3","4","5","6","7","8","9","10","11","12"];
+          week=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+          Week=["禮拜一","禮拜二","禮拜三","禮拜四","禮拜五","禮拜六","禮拜日"];
+          var tmp1=requestarray[i].time;
+          var tmp=tmp1.split(",");
+          var tmp2=tmp1.split(" ");
+          console.log(tmp1);
+          var output="";
+          output+=tmp2[3]+"/";
+          for(i=0;i<12;i++)
+            if(tmp2[2]==month[i])
+              output+=Month[i]+"/";
+          output+=tmp2[1]+" ";
+          for(i=0;i<7;i++)
+            if(tmp[0]==week[i])
+              output+=Week[i]+" ";
+          output+=tmp2[4];
+          TT.push(output);
+        }
+      }
+      console.log(TT);
+    }
     function complete(i)
     {
       $.ajax({

@@ -186,6 +186,7 @@
 
     function displayPost(postResult){
       console.log(postResult);
+      convertion(postResult);
       var note;
       if (myType == 'dri')
         note = '是邊緣人需要別人載他';
@@ -201,7 +202,7 @@
                           <div class="inner">\
                             <h3 id="post'+i+'" onclick="posterInfo(this)">'+ postResult[i].post_name+'<span style:"position:relative; top:5px;">'+note+'</span>'+'</h3>\
                             <div id="posterInfo'+i+'"></div>\
-                            <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + postResult[i].post_getOnTime + '<br>上車地點:' + postResult[i].post_location   ;      
+                            <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + TT[i] + '<br>上車地點:' + postResult[i].post_location   ;      
           if(postResult[i].post_haveHat==true)
             popContent+='<br>安全帽 : 有';
           else 
@@ -226,7 +227,34 @@
       else
         document.getElementById("allPost").innerHTML = "目前沒有刊登資訊";
     }
-    
+    var TT=[]
+    function convertion(requestarray)
+    {
+      if (requestarray.length) {
+        for (i = 0; i < requestarray.length; i++) {
+          month=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          Month=["1","2","3","4","5","6","7","8","9","10","11","12"];
+          week=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+          Week=["禮拜一","禮拜二","禮拜三","禮拜四","禮拜五","禮拜六","禮拜日"];
+          var tmp1=requestarray[i].post_getOnTime;
+          var tmp=tmp1.split(",");
+          var tmp2=tmp1.split(" ");
+          console.log(tmp1);
+          var output="";
+          output+=tmp2[3]+"/";
+          for(i=0;i<12;i++)
+            if(tmp2[2]==month[i])
+              output+=Month[i]+"/";
+          output+=tmp2[1]+" ";
+          for(i=0;i<7;i++)
+            if(tmp[0]==week[i])
+              output+=Week[i]+" ";
+          output+=tmp2[4];
+          TT.push(output);
+        }
+      }
+      console.log(TT);
+    }
     //是否要已送出過就無法再按
     function sendRequest(postID){
       $.ajax({

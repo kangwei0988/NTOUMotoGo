@@ -82,11 +82,39 @@ function w3_close() {
   document.getElementById("mySidebar").style.display = "none";
   document.getElementById("myOverlay").style.display = "none";
 }
-
+var TT=[]
+    function convertion(requestarray)
+    {
+      if (requestarray.length) {
+        for (i = 0; i < requestarray.length; i++) {
+          month=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          Month=["1","2","3","4","5","6","7","8","9","10","11","12"];
+          week=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+          Week=["禮拜一","禮拜二","禮拜三","禮拜四","禮拜五","禮拜六","禮拜日"];
+          var tmp1=requestarray[i].post.post_getOnTime;
+          var tmp=tmp1.split(",");
+          var tmp2=tmp1.split(" ");
+          console.log(tmp1);
+          var output="";
+          output+=tmp2[3]+"/";
+          for(i=0;i<12;i++)
+            if(tmp2[2]==month[i])
+              output+=Month[i]+"/";
+          output+=tmp2[1]+" ";
+          for(i=0;i<7;i++)
+            if(tmp[0]==week[i])
+              output+=Week[i]+" ";
+          output+=tmp2[4];
+          TT.push(output);
+        }
+      }
+      console.log(TT);
+    }
 function displayPosts(matchedPosts){
   var thisType;
   var note;
   var popContent="";
+  convertion(matchedPosts);
         for(var i=0;i<matchedPosts.length;i++){
           thisType = matchedPosts[i].post_type;
           if(thisType == 'dri')
@@ -97,7 +125,7 @@ function displayPosts(matchedPosts){
                           <div class="inner">\
                             <h3 id="post'+i+'">'+ matchedPosts[i].post.post_name + note +'</h3>\
                             <div id="posterInfo'+i+'"></div>\
-                            <p style="text-align: left;">目的地:'+ matchedPosts[i].post.post_goto +'<br>上車時間:' + matchedPosts[i].post.post_getOnTime + '<br>上車地點:' + matchedPosts[i].post.post_location   ;      
+                            <p style="text-align: left;">目的地:'+ matchedPosts[i].post.post_goto +'<br>上車時間:' + TT[i] + '<br>上車地點:' + matchedPosts[i].post.post_location   ;      
           if(matchedPosts[i].post.post_haveHat==true)
             popContent+='<br>安全帽 : 有';
           else 
@@ -108,15 +136,20 @@ function displayPosts(matchedPosts){
             popContent+='<br>雨衣 : 無';
           popContent+='<br>備註 :'+ matchedPosts[i].post.post_notice +'</p>';
 ///////////////////////////////////////////////////////////////////////////////////
-
-          popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="complete(this)">已完成</button>';
-          popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="uncomplete(this)">未完成</button>';
-          popContent+='<a class="button style2 fit" href="Map?id='+strings[i].target_id+'">地圖</a>';
-          popContent+='<a class="button style2 fit" href="chatRoom?'+strings[i]._id+'">聊天室</a>';
-///////////////////////////////////////////////////////////////////////////////////
-          if(matchedPosts[i].post.post_matched)
-            popContent+='<button class="button style2 fit" >已配對</button>';
+          if(strings[i].target_id==strings[i].dri_id)//使用者是乘客
+          {
+            popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="complete(this)">已完成</button>';
+            popContent+='<button class="button style2 fit" id = "button'+i+'" onclick="uncomplete(this)">未完成</button>';
+            popContent+='<a class="button style2 fit" href="Map?id='+strings[i].target_id+'">地圖</a>';
+            popContent+='<a class="button style2 fit" href="chatRoom?'+strings[i]._id+'">聊天室</a>';
+          }
           else
+          {
+            popContent+='<a class="button style2 fit" href="Map?id='+strings[i].target_id+'">地圖</a>';
+            popContent+='<a class="button style2 fit" href="chatRoom?'+strings[i]._id+'">聊天室</a>';
+          }
+///////////////////////////////////////////////////////////////////////////////////
+          if(!matchedPosts[i].post.post_matched)
           {
             popContent+='<button class="button style2 fit">未配對</button>';
             popContent+='<button class="button style2 fit">刪除此刊登</button>';
