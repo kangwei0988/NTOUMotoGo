@@ -204,11 +204,12 @@
       document.getElementById("RequestList").innerHTML +=
         '<a class="button style fit" onclick="location.reload()">重新整理</a>';
       }
-    var TT=[]
+    var TT=[];
     function convertion()
     {
       if (requestarray.length) {
         for (i = 0; i < requestarray.length; i++) {
+          console.log(requestarray.length);
           month=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
           Month=["1","2","3","4","5","6","7","8","9","10","11","12"];
           week=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -219,15 +220,16 @@
           console.log(tmp1);
           var output="";
           output+=tmp2[3]+"/";
-          for(i=0;i<12;i++)
-            if(tmp2[2]==month[i])
-              output+=Month[i]+"/";
+          for(j=0;j<12;j++)
+            if(tmp2[2]==month[j])
+              output+=Month[j]+"/";
           output+=tmp2[1]+" ";
-          for(i=0;i<7;i++)
-            if(tmp[0]==week[i])
-              output+=Week[i]+" ";
+          for(j=0;j<7;j++)
+            if(tmp[0]==week[j])
+              output+=Week[j]+" ";
           output+=tmp2[4];
           TT.push(output);
+          console.log("SDFSd");
         }
       }
       console.log(TT);
