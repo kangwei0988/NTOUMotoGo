@@ -52,11 +52,9 @@ def joined(message):
     join_room(room)
     requ = requestCol.find_one({'_id' : ObjectId(room)})
     tarName = ''
-    if requ['pas_id'] == userCol.find_one({'Account_name' : session['NTOUmotoGoUser']}):
-        tarName = userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name']
-    else:
-        tarName = userCol.find_one({'_id' : ObjectId(requ['pas_id'])})['_name']
-    emit('status', {'msg':  requ['chat_record'], 'tarName' : tarName}, room=room)
+    tarName1 = userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name']
+    tarName2 = userCol.find_one({'_id' : ObjectId(requ['pas_id'])})['_name']
+    emit('status', {'msg':  requ['chat_record'], 'tarName1' : tarName1, 'tarName2' : tarName2}, room=room)
 #傳送訊息
 @socketio.on('text', namespace='/chat')
 def text(message):
@@ -67,10 +65,10 @@ def text(message):
     name = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_name']
     uncodeMsg = urllib.parse.unquote(message['msg'])
     print(uncodeMsg)
-    newMsg = name + ':' + uncodeMsg +'\n'+ str(datetime.datetime.now())
-    msg += newMsg + '\n'
+    newMsg = '<p>' + name + ':' + uncodeMsg +'</p>'+ '<p>' +str(datetime.datetime.now())
+    msg += newMsg + '</p>'
     requestCol.update_one({'_id' : ObjectId(room)}, {'$set' :{'chat_record' : msg}})
-    emit('message', {'msg': newMsg}, room=room)
+    emit('message', {'msg': msg}, room=room)
 #離開
 @socketio.on('left', namespace='/chat')
 def left(message):

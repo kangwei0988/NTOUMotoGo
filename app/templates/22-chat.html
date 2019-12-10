@@ -22,8 +22,8 @@
             font-weight:bold;
         }
     </style>
-    <!-- <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script> -->
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
         var socket;
         $(document).ready(function () {
@@ -35,22 +35,23 @@
                     socket.emit('joined', { 'room': url });
             });
             socket.on('status', function (data) {
-                $('#shit').text("正在與:" + data.tarName + " 聊天");
-                $('#chat').text(data.msg);
+                $('#shit').text(data.tarName1 + " 與 " + data.tarName2 + " 的聊天室聊天");
+                document.getElementById('chat').innerHTML = data.msg;
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             });
             socket.on('message', function (data) {
-                $('#chat').text($('#chat').text() + data.msg + '\n');
-                // $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                document.getElementById('chat').innerHTML =  data.msg;
+                console.log(data.msg);
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
             });
             $('#text1').keypress(function (e) {
                 var code = e.keyCode || e.which;
-                if (code == 13 || $("#enter").click) {
+                if (code == 13) {
                     var url = location.href;
                     url = url.split('?')[1];
                     text = encodeURI($('#text1').val());
                     console.log(text);
-                    $('#text1').text('');
+                    $('#text1').val('');
                     socket.emit('text', { 'msg': text, 'room': url });
                 }
             });
@@ -65,16 +66,25 @@
                 window.location.href = 'https://' + document.domain + '/home';
             });
         }
+        function textin(){
+            var url = location.href;
+            url = url.split('?')[1];
+            text = encodeURI($('#text1').val());
+            console.log(text);
+            $('#text1').val('');
+            socket.emit('text', { 'msg': text, 'room': url });
+        }
     </script>
 </head>
 
 <body>
     <h1 id='shit'> 正在與:</h1>
     <div id="chat">
-
+        <br>
     </div><br>
+    <div>1<br>2</div>
     <input id="text1" type = "text" size="100" placeholder="Enter your message here">
-    <input id="enter" type="button" value="輸入"style="width:100px;">
+    <input id="enter" type="button" value="輸入"style="width:100px;" onclick="textin()">
     <br><br>
     <a href="#" ><input type="button" onclick="leave_room()" style="width:100px; background-color:lightpink; color:black; font-weight:bold;" value="離開">  </a>
 </body>

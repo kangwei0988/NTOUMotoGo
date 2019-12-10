@@ -401,7 +401,7 @@ def getMyRequests():
                     'Location' : Post['post_location'],
                     'Goto' : Post['post_goto'],
                     'getonTime' : Post['post_getOnTime'],
-                    'driwver_id' : str(requ['dri_id']),
+                    'driver_id' : str(requ['dri_id']),
                     'passenger_id' : str(requ['pas_id']),
                     'user_id'   :   str(user['_id']),
                     'notice'    :   Post['post_notice'],
@@ -470,7 +470,7 @@ def getHistory():
             pasUser= userCol.find_one({'_id' : history['pas_id']})
             result['passenger'] = {'_name' : pasUser['_name'], '_id' : str(pasUser['_id'])} #填入駕駛資料
             driUser= userCol.find_one({'_id' : history['dri_id']})
-            result['driver']    = {'_name' : pasUser['_name'], '_id' : str(driUser['_id'])} #填入乘客資料
+            result['driver']    = {'_name' : driUser['_name'], '_id' : str(driUser['_id'])} #填入乘客資料
             result['pas_ok'] = history['pas_ok']
             result['dri_ok'] = history['dri_ok']
             if str(history['pas_rate']) in user['_rateHistory']: #如果乘客有寫評價且被評價者為自己
