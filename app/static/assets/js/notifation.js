@@ -2,7 +2,7 @@ var socket;
 var noti = false;
 var alertProgram;
 $(document).ready(function () {
-  socket = io.connect('https://' + document.domain);
+  socket = io.connect('http://127.0.0.1');
   socket.on('news', function (data) {
     console.log(data.num)
 
