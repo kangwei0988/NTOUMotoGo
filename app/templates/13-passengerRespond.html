@@ -52,7 +52,7 @@
 
   <!-- Sidebar/menu -->
   <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
-    style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
+    style="z-index:10;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
     <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a> 
     <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
     <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a> 
@@ -63,7 +63,7 @@
   </nav>
 
   <!-- Top menu on small screens -->
-  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44; z-index:30">
+  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44; z-index:3">
     <span class="w3-center w3-padding w3-text-light-grey">請求狀態</span>
     <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
   </header>
@@ -152,14 +152,18 @@
         var requestlist=document.getElementById("RequestList");
         requestlist.innerHTML="";
         for (i = 0; i < requestarray.length; i++) {
+          if(requestarray[i].state != "completed")
+          {
+
+          
             console.log("DFSAf");
             var id = "list"+i;
             requestlist.innerHTML +=
             "\<div class='box' id="+id+" style='position:relative'>"
             var box=document.getElementById("list"+i);
-            if(requestarray[i].matched == "completed" || requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
+            if(requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
             {
-              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=2' onclick=Delete("+i+") >"
+              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=5' onclick=Delete("+i+") >"
             }
             box.innerHTML+=
             "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
@@ -178,7 +182,7 @@
                 \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
                 \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
-              else if(requestarray[i].state == "rejected")
+              else if(requestarray[i].state == "refuse")
               {
                 box.innerHTML+=
                 "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方拒絕</button>\
@@ -201,12 +205,7 @@
                 box.innerHTML+=
                 "\<button class='button style2 fit' disabled=true>該要求已取消</button>"
               }
-              else if(requestarray[i].state == "completed")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' disabled=true>已完成共乘系統</button>\
-                \<a class='button style3 fit' onclick='javascript:location.href='/history''>前往查看</a>";
-              }
+            }
         }
       }
         else {
