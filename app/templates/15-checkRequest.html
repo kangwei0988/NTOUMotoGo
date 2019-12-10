@@ -37,9 +37,18 @@
     color:yellow;
     cursor: pointer;
   }
+  .userInfo{
+    text-decoration:none;
+    text-decoration-color:green;
+    color:green;
+  }
+  .userInfo:hover{
+    text-decoration-color:green;
+    color:green;
+  }
   .Delete{
     position:absolute;
-    left:335px;
+    left:326px;
     top:0px;
     z-index:1;
     cursor: pointer;
@@ -119,6 +128,7 @@
         }
       });
     }
+    
     function showrequests(){
       var i;
       if (requestarray.length) {
@@ -129,16 +139,28 @@
             requestlist.innerHTML +=
             "\<div class='box' id="+id+" style='position:relative'>";
             var box=document.getElementById("list"+i);
-            if(requestarray[i].matched == "completed" || requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
+            if(requestarray[i].matched == "completed" || requestarray[i].matched == "failed" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
             {
               box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=2' onclick=Delete("+i+") >"
             }
             box.innerHTML+=
             "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
-            <div class='inner'>\
-              <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
-              <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-              <p>上車時間:" + TT[i] + "</p>\
+            <div class='inner'>"
+              if(requestarray[i].dri_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a class='userinfo'id='post"+i+"' onclick='posterInfo("+i+")'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>"
+            }
+            else if(requestarray[i].pas_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo(this)'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>\
+              <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>"
+              
+            }
+            box.innerHTML+=
+              "<p>上車時間:" + TT[i] + "</p>\
               <p>上車地點:" + requestarray[i].starting + "</p>\
               <p>目的地:" + requestarray[i].destination + "</p>\
               <p>備註:" + requestarray[i].note + "</p></div></div>";
@@ -204,6 +226,39 @@
       document.getElementById("RequestList").innerHTML +=
         '<a class="button style fit" onclick="location.reload()">重新整理</a>';
       }
+      function posterInfo(i){
+        if(requestarray[i].dri_id==requestarray[i].user_id)
+          strings=requestarray[i].pas_id
+        else
+          strings=requestarray[i].dri_id
+      $.ajax({
+        type: 'POST',
+        url: "/getAnotherUserData",
+        data: JSON.stringify({'_id' : strings}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data){
+          var i, avgRating = 0;
+          var popPosterInfo="";
+          popPosterInfo += '<img src = "'+data._photo+'"><br>';
+          
+          if(data._rate.length){
+            
+            for(i = 0; i < data._rate.length;i++)
+              avgRating += data._rate[i];
+            avgRating /= (data._rate.length);
+            popPosterInfo += avgRating; 
+            popPosterInfo += '顆星!';
+          }
+          else
+            popPosterInfo += "尚無評價";
+          popPosterInfo += '<br>電話號碼:' + data._phone+"</br>";
+          
+          console.log('posterInfo'+i)
+          document.getElementById('posterInfo'+i).innerHTML=""
+          document.getElementById('posterInfo'+i).innerHTML += popPosterInfo;
+        }
+      });
+    }
     var TT=[];
     function convertion()
     {
@@ -256,7 +311,7 @@
     }
     function Delete(i)
     {
-      if(requestarray[i].matched == "completed" || requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled")
+      if(requestarray[i].matched == "completed" || requestarray[i].matched == "failed" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled")
       {
         $.ajax({
             type: 'POST',
@@ -264,7 +319,7 @@
             data: JSON.stringify({'delete_id': requestarray[i].requ_id}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
-              window.location.reload();
+              window.location.href='https://' + document.domain + '/checkrequestt';
               window.alert("ASDF");
             }
             });
@@ -279,8 +334,9 @@
         var id = "list"+i;
         var box=document.getElementById("list"+i);
         box.innerHTML="";
-        box.innerHTML +=
-        "<div class='inner'>\
+        box.innerHTML+=
+        "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+        <div class='inner'>\
           <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
           <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
           <p>上車時間:" + requestarray[i].time + "</p>\
@@ -323,6 +379,7 @@
         var box=document.getElementById("list"+i);
         box.innerHTML="";
         box.innerHTML +=
+              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=2' onclick=Delete("+i+") >"
             "\<img class='image fit' src='static/images/pic01.jpg' alt='' />\
             <div class='inner'>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\

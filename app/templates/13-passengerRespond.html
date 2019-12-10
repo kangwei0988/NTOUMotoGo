@@ -46,6 +46,15 @@
     z-index:1;
     cursor: pointer;
   }
+  .userInfo{
+    text-decoration:none;
+    text-decoration-color:green;
+    color:green;
+  }
+  .userInfo:hover{
+    text-decoration-color:green;
+    color:green;
+  }
 </style>
 
 <body style="background-color: #202024">
@@ -161,16 +170,28 @@
             requestlist.innerHTML +=
             "\<div class='box' id="+id+" style='position:relative'>"
             var box=document.getElementById("list"+i);
-            if(requestarray[i].matched == "uncompleted" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
+            if(requestarray[i].matched == "failed" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
             {
               box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=5' onclick=Delete("+i+") >"
             }
             box.innerHTML+=
             "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
-            <div class='inner'>\
-              <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
-              <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-              <p>上車時間:" + TT[i] + "</p>\
+            <div class='inner'>"
+            if(requestarray[i].dri_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a class='userinfo'id='post"+i+"' onclick='posterInfo("+i+")'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>"
+            }
+            else if(requestarray[i].pas_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo(this)'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>\
+              <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>"
+              
+            }
+            box.innerHTML+=
+              "<p>上車時間:" + TT[i] + "</p>\
               <p>上車地點:" + requestarray[i].starting + "</p>\
               <p>目的地:" + requestarray[i].destination + "</p>\
               <p>備註:" + requestarray[i].note + "</p></div></div>";
@@ -186,13 +207,13 @@
               {
                 box.innerHTML+=
                 "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方拒絕</button>\
-                \<a class='button style2 fit' onclick='reject("+i+")'>理由:"+request[i].answer_msg+"</a>"
+                \<a class='button style2 fit' onclick='reject("+i+")'>理由:"+requestarray[i].answer_msg+"</a>"
               }
               else if(requestarray[i].state == "matched")
               {
                   box.innerHTML+=
                   "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
-                  \<a class='button style3 fit' onclick='javascript:location.href='/matchedProcess''>前往查看</a>\
+                  \<a class='button style3 fit' onclick=javascript:location.href='/matchedPost'>前往查看</a>\
                   \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
               else if(requestarray[i].state == "due")
@@ -204,6 +225,11 @@
               {
                 box.innerHTML+=
                 "\<button class='button style2 fit' disabled=true>該要求已取消</button>"
+              }
+              else if(requestarray[i].state == "failed")
+              {
+                box.innerHTML+=
+                "\<button class='button style2 fit' disabled=true>共乘系統未完成QQ</button>"
               }
             }
         }
@@ -224,13 +250,48 @@
                 data: JSON.stringify({'cancel_id': requestarray[i].requ_id}),
                 contentType: 'application/json; charset=utf-8',
                 success: function(data) {
-                  window.location.reload();
+                  var tmp=data;
+                  window.location.href='https://' + document.domain + '/passengerRespond';
                 }
                 });
         }
         else
           window.alert("取消失敗，已完成配對!!");
       }
+      function posterInfo(i){
+        if(requestarray[i].dri_id==requestarray[i].user_id)
+          strings=requestarray[i].pas_id
+        else
+          strings=requestarray[i].dri_id
+      $.ajax({
+        type: 'POST',
+        url: "/getAnotherUserData",
+        data: JSON.stringify({'_id' : strings}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data){
+          var tmp=data;
+          var i, avgRating = 0;
+          var popPosterInfo="";
+          popPosterInfo += '<img src = "'+data._photo+'"><br>';
+          
+          if(data._rate.length){
+            
+            for(i = 0; i < data._rate.length;i++)
+              avgRating += data._rate[i];
+            avgRating /= (data._rate.length);
+            popPosterInfo += avgRating; 
+            popPosterInfo += '顆星!';
+          }
+          else
+            popPosterInfo += "尚無評價";
+          popPosterInfo += '<br>電話號碼:' + data._phone+"</br>";
+          
+          console.log('posterInfo'+i)
+          document.getElementById('posterInfo'+i).innerHTML=""
+          document.getElementById('posterInfo'+i).innerHTML += popPosterInfo;
+        }
+      });
+    }
     var TT=[]
     function convertion()
     {
@@ -283,15 +344,15 @@
     }
     function Delete(i)
     {
-      if(requestarray[i].state=="completed" || requestarray[i].state=="refuse" || requestarray[i].state=="cancelled" || requestarray[i].state=="uncompleted")
+      if(requestarray[i].state=="completed" || requestarray[i].state=="refuse" || requestarray[i].state=="cancelled" || requestarray[i].state=="failed")
       {
         $.ajax({
             type: 'POST',
             url: "/deleteRequest",
             data: JSON.stringify({'delete_id': requestarray[i].requ_id}),
             contentType: 'application/json; charset=utf-8',
-            success: function(data) {
-              window.location.reload();
+            success: function() {
+              window.location.href='https://' + document.domain + '/passengerRespond';
               window.alert("ASDF");
             }
             });
