@@ -520,54 +520,6 @@ def sendRate():
     
     return '成功'
 
-#個人頁面拿資料
-@app.route('/getUserData',methods=['GET','POST'])
-def getUserData():
-    #tmp = request.get_json(silent=True)
-    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
-    rate = []
-
-    for rateId in user['_rateHistory']:#將每個評價的星數裝進陣列
-        rateObj = rateCol.find_one({'_id' : ObjectId(rateId) })
-        rateNum = rateObj['rate_range']
-        rate.append(rateNum)
-
-    userData = {
-        '_name':user['_name'],
-        '_mail': user['_mail'],
-        '_gender':user['_gender'],
-        '_motoplate':user['_motoplate'],
-        '_rateHistory':rate,
-        '_phone':user['_phone'],
-        '_user_photo':user['_user_photo'],
-        '_license_photo':user['_license_photo'],
-        'Account_name':session['NTOUmotoGoUser']
-        }
-    
-    return jsonify(userData)
-
-#拿別人個人頁面資料
-@app.route('/getAnotherUserData',methods=['GET','POST'])
-def getAnotherUata():
-    info = request.get_json(silent=True)
-    rate = []
-    user = userCol.find_one({'_id':ObjectId(info['_id'])})
-    for rateId in user['_rateHistory']:#將每個評價的星數裝進陣列
-        rateObj = rateCol.find_one({'_id' : ObjectId(rateId) })
-        rateNum = rateObj['rate_range']
-        rate.append(rateNum)
-
-    userData = {
-        '_name':user['_name'],
-        '_mail': user['_mail'],
-        '_gender':user['_gender'],
-        '_motoplate':user['_motoplate'],
-        '_phone':user['_phone'],
-        '_user_photo':user['_user_photo'],
-        '_license_photo':user['_license_photo'],
-        }
-    
-    return jsonify(userData)
 
 #個人刊登資訊
 @app.route('/getSelfPost',methods=['GET','POST'])

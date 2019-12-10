@@ -1,5 +1,6 @@
 var socket;
 var noti = false;
+var alertProgram;
 $(document).ready(function () {
   socket = io.connect('https://' + document.domain);
   socket.on('news', function (data) {
@@ -11,8 +12,8 @@ $(document).ready(function () {
       noti =  true;
     }
     else{
-      alertnotice(noti);
-      noti = false; 
+      //alertnotice(noti);
+      //noti = false; 
     }
     
   });
@@ -55,6 +56,6 @@ function alertnotice(notice) {
     alertProgram = setInterval(alertmenu, 1500);
   }
   
-  window.addEventListener("click", function () { clearInterval(alertProgram); y.setAttribute("class", "w3-right w3-button w3-border"); console.log("clear") }, false);
+  window.addEventListener("click", function () { clearInterval(alertProgram); y.setAttribute("class", "w3-right w3-button w3-border"); console.log("clear"); noti=false }, false);
 
 }

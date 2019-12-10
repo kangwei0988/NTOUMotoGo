@@ -86,6 +86,7 @@ def getAnotherUata():
         '_phone':user['_phone'],
         '_user_photo':user['_user_photo'],
         '_license_photo':user['_license_photo'],
+        '_rate':rate,
         }
     
     return jsonify(userData)
