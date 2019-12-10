@@ -49,6 +49,11 @@
   .userInfo{
     text-decoration:none;
     color:green;
+    cursor: default;
+  }
+  .userInfo:hover{
+    color:green;
+    cursor: default;
   }
 </style>
 
@@ -162,7 +167,6 @@
           for (i = 0; i < requestarray.length; i++) {
             if(requestarray[i].requ_id==url)
             {
-              remark=i;
               if(requestarray[i].state != "completed")
           {
             var id = "list"+i;
@@ -190,9 +194,9 @@
               
             }
             box.innerHTML+=
-              "<p>上車時間:" + TT[i] + "</p>\
-              <p>上車地點:" + requestarray[i].starting + "</p>\
-              <p>目的地:" + requestarray[i].destination + "</p>\
+            "<p style='color:pink'>上車時間:<span style='font-size:20px'>" + TT[i] + "</span></p>\
+              <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
+              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>\
               <p>備註:" + requestarray[i].note + "</p></div></div>";
               var box=document.getElementById("list"+i);
               if(requestarray[i].state == "waiting")
@@ -234,11 +238,12 @@
         }
         }
         }
+        else{
+
+        
         for (i = 0; i < requestarray.length; i++) {
           if(requestarray[i].state != "completed")
           {
-            if(i==remark)
-              continue;
             var id = "list"+i;
             requestlist.innerHTML +=
             "\<div class='box' id="+id+" style='position:relative'>"
@@ -264,9 +269,9 @@
               
             }
             box.innerHTML+=
-              "<p>上車時間:" + TT[i] + "</p>\
-              <p>上車地點:" + requestarray[i].starting + "</p>\
-              <p>目的地:" + requestarray[i].destination + "</p>\
+            "<p style='color:pink'>上車時間:<span style='font-size:20px'>" + TT[i] + "</span></p>\
+              <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
+              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>\
               <p>備註:" + requestarray[i].note + "</p></div></div>";
               var box=document.getElementById("list"+i);
               if(requestarray[i].state == "waiting")
@@ -306,6 +311,7 @@
               }
             }
         }
+      }
       }
         else {
           document.getElementById("RequestList").innerHTML += "尚未發出請求";
@@ -350,7 +356,7 @@
           popPosterInfo += '<img src = "'+data._photo+'"><br>';
           
           if(data._rate.length){
-            
+            popPosterInfo +="平均評價:"
             for(var j = 0; j < data._rate.length;j++)
               avgRating += data._rate[j];
             avgRating /= (data._rate.length);

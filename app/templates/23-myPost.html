@@ -135,10 +135,11 @@
       var popContent = "";
       convertion(postResult);
       url=location.href.split("?")[1];
+      if(url!=undefined)
+        {
       for (var i = 0; i < postResult.length; i++) {
         if(postResult[i]._id==url)
         {
-          remark=i;
           thisType = postResult[i].post_type;
         if (thisType == 'dri')
           note = '的後座空空的覺得好寂寞';
@@ -161,15 +162,17 @@
         if (postResult[i].post_matched)
           popContent += '<a class="button style3 fit" disabled=true>已配對</a>';
         else {
-          popContent += '<a class="button style3 fit"disabled=true>未配對</a>';
+          popContent += '<a class="button style3 fit"disabled=true>尚未配對</a>';
           popContent += '<a class="button style2 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
         }
         popContent += '</div></div>';
         }
       }
+        }
+      else{
+
+      
       for (var i = 0; i < postResult.length; i++) {
-        if(i==remark)
-          continue;
         thisType = postResult[i].post_type;
         if (thisType == 'dri')
           note = '的後座空空的覺得好寂寞';
@@ -196,6 +199,7 @@
           popContent += '<a class="button style2 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
         }
         popContent += '</div></div>';
+      }
       }
       document.getElementById("myPostList").innerHTML = popContent;
     }
