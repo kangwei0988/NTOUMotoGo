@@ -148,15 +148,15 @@
       convertion(data);
 
       if (data["_type"] == "requ") {
-        displaystr += '<div class="box"><div class="inner"><a href="http://' + document.domain + '/passengerRespond" class="button fit">' + data["_msg"] + '<span class="timestyle">' + TT + ' </a></div></div>';
+        displaystr += '<div class="box"><div class="inner"><a href="https://' + document.domain + '/passengerRespond" class="button fit">' + data["_msg"] + '<span class="timestyle">' + TT + ' </a></div></div>';
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "post") {
-        displaystr += '<div class="box"><div class="inner"><a href="http://' + document.domain + '/myPost" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">' + TT + ' </a></div></div>';
+        displaystr += '<div class="box"><div class="inner"><a href="https://' + document.domain + '/myPost" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">' + TT + ' </a></div></div>';
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "rate") {
-        displaystr += '<div class="box"><div class="inner"><a href="http://' + document.domain + '/rate" class="button style3 fit">' + data["_msg"] + '<span class="timestyle">' + TT + ' </a></div></div>';
+        displaystr += '<div class="box"><div class="inner"><a href="https://' + document.domain + '/rate" class="button style3 fit">' + data["_msg"] + '<span class="timestyle">' + TT + ' </a></div></div>';
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "system") {
