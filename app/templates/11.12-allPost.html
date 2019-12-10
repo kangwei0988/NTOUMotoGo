@@ -203,14 +203,27 @@
                             <h3 id="post'+i+'" onclick="posterInfo(this)">'+ postResult[i].post_name+'<span style:"position:relative; top:5px;">'+note+'</span>'+'</h3>\
                             <div id="posterInfo'+i+'"></div>\
                             <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + TT[i] + '<br>上車地點:' + postResult[i].post_location   ;      
-          if(postResult[i].post_haveHat==true)
-            popContent+='<br>安全帽 : 有';
-          else 
-            popContent+='<br>安全帽 : 無';
-          if(postResult[i].post_raincoat==true)
-            popContent+='<br>雨衣 : 有';
-          else 
-            popContent+='<br>雨衣 : 無';
+          if(myType=='dri')
+          {
+            if(postResult[i].post_haveHat==true)
+              popContent+='<br>我有安全帽';
+            else 
+              popContent+='<br>我沒有安全帽';
+            if(postResult[i].post_raincoat==true)
+              popContent+='<br>我有雨衣';
+            else 
+              popContent+='<br>我沒有雨衣';
+          }
+          else{
+            if(postResult[i].post_haveHat==true)
+              popContent+='<br>我需要安全帽';
+            else 
+              popContent+='<br>我不需要安全帽';
+            if(postResult[i].post_raincoat==true)
+              popContent+='<br>我需要雨衣';
+            else 
+              popContent+='<br>我不需要雨衣';
+          }
           popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
           if(postResult[i].owner_id != myID)
             popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button>\
