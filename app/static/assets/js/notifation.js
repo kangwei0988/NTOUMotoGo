@@ -1,9 +1,20 @@
 var socket;
+var noti = false;
 $(document).ready(function () {
   socket = io.connect('https://' + document.domain);
   socket.on('news', function (data) {
     console.log(data.num)
-    alertnotice();
+
+    if(!noti)
+    {
+      alertnotice(noti);
+      noti =  true;
+    }
+    else{
+      alertnotice(noti);
+      noti = false; 
+    }
+    
   });
   socket.on('socketlogout', function () {
 
@@ -23,13 +34,13 @@ $(document).ready(function () {
   });
 });
 
-function alertnotice() {
+function alertnotice(notice) {
   var x = document.getElementById("notice");
   var y = document.getElementById("menu");
 
   x.innerHTML = "新通知";
 
-  function alertnotice() {
+  function alertnoti() {
     x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16 w3-animate-zoom");
     setTimeout(function () { x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16") }, 1000);
   }
@@ -38,8 +49,12 @@ function alertnotice() {
     setTimeout(function () { y.setAttribute("class", "w3-right w3-button w3-border") }, 1000);
   }
 
-  setInterval(alertnotice, 1500);
-  alertProgram = setInterval(alertmenu, 1500);
+  if(!notice)
+  {
+    setInterval(alertnoti, 1500);
+    alertProgram = setInterval(alertmenu, 1500);
+  }
+  
   window.addEventListener("click", function () { clearInterval(alertProgram); y.setAttribute("class", "w3-right w3-button w3-border"); console.log("clear") }, false);
 
 }
