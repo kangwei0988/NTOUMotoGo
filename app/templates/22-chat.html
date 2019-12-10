@@ -1,67 +1,82 @@
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Flask-SocketIO-Chat: {{ room }}</title>
-        <style>
-            #chat{
-                width: 550px;
-                height:500px;
-                border-color: black;
-                border-width:3px;
-                border-style:solid;
-            }
-        </style>
-        <!-- <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script> -->
-        <script type="text/javascript" charset="utf-8">
-            var socket;
-            $(document).ready(function(){
-                var url = location.href;
-                url = url.split('?')[1];
-                socket = io.connect('https://' + document.domain + '/chat');
-                socket.on('connect', function() {
-                    if(url != '')
-                        socket.emit('joined', {'room' : url});
-                });
-                socket.on('status', function(data) {
-                    $('#shit').text("正在與:"+data.tarName+" 聊天");
-                    $('#chat').val(data.msg);
-                    $('#chat').scrollTop($('#chat')[0].scrollHeight);
-                });
-                socket.on('message', function(data) {
-                    $('#chat').val($('#chat').val() + data.msg + '\n');
-                    $('#chat').scrollTop($('#chat')[0].scrollHeight);
-                });
-                $('#text').keypress(function(e) {
-                    var code = e.keyCode || e.which;
-                    if (code == 13) {
-                        var url = location.href;
-                        url = url.split('?')[1];
-                        text = encodeURI($('#text').val());
-                        console.log(text);
-                        $('#text').val('');
-                        socket.emit('text', {'msg': text,'room' : url});
-                    }
-                });
+
+<head>
+    <meta charset="utf-8">
+    <title>Flask-SocketIO-Chat: {{ room }}</title>
+    <style>
+        body {
+            background-color:lightblue;
+        }
+
+        #chat {
+            width: 80%;
+            height: 60%;
+            border-color: black;
+            border-width: 3px;
+            border-style: solid;
+            overflow: auto;
+            background-color: floralwhite;
+        }
+        #shit{
+            font-style:italic;
+            font-weight:bold;
+        }
+    </style>
+    <!-- <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script> -->
+    <script type="text/javascript" charset="utf-8">
+        var socket;
+        $(document).ready(function () {
+            var url = location.href;
+            url = url.split('?')[1];
+            socket = io.connect('https://' + document.domain + '/chat');
+            socket.on('connect', function () {
+                if (url != '')
+                    socket.emit('joined', { 'room': url });
             });
-            function leave_room() {
-                var url = location.href;
-                url = url.split('?')[1];
-                socket.emit('left', {'room': url}, function() {
-                    socket.disconnect();
+            socket.on('status', function (data) {
+                $('#shit').text("正在與:" + data.tarName + " 聊天");
+                $('#chat').text(data.msg);
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            });
+            socket.on('message', function (data) {
+                $('#chat').text($('#chat').text() + data.msg + '\n');
+                // $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            });
+            $('#text1').keypress(function (e) {
+                var code = e.keyCode || e.which;
+                if (code == 13 || $("#enter").click) {
+                    var url = location.href;
+                    url = url.split('?')[1];
+                    text = encodeURI($('#text1').val());
+                    console.log(text);
+                    $('#text1').text('');
+                    socket.emit('text', { 'msg': text, 'room': url });
+                }
+            });
+        });
+        function leave_room() {
+            var url = location.href;
+            url = url.split('?')[1];
+            socket.emit('left', { 'room': url }, function () {
+                socket.disconnect();
 
-                    // go back to the login page
-                    window.location.href = 'https://' + document.domain + '/home';
-                });
-            }
-        </script>
-    </head>
-    <body>
-        <h1 id='shit'> </h1>
-        <div id="chat">
+                // go back to the login page
+                window.location.href = 'https://' + document.domain + '/home';
+            });
+        }
+    </script>
+</head>
 
-        </div><br>
-        <input id="text" size="80" placeholder="Enter your message here"><br><br>
-        <a href="#" onclick="leave_room();">Leave this room</a>
-    </body>
+<body>
+    <h1 id='shit'> 正在與:</h1>
+    <div id="chat">
+
+    </div><br>
+    <input id="text1" type = "text" size="100" placeholder="Enter your message here">
+    <input id="enter" type="button" value="輸入"style="width:100px;">
+    <br><br>
+    <a href="#" ><input type="button" onclick="leave_room()" style="width:100px; background-color:lightpink; color:black; font-weight:bold;" value="離開">  </a>
+</body>
+
 </html>
