@@ -130,13 +130,13 @@ function searchHistory(strings){
       convertion(strings);
       if(myID == strings[i].driver._id){
         showName = strings[i].passenger._name;
-        ifRate = strings[i].dri_rate;
+        ifRate = strings[i].pas_rate;
         rateType = 'pas_rate';
         note = '被你載'
       }
       else{
         showName = strings[i].driver._name;
-        ifRate = strings[i].pas_rate;
+        ifRate = strings[i].dri_rate;
         rateType = 'dri_rate';
         note ='載你';
       }
