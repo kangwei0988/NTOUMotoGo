@@ -83,7 +83,7 @@
     <span class="w3-center w3-padding w3-text-light-grey">
       <span id="myType"></span>
       <button class = "mybutton2" onclick="changeType()">切換身分</button>
-      <button type="button" class="mybutton" id="search" onclick="inputSearch()" style="width: 10%;">搜尋</button>
+      <button type="button" class="mybutton" id="search" onclick="inputSearch()">搜尋</button>
     </span>
     <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
   </header>
@@ -240,6 +240,7 @@
       else
         document.getElementById("allPost").innerHTML = "目前沒有刊登資訊";
     }
+    
     var TT=[]
     function convertion(requestarray)
     {
@@ -284,17 +285,32 @@
     //刊登人個人資訊 
     function posterInfo(obj){
       var whoName = obj.id.charAt(4);
-      var popPosterInfo="顯示"+allPostList[whoName].post_name+"的資訊";
-      console.log(popPosterInfo);
-      $("#posterInfo"+whoName).append(popPosterInfo);
+      $.ajax({
+        type: 'POST',
+        url: "/getAnotherUserData",
+        data: JSON.stringify({'_id' : allPostList[whoName].owner_id}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data){
+          var i, avgRating = 0;
+          var popPosterInfo="";
+          popPosterInfo += '<img src = "'+data._photo+'"><br>';
+          
+          if(data._rate.length){
+            
+            for(i = 0; i < data._rate.length;i++)
+              avgRating += data._rate[i];
+            avgRating /= (data._rate.length);
+            popPosterInfo += avgRating;
+            popPosterInfo += '顆星!';
+          }
+          else
+            popPosterInfo += "尚無評價";
+          popPosterInfo += '<br>電話號碼:' + data._phone+"</br>";
+          
 
-      // $.ajax({
-      //   type: 'POST',
-      //   url: "/postBoard",
-      //   data: JSON.stringify({'post_type' : "dri"}),
-      //   contentType: 'application/json; charset=utf-8',
-      //   success: displayPost
-      // });
+          document.getElementById('posterInfo'+whoName).innerHTML = popPosterInfo;
+        }
+      });
     }
     
     //填入搜尋資訊
