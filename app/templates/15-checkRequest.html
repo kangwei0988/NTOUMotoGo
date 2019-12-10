@@ -39,11 +39,6 @@
   }
   .userInfo{
     text-decoration:none;
-    text-decoration-color:green;
-    color:green;
-  }
-  .userInfo:hover{
-    text-decoration-color:green;
     color:green;
   }
   .Delete{
@@ -130,11 +125,108 @@
     }
     
     function showrequests(){
-      var i;
+      var i, remark;
       if (requestarray.length) {
         var requestlist=document.getElementById("RequestList");
         requestlist.innerHTML="";
+        url=location.href.split("?")[1];
+        console.log(url)
+        if(url!=undefined)
+        {
+          for (i = 0; i < requestarray.length; i++) {
+            if(requestarray[i].requ_id==url)
+            {
+              remark=i;
+              var id = "list"+i;
+            requestlist.innerHTML +=
+            "\<div class='box' id="+id+" style='position:relative'>";
+            var box=document.getElementById("list"+i);
+            if(requestarray[i].matched == "completed" || requestarray[i].matched == "failed" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
+            {
+              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=2' onclick=Delete("+i+") >"
+            }
+            box.innerHTML+=
+            "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            <div class='inner'>"
+              if(requestarray[i].dri_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a class='userinfo'id='post"+i+"' onclick='posterInfo("+i+")'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>"
+            }
+            else if(requestarray[i].pas_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo("+i+")'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>\
+              <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>"
+              
+            }
+            box.innerHTML+=
+              "<p>上車時間:" + TT[i] + "</p>\
+              <p>上車地點:" + requestarray[i].starting + "</p>\
+              <p>目的地:" + requestarray[i].destination + "</p>\
+              <p>備註:" + requestarray[i].note + "</p></div></div>";
+              
+              if(requestarray[i].matched == "waiting")
+              {
+                box.innerHTML+=
+                "\<a class='button style3 fit' onclick='accept_api("+i+")'>接受</a>\
+                \<a class='button style3 fit' onclick='reject("+i+")'>拒絕</a>\
+                \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
+              }
+              else if(requestarray[i].matched == "due")
+              {
+                box.innerHTML+=
+                "\<a class='button style3 fit') disabled=true>此要求已過期</a>"
+              }
+              else
+              {
+                if(requestarray[i].matched == "matched")
+                {
+                  console.log("SDFs");
+                  if(requestarray[i].user_id == requestarray[i].pas_id)
+                    box.innerHTML+=
+                    "<button class='button style2 fit' disabled=true>配對成功</button>\
+                    \<a class='button style3 fit' onclick='javascript:location.href='/matchedProcess''>前往查看</a>\
+                    \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
+                  else 
+                  {
+                    box.innerHTML+=
+                    "<button class='button style2 fit' disabled=true>配對成功，尚未完成完成共乘系統</button>\
+                    \<a class='button style3 fit' onclick='javascript:location.href='/matchedProcess'>前往查看</a>\
+                    \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
+                  }
+                  
+                }
+                else if(requestarray[i].matched == "refuse")
+                {
+                  box.innerHTML+=
+                  "<button class='button style2 fit' disabled=true>已拒絕</button>"
+                }
+                else if(requestarray[i].matched == "completed")
+                {
+                  box.innerHTML+=
+                  "<button class='button style2 fit' disabled=true>已完成共乘系統</button>\
+                  \<a class='button style3 fit' onclick='javascript:location.href='/history''>前往查看</a>";
+                }
+                else if(requestarray[i].matched == "cancelled")
+                {
+                  box.innerHTML+=
+                  "<button class='button style2 fit' disabled=true>已取消</button>"
+                }
+                else if(requestarray[i].state == "due")
+              {
+                box.innerHTML+=
+                "\<button class='button style3 fit' disabled=true>該要求已過期</button>"
+              }
+              }
+            }
+          }
+        }
+        
         for (i = 0; i < requestarray.length; i++) {
+          if(i==remark)
+            continue;
             var id = "list"+i;
             requestlist.innerHTML +=
             "\<div class='box' id="+id+" style='position:relative'>";
@@ -154,7 +246,7 @@
             }
             else if(requestarray[i].pas_id==requestarray[i].user_id){
               box.innerHTML+=
-              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo(this)'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo("+i+")'>駕駛:" + requestarray[i].driver + "</a></h3>\
               <div id='posterInfo"+i+"'></div>\
               <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>"
               
@@ -227,24 +319,25 @@
         '<a class="button style fit" onclick="location.reload()">重新整理</a>';
       }
       function posterInfo(i){
+        var tmp;
         if(requestarray[i].dri_id==requestarray[i].user_id)
-          strings=requestarray[i].pas_id
+          tmp=requestarray[i].pas_id
         else
-          strings=requestarray[i].dri_id
+          tmp=requestarray[i].dri_id
       $.ajax({
         type: 'POST',
         url: "/getAnotherUserData",
-        data: JSON.stringify({'_id' : strings}),
+        data: JSON.stringify({'_id' : tmp}),
         contentType: 'application/json; charset=utf-8',
         success: function(data){
-          var i, avgRating = 0;
+          var avgRating = 0;
           var popPosterInfo="";
           popPosterInfo += '<img src = "'+data._photo+'"><br>';
           
           if(data._rate.length){
             
-            for(i = 0; i < data._rate.length;i++)
-              avgRating += data._rate[i];
+            for(var j = 0; j < data._rate.length;j++)
+              avgRating += data._rate[j];
             avgRating /= (data._rate.length);
             popPosterInfo += avgRating; 
             popPosterInfo += '顆星!';
@@ -339,7 +432,7 @@
         <div class='inner'>\
           <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
           <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-          <p>上車時間:" + requestarray[i].time + "</p>\
+          <p>上車時間:" + TT[i] + "</p>\
           <p>上車地點:" + requestarray[i].starting + "</p>\
           <p>目的地:" + requestarray[i].destination + "</p>\
           <p>備註:" + requestarray[i].note + "</p>\
@@ -384,7 +477,7 @@
             <div class='inner'>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
               <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-              <p>上車時間:" + requestarray[i].time + "</p>\
+              <p>上車時間:" + TT[i] + "</p>\
               <p>上車地點:" + requestarray[i].starting + "</p>\
               <p>目的地:" + requestarray[i].destination + "</p>\
               <p>備註:" + requestarray[i].note + "</p>\
@@ -416,7 +509,7 @@
                 <div class='inner'>\
                   <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
                   <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-                  <p>上車時間:" + requestarray[i].time + "</p>\
+                  <p>上車時間:" + TT[i] + "</p>\
                   <p>上車地點:" + requestarray[i].starting + "</p>\
                   <p>目的地:" + requestarray[i].destination + "</p>\
                   <p>備註:" + requestarray[i].note + "</p>\
@@ -444,7 +537,7 @@
                 <div class='inner'>\
                   <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
                   <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-                  <p>上車時間:" + requestarray[i].time + "</p>\
+                  <p>上車時間:" + TT[i] + "</p>\
                   <p>上車地點:" + requestarray[i].starting + "</p>\
                   <p>目的地:" + requestarray[i].destination + "</p>\
                   <p>備註:" + requestarray[i].note + "</p>\
