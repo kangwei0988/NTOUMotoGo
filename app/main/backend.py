@@ -340,14 +340,15 @@ def sendRequest():
             info['pas_ok'] = True
         request_id =requestCol.insert_one(info).inserted_id     #請求資料的id
         if request_id:
-            postOwnerRequHis = userCol.find_one({'_id' : post['owner_id']})['_requestHistory']   #更改被請求者請求歷史紀錄
+            postUser = userCol.find_one({'_id' : post['owner_id']})
+            postOwnerRequHis = postUser['_requestHistory']   #更改被請求者請求歷史紀錄
             postOwnerRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : post['owner_id']},{'$set' : {'_requestHistory' : postOwnerRequHis}})
             userRequHis = userCol.find_one({'_id' : user['_id']})['_requestHistory']             #更改被請求者請求歷史紀錄
             userRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : user['_id']},{'$set' : {'_requestHistory' : userRequHis}})
-            socketio.start_background_task(notifation, app, post['owner_id'], request_id, 'requ', '新的請求')
-            socketio.start_background_task(notifation, app, user['_id'], request_id, 'requ', '成功發出請求')
+            socketio.start_background_task(notifation, app, post['owner_id'], request_id, '來自'+user['_name']+'新的請求')
+            socketio.start_background_task(notifation, app, user['_id'], request_id, 'requ', '成功對'+postUser['_name']+'發出請求')
         else:
             socketio.start_background_task(notifation, app, user['_id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次')
     return redirect(url_for('allPost'))
