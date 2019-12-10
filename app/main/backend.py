@@ -276,12 +276,11 @@ def deleteRequest():
             # thr = Thread(target=notifation, args=[app, user['_id'], deleteID['delete_id'], 'requ', '刪除請求紀錄成功']) #呼叫通知函式，回報刪除成功
             # thr.start()
             socketio.start_background_task(notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除請求紀錄成功')
-            return redirect(request.url)
+            return ''
     # thr = Thread(target=notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除失敗，該請求紀錄可能已被刪除') #呼叫通知函式，回報刪除失敗
     # thr.start()        
     socketio.start_background_task(notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除失敗，該請求紀錄可能已被刪除')
-    return redirect(request.url)
-
+    return ''
 #取消請求
 @app.route('/cancelRequest',methods=['GET','POST'])
 def cancelRequest():
@@ -289,7 +288,7 @@ def cancelRequest():
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
     requcancel = requestCol.find_one({'_id':ObjectId(cancelID['cancel_id'])})#cancel_id配合front end
     if requcancel is None:
-            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '找不到該請求')      
+            socketio.start_background_task(notifation, app, user['_id'], '', 'requ', '找不到該請求')      
             return redirect(request.url)
     if user['_id'] == requcancel['sender_id']:
         if requcancel['_state'] == "cancelled":   
@@ -347,7 +346,7 @@ def sendRequest():
             userRequHis = userCol.find_one({'_id' : user['_id']})['_requestHistory']             #更改被請求者請求歷史紀錄
             userRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : user['_id']},{'$set' : {'_requestHistory' : userRequHis}})
-            socketio.start_background_task(notifation, app, post['owner_id'], request_id, '來自'+user['_name']+'新的請求')
+            socketio.start_background_task(notifation, app, post['owner_id'], request_id, 'requ', '來自'+user['_name']+'新的請求')
             socketio.start_background_task(notifation, app, user['_id'], request_id, 'requ', '成功對'+postUser['_name']+'發出請求')
         else:
             socketio.start_background_task(notifation, app, user['_id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次')
