@@ -546,6 +546,29 @@ def getUserData():
     
     return jsonify(userData)
 
+#拿別人個人頁面資料
+@app.route('/getAnotherUserData',methods=['GET','POST'])
+def getAnotherUata():
+    info = request.get_json(silent=True)
+    rate = []
+    user = userCol.find_one({'_id':ObjectId(info['_id'])})
+    for rateId in user['_rateHistory']:#將每個評價的星數裝進陣列
+        rateObj = rateCol.find_one({'_id' : ObjectId(rateId) })
+        rateNum = rateObj['rate_range']
+        rate.append(rateNum)
+
+    userData = {
+        '_name':user['_name'],
+        '_mail': user['_mail'],
+        '_gender':user['_gender'],
+        '_motoplate':user['_motoplate'],
+        '_phone':user['_phone'],
+        '_user_photo':user['_user_photo'],
+        '_license_photo':user['_license_photo'],
+        }
+    
+    return jsonify(userData)
+
 #個人刊登資訊
 @app.route('/getSelfPost',methods=['GET','POST'])
 def getSelfPost():
@@ -562,18 +585,6 @@ def getSelfPost():
         results.append(result)
     return jsonify(results)
 
-#修改個人頁面資料
-@app.route('/modifyUserData',methods=['GET','POST'])
-def modifyUserData():
-    tmp = request.get_json(silent=True)
-    user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
-
-    userCol.update_one({'_id':user['_id']},{'$set':{'_phone' : tmp['_phone']}})
-    userCol.update_one({'_id':user['_id']},{'$set':{'_motoplate' : tmp['_motoplate']}})
-    userCol.update_one({'_id':user['_id']},{'$set':{'_new_notifications' : tmp['_new_notifications']}})
-    userCol.update_one({'_id':user['_id']},{'$set':{'_want_ mail' : tmp['_want_mail']}})
-
-    return '成功'
 
 
 #配對成功測試

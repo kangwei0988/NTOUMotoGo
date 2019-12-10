@@ -135,6 +135,18 @@ def setPsw():
 def checkAccountStatus():
     return render_template('25-checkAccountCreat.html')
 
+@app.route('/forgotPassword')
+def forgotPassword():
+    data = request.get_json(silent=True)
+    user = userCol.find_one({'_email' : data['Account_name']})
+    if user:
+        title = "海大機車共乘系統-重設密碼"
+        msg = "前往頁面填寫密碼以重設帳號 \n https://ntoumotogo.kangs.idv.tw/verify?id="+str(user['_id'])+"&token="+str(user['_passsword']) #激活網址
+        thr = Thread(target=sendMail, args=[app, title,msg,user['_mail']]) #寄送驗證信
+        thr.start()
+    
+
+
 
 
     
