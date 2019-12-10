@@ -65,8 +65,7 @@ def text(message):
     name = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_name']
     uncodeMsg = urllib.parse.unquote(message['msg'])
     print(uncodeMsg)
-    newMsg = '<p>' + name + ':' + uncodeMsg +'</p>'+ '<p>' +str(datetime.datetime.now())
-    msg += newMsg + '</p>'
+    msg += '<p>' + name + ':' + uncodeMsg +'</p>'+'\n'+ '<p>' +str(datetime.datetime.now())+'</p>'+'\n'
     requestCol.update_one({'_id' : ObjectId(room)}, {'$set' :{'chat_record' : msg}})
     emit('message', {'msg': msg}, room=room)
 #離開
