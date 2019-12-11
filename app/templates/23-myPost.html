@@ -147,7 +147,7 @@
                           <div class="inner">\
                             <h2 id="post'+ i + '" onclick="posterInfo(this)">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
-                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;">' + TT[i] + '</span>';
+                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold; color:orange;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:skyblue;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:pink;">' + TT[i] + '</span>';
             if (postResult[i].post_type == 'pas') {
               if (postResult[i].post_haveHat == true)
                 popContent += '<br>我需要安全帽';
@@ -170,10 +170,10 @@
             }
             popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
             if (postResult[i].post_matched)
-              popContent += '<a class="button style3 fit" disabled=true>已配對</a>';
+              popContent += '<a class="button style2 fit" disabled=true>已配對</a>';
             else {
-              popContent += '<a class="button style3 fit"disabled=true>尚未配對</a>';
-              popContent += '<a class="button style2 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
+              popContent += '<a class="button style2 fit"disabled=true>尚未配對</a>';
+              popContent += '<a class="button style3 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
             }
             popContent += '</div></div>';
           }
@@ -188,9 +188,9 @@
             note = '是邊緣人需要別人載他';
           popContent += '<div class="box">\
                           <div class="inner">\
-                            <h2 id="post'+ i + '" onclick="posterInfo(this)">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
+                            <h2 id="post'+ i + '" onclick="posterInfo(this)" style="color:yellow">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
-                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;">' + TT[i] + '</span>';
+                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold; color:orange;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:skyblue;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:pink;">' + TT[i] + '</span>';
           if (postResult[i].post_type == 'pas') {
             if (postResult[i].post_haveHat == true)
               popContent += '<br>我需要安全帽';
@@ -213,29 +213,29 @@
           }
           popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
           if (postResult[i].post_matched)
-            popContent += '<a class="button style3 fit" disabled=true>已配對</a>';
+            popContent += '<a class="button style2 fit" disabled=true>已配對</a>';
           else {
-            popContent += '<a class="button style3 fit"disabled=true>未配對</a>';
-            popContent += '<a class="button style2 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
+            popContent += '<a class="button style2 fit"disabled=true>尚未配對</a>';
+            popContent += '<a class="button style3 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
           }
           popContent += '</div></div>';
         }
       }
       document.getElementById("myPostList").innerHTML = popContent;
     }
-    function cancel(i) {
-      console.log(string[i]._id);
-      $.ajax({
-        type: 'POST',
-        url: "/cancelRequest",
-        data: JSON.stringify({ 'cancel_id': string[i]._id }),
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-          console.log("DSFSFSDFSD");
-          window.location.reload();
-        }
-      });
-    }
+    function cancel(i)
+      {
+          $.ajax({
+                type: 'POST',
+                url: "/cancelPost",
+                data: JSON.stringify({'cancel_id': string[i]._id}),
+                contentType: 'application/json; charset=utf-8',
+                success: function(data) {
+                  var tmp=data;
+                  window.location.href='https://' + document.domain + '/myPost';
+                }
+                });
+      }
     var string;
     window.onload = function () {
       $.ajax({

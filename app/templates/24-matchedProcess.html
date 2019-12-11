@@ -142,9 +142,10 @@
           note = '是邊緣人需要別人載他';
         popContent += '<div class="box">\
                           <div class="inner">\
-                            <h2 id="post'+ i + '" onclick="posterInfo(this)">' + matchedPosts[i].post.post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
+                            <h2 id="post'+ i + '" onclick="posterInfo(this)" style=color:yellow;>' + matchedPosts[i].post.post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
-                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold;">'+ matchedPosts[i].post.post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;">' + matchedPosts[i].post.post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;">' + TT[i] + '</span>';
+                            <p style="text-align: left;">刊登接受者:<span style="font-size:20px; font-weight:bold; color:orange;">'+ matchedPosts[i].sender_name + '</span><br>\
+                            目的地:<span style="font-size:20px; font-weight:bold; color:skyblue">'+ matchedPosts[i].post.post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:red;">' + matchedPosts[i].post.post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:pink">' + TT[i] + '</span>';
         if (matchedPosts[i].post.post_type == 'pas') {
           if (matchedPosts[i].post.post_haveHat == true)
             popContent += '<br>我需要安全帽';
@@ -171,19 +172,19 @@
         ///////////////////////////////////////////////////////////////////////////////////
         if (strings[i].target_id == strings[i].dri_id)//使用者是乘客
         {
-          popContent += '<button class="button style2 fit" id = "button' + i + '" onclick="complete(this)">已完成</button>';
-          popContent += '<button class="button style2 fit" id = "button' + i + '" onclick="uncomplete(this)">未完成</button>';
-          popContent += '<a class="button style2 fit" href="Map?id=' + strings[i].target_id + '">地圖</a>';
-          popContent += '<a class="button style2 fit" href="chatRoom?' + strings[i]._id + '">聊天室</a>';
+          popContent += '<button class="button style3 fit" id = "button' + i + '" onclick="complete(this)">已完成</button>';
+          popContent += '<button class="button style3 fit" id = "button' + i + '" onclick="uncomplete(this)">未完成</button>';
+          popContent += '<a class="button style3 fit" href="Map?id=' + strings[i].target_id + '">地圖</a>';
+          popContent += '<a class="button style3 fit" href="chatRoom?' + strings[i]._id + '">聊天室</a>';
         }
         else {
-          popContent += '<a class="button style2 fit" href="Map?id=' + strings[i].target_id + '">地圖</a>';
-          popContent += '<a class="button style2 fit" href="chatRoom?' + strings[i]._id + '">聊天室</a>';
+          popContent += '<a class="button style3 fit" href="Map?id=' + strings[i].target_id + '">地圖</a>';
+          popContent += '<a class="button style3 fit" href="chatRoom?' + strings[i]._id + '">聊天室</a>';
         }
         ///////////////////////////////////////////////////////////////////////////////////
         if (!matchedPosts[i].post.post_matched) {
           popContent += '<button class="button style2 fit">未配對</button>';
-          popContent += '<button class="button style2 fit">刪除此刊登</button>';
+          popContent += '<button class="button style3 fit">刪除此刊登</button>';
         }
         popContent += '</div></div>';
       }

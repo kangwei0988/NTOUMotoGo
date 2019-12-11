@@ -201,9 +201,9 @@
         for (var i = 0; i < postResult.length; i++) {
           popContent += '<div class="box">\
                           <div class="inner">\
-                            <h2 id="post'+ i + '" onclick="posterInfo(this)">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
+                            <h2 id="post'+ i + '" onclick="posterInfo(this)" style="color:yellow">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
-                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;">' + TT[i] + '</span>';
+                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold; color:skyblue;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:pink;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:orange;">' + TT[i] + '</span>';
           if (myType == 'pas') {
             if (postResult[i].post_haveHat == true)
               popContent += '<br>我有安全帽';
