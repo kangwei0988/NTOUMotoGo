@@ -41,7 +41,7 @@ def newAccount():
         newUser['_token'] = False
         newUser['_notifications'] = []
         newUser['_new_notifications'] = True
-        newUser['_want_mail'] = True
+        newUser['_want_mail'] = 'true'
         newUser['_user_photo'] = '#'
         newUser['_license_photo'] = '#'
         newUser['_studentCard'] = '#'

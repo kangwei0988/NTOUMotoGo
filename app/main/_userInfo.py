@@ -95,25 +95,17 @@ def getAnotherUata():
 #設置email和通知的開關
 @app.route('/getNotiMail',methods=['GET','POST'])
 def getNotiMail():
-    print(request.endpoint)
-    print(request.url)
     tmp = request.get_json(silent=True)
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     result = {}
-    result.update({'_new_notifications':user['_new_notifications']})
     result.update({'_want_mail':user['_want_mail']})
-    
     return jsonify(result)
 
     
 #設置email和通知的開關
 @app.route('/setNotiMail',methods=['GET','POST'])
 def setNotiMail():
-    print(request.endpoint)
-    print(request.url)
-    print(request.base_url)
     tmp = request.values.to_dict()
-    userCol.update_one({'Account_name' : session['NTOUmotoGoUser']},{'$set':{'_new_notifications' : tmp['_new_notifications']}})
     userCol.update_one({'Account_name' : session['NTOUmotoGoUser']},{'$set':{'_want_mail' : tmp['_want_mail']}})
     return redirect(url_for('userInfo'))
 
