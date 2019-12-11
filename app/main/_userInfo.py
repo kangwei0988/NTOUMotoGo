@@ -91,3 +91,13 @@ def getAnotherUata():
     
     return jsonify(userData)
 
+
+#設置email和通知的開關
+@app.route('/setNotiMail',methods=['GET','POST'])
+def setNotiMail():
+    tmp = request.get_json(silent=True)
+    userCol.update_one({'Account_name' : session['NTOUmotoGoUser']},{'$set':{'_new_notifications' : tmp['_new_notifications']}})
+    userCol.update_one({'Account_name' : session['NTOUmotoGoUser']},{'$set':{'_want_mail' : tmp['_want_mail']}})
+    
+
+
