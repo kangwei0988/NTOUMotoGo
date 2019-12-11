@@ -322,9 +322,10 @@
                 \<a class='button style3 fit' href='chatRoom?"+ requestarray[i].requ_id + "'>聊天</a>"
               }
               else if (requestarray[i].state == "refuse") {
+                console.log(requestarray[i].answer_msg);
                 box.innerHTML +=
-                  "\<button class='button style2 fit' onclick='accept(" + i + ")' disabled=true>已被對方拒絕</button>\
-                \<a class='button style2 fit' onclick='reject("+ i + ")'>理由:" + string[i].answer_msg + "</a>"
+                  "\<button class='button style2 fit' disabled=true>已被對方拒絕</button>\
+                \<a class='button style2 fit'>理由:" + requestarray[i].answer_msg + "</a>";
               }
               else if (requestarray[i].state == "matched") {
                 box.innerHTML +=
@@ -390,7 +391,7 @@
             var tmp = data;
             var avgRating = 0;
             var popPosterInfo = "";
-            popPosterInfo += '<img src = "static/userPhotos/' + data._user_photo + '"><br>';
+            popPosterInfo += '<img style="width:300px;height:200px;" src = "static/userPhotos/' + data._user_photo + '"><br>';
 
             if (data._rate.length) {
               popPosterInfo += "平均評價:"
@@ -455,7 +456,8 @@
           'user_id': string[i].user_id,
           'note': string[i].notice,
           'state': string[i].state,
-          'requ_id': string[i].requ_id
+          'requ_id': string[i].requ_id,
+          'answer_msg': string[i].answer_msg
         };
 
         requestarray.push(list);

@@ -388,7 +388,7 @@
         success: function(data){
           var avgRating = 0;
           var popPosterInfo="";
-          popPosterInfo += '<img src = "static/userPhotos/'+data._user_photo+'"><br>';
+          popPosterInfo += '<img style="width:300px;height:200px;" src = "static/userPhotos/'+data._user_photo+'"><br>';
           
           if(data._rate.length){
             popPosterInfo +="平均評價:"

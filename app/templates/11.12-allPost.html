@@ -289,8 +289,13 @@
 
     //刊登人個人資訊 
     function posterInfo(obj) {
+      count++;
       var whoName = obj.id.charAt(4);
-      $.ajax({
+      if(count%2==0)
+        document.getElementById('posterInfo' + whoName).innerHTML = popPosterInfo;
+      else
+      {
+        $.ajax({
         type: 'POST',
         url: "/getAnotherUserData",
         data: JSON.stringify({ '_id': allPostList[whoName].owner_id }),
@@ -299,7 +304,7 @@
 
           var i, avgRating = 0;
           var popPosterInfo = "";
-          popPosterInfo += '<img src = "static/userPhotos/' + data._user_photo + '"><br>';
+          popPosterInfo += '<img style="width:300px;height:200px;" src = "static/userPhotos/' + data._user_photo + '"><br>';
 
           if (data._rate.length) {
 
@@ -317,6 +322,8 @@
           document.getElementById('posterInfo' + whoName).innerHTML = popPosterInfo;
         }
       });
+      }
+      
     }
 
     //填入搜尋資訊
