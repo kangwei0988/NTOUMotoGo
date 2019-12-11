@@ -101,7 +101,7 @@
     //identity
 
     var strings = [];
-
+    var count=0;
     // Script to open and close sidebar
     function w3_open() {
       document.getElementById("mySidebar").style.display = "block";
@@ -209,6 +209,11 @@
       document.getElementById("myPostList").innerHTML = popContent;
     }
     function posterInfo(i){
+      count++;
+      if(count%2==0)
+        document.getElementById('posterInfo'+i).innerHTML="";
+      else
+      {
         console.log(i);
         var tmp;
       $.ajax({
@@ -239,6 +244,8 @@
           document.getElementById('posterInfo'+i).innerHTML += popPosterInfo;
         }
       });
+      }
+      
     }
     function map(message) {
       console.log("SDFSF")

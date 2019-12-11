@@ -108,7 +108,7 @@
       var captionText = document.getElementById("caption");
       captionText.innerHTML = element.alt;
     }
-    
+    var count=0;
     var string=[];
     var requestarray=[];
     window.onload = function(){
@@ -371,7 +371,12 @@
       }
       function posterInfo(i){
         var tmp;
-        if(requestarray[i].dri_id==requestarray[i].user_id)
+        count++;
+        if(count%2==0)
+          document.getElementById('posterInfo'+i).innerHTML="";
+        else
+        {
+          if(requestarray[i].dri_id==requestarray[i].user_id)
           tmp=requestarray[i].pas_id
         else
           tmp=requestarray[i].dri_id
@@ -402,6 +407,8 @@
           document.getElementById('posterInfo'+i).innerHTML += popPosterInfo;
         }
       });
+        }
+        
     }
     var TT=[];
     function convertion()

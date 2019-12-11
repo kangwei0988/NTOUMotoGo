@@ -28,31 +28,36 @@
     opacity: 0.6;
     transition: 0.3s
   }
-  .userinfo{
-    text-decoration:none;
+
+  .userinfo {
+    text-decoration: none;
     text-decoration-color: red;
-    color:yellow;
+    color: yellow;
   }
-  .userinfo:hover{
-    text-decoration:none;
-    text-decoration-color:orange;
-    color:yellow;
+
+  .userinfo:hover {
+    text-decoration: none;
+    text-decoration-color: orange;
+    color: yellow;
     cursor: pointer;
   }
-  .Delete{
-    position:absolute;
-    left:326px;
-    top:0px;
-    z-index:2;
+
+  .Delete {
+    position: absolute;
+    left: 326px;
+    top: 0px;
+    z-index: 2;
     cursor: pointer;
   }
-  .userInfo{
-    text-decoration:none;
-    color:green;
+
+  .userInfo {
+    text-decoration: none;
+    color: green;
     cursor: default;
   }
-  .userInfo:hover{
-    color:green;
+
+  .userInfo:hover {
+    color: green;
     cursor: default;
   }
 </style>
@@ -62,9 +67,9 @@
   <!-- Sidebar/menu -->
   <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
     style="z-index:10;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
-    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a> 
-    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
-    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a> 
+    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a>
+    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a>
+    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
     <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
     <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
     <a href="/logout" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">登出</a>
@@ -74,7 +79,8 @@
   <!-- Top menu on small screens -->
   <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44; z-index:3">
     <span class="w3-center w3-padding w3-text-light-grey">請求狀態</span>
-    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
+    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey"
+      onclick="w3_open()">&#9776;</a>
   </header>
 
   <!-- Overlay effect when opening sidebar on small screens -->
@@ -104,8 +110,9 @@
   </div>
 
   <script src="static/assets/js/jquery.min.js"></script>
-  <script src="static/assets/js/getCoords.js" ></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap" async defer></script>
+  <script src="static/assets/js/getCoords.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap"
+    async defer></script>
   <script src="static/assets/js/jquery.scrolly.min.js"></script>
   <script src="static/assets/js/skel.min.js"></script>
   <script src="static/assets/js/util.js"></script>
@@ -135,16 +142,16 @@
       var captionText = document.getElementById("caption");
       captionText.innerHTML = element.alt;
     }
-
-    var string=[];
-    var requestarray=[];
-    window.onload = function(){
+    var count=0;
+    var string = [];
+    var requestarray = [];
+    window.onload = function () {
       $.ajax({
         type: 'POST',
         url: "/getMySendRequests",
-        data: JSON.stringify({"request_id": 'token'}),
+        data: JSON.stringify({ "request_id": 'token' }),
         contentType: 'application/json; charset=utf-8',
-        success: function(data) {
+        success: function (data) {
           if (data) {
             console.log(data);
             string = data;
@@ -155,339 +162,322 @@
         }
       });
     }
-    function showrequests(){
+    function showrequests() {
       var i;
       if (requestarray.length) {
-        var requestlist=document.getElementById("RequestList");
-        requestlist.innerHTML="";
-        url=location.href.split("?")[1];
+        var requestlist = document.getElementById("RequestList");
+        requestlist.innerHTML = "";
+        url = location.href.split("?")[1];
         console.log(url)
-        if(url!=undefined)
-        {
+        if (url != undefined) {
           for (i = 0; i < requestarray.length; i++) {
-            if(requestarray[i].requ_id==url)
-            {
-              if(requestarray[i].state != "completed")
-          {
-            var id = "list"+i;
-            requestlist.innerHTML +=
-            "\<div class='box' id="+id+" style='position:relative'>"
-            var box=document.getElementById("list"+i); 
-            if(requestarray[i].state == "failed" || requestarray[i].state == "refuse" || requestarray[i].state == "cancelled" || requestarray[i].state == "due")
-            {
-              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=5' onclick=Delete("+i+") >"
-            }
-            box.innerHTML+=
-            "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            if (requestarray[i].requ_id == url) {
+              if (requestarray[i].state != "completed") {
+                var id = "list" + i;
+                requestlist.innerHTML +=
+                  "\<div class='box' id=" + id + " style='position:relative'>"
+                var box = document.getElementById("list" + i);
+                if (requestarray[i].state == "failed" || requestarray[i].state == "refuse" || requestarray[i].state == "cancelled" || requestarray[i].state == "due") {
+                  box.innerHTML += "<img class='Delete' src='static/images/delete.jpg' width=25px z-index=5' onclick=Delete(" + i + ") >"
+                }
+                box.innerHTML +=
+                  "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
             <div class='inner'>"
-            if(requestarray[i].dri_id==requestarray[i].user_id){
-              box.innerHTML+=
-              "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
-              <h3><a class='userinfo'id='post"+i+"' onclick='posterInfo("+i+")'>乘客:" + requestarray[i].passenger + "</a></h3>\
-              <div id='posterInfo"+i+"'></div>";
-            }
-            else if(requestarray[i].pas_id==requestarray[i].user_id){
-              box.innerHTML+=
-              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo("+i+")'>駕駛:" + requestarray[i].driver + "</a></h3>\
-              <div id='posterInfo"+i+"'></div>\
+                if (requestarray[i].dri_id == requestarray[i].user_id) {
+                  box.innerHTML +=
+                    "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a class='userinfo'id='post"+ i + "' onclick='posterInfo(" + i + ")'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <div id='posterInfo"+ i + "'></div>";
+                }
+                else if (requestarray[i].pas_id == requestarray[i].user_id) {
+                  box.innerHTML +=
+                    "<h3><a class='userinfo' id='post" + i + "' onclick='posterInfo(" + i + ")'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <div id='posterInfo"+ i + "'></div>\
               <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>";
-              
-            }
-            box.innerHTML+=
-            "<p style='color:pink'>上車時間:<span style='font-size:20px color:'>" + TT[i] + "</span></p>\
-              <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
-              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>"
-              var popContent="";
-              if (requestarray[i].user_id == requestarray[i].dri_id) {
-            if (requestarray[i].post_haveHat == true)
-              popContent += '<br>駕駛有安全帽';
-            else
-              popContent += '<br>駕駛沒有安全帽';
-            if (requestarray[i].post_raincoat == true)
-              popContent += '<br>駕駛有雨衣';
-            else
-              popContent += '<br>駕駛沒有雨衣';
-          }
-          else {
-            if (requestarray[i].post_haveHat == true)
-              popContent += '<br>乘客需要安全帽';
-            else
-              popContent += '<br>乘客不需要安全帽';
-            if (requestarray[i].post_raincoat == true)
-              popContent += '<br>乘客需要雨衣';
-            else
-              popContent += '<br>乘客不需要雨衣';
-          }
-          box.innerHTML+=popContent;
-          box.innerHTML+=
-              "<p>備註:" + requestarray[i].note + "</p></div></div>";
-              var box=document.getElementById("list"+i);
-              if(requestarray[i].state == "waiting")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>等待回應中...</button>\
-                \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
-                \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
-              }
-              else if(requestarray[i].state == "refuse")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方拒絕</button>\
-                \<a class='button style2 fit' onclick='reject("+i+")'>理由:"+requestarray[i].answer_msg+"</a>"
-              }
-              else if(requestarray[i].state == "matched")
-              {
-                  box.innerHTML+=
-                  "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
-                  \<a class='button style3 fit' onclick=javascript:location.href='/matchedPost'>前往查看</a>\
-                  \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
-              }
-              else if(requestarray[i].state == "due")
-              {
-                box.innerHTML+=
-                "\<button class='button style3 fit' disabled=true>該要求已過期</button>"
-              }
-              else if(requestarray[i].state == "cancelled")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' disabled=true>該要求已取消</button>"
-              }
-              else if(requestarray[i].state == "failed")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' disabled=true>共乘系統未完成QQ</button>"
-              }
-            }
-        }
-        }
-        }
-        else{
 
-        
-        for (i = 0; i < requestarray.length; i++) {
-          if(requestarray[i].state != "completed")
-          {
-            var id = "list"+i;
-            requestlist.innerHTML +=
-            "\<div class='box' id="+id+" style='position:relative'>"
-            var box=document.getElementById("list"+i);
-            if(requestarray[i].state == "failed" || requestarray[i].state == "refuse" || requestarray[i].state == "cancelled" || requestarray[i].state == "due")
-            {
-              box.innerHTML+="<img class='Delete' src='static/images/delete.jpg' width=25px z-index=5' onclick=Delete("+i+") >"
-            }
-            box.innerHTML+=
-            "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
-            <div class='inner'>"
-            if(requestarray[i].dri_id==requestarray[i].user_id){
-              box.innerHTML+=
-              "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
-              <h3><a class='userinfo'id='post"+i+"' onclick='posterInfo("+i+")'>乘客:" + requestarray[i].passenger + "</a></h3>\
-              <div id='posterInfo"+i+"'></div>";
-            }
-            else if(requestarray[i].pas_id==requestarray[i].user_id){
-              box.innerHTML+=
-              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo("+i+")'>駕駛:" + requestarray[i].driver + "</a></h3>\
-              <div id='posterInfo"+i+"'></div>\
-              <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>";
-              
-            }
-            box.innerHTML+=
-            "<p style='color:pink'>上車時間:<span style='font-size:20px color:'>" + TT[i] + "</span></p>\
+                }
+                box.innerHTML +=
+                  "<p style='color:pink'>上車時間:<span style='font-size:20px color:'>" + TT[i] + "</span></p>\
               <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
               <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>"
-              var popContent="";
-              if (requestarray[i].user_id == requestarray[i].dri_id) {
-            if (requestarray[i].post_haveHat == true)
-              popContent += '<br>駕駛有安全帽';
-            else
-              popContent += '<br>駕駛沒有安全帽';
-            if (requestarray[i].post_raincoat == true)
-              popContent += '<br>駕駛有雨衣';
-            else
-              popContent += '<br>駕駛沒有雨衣';
-          }
-          else {
-            if (requestarray[i].post_haveHat == true)
-              popContent += '<br>乘客需要安全帽';
-            else
-              popContent += '<br>乘客不需要安全帽';
-            if (requestarray[i].post_raincoat == true)
-              popContent += '<br>乘客需要雨衣';
-            else
-              popContent += '<br>乘客不需要雨衣';
-          }
-          box.innerHTML+=popContent;
-          box.innerHTML+=
-              "<p>備註:" + requestarray[i].note + "</p></div></div>";
-              var box=document.getElementById("list"+i);
-              if(requestarray[i].state == "waiting")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>等待回應中...</button>\
-                \<a class='button style3 fit' onclick='cancel("+i+")'>取消</a>\
-                \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
-              }
-              else if(requestarray[i].state == "refuse")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方拒絕</button>\
-                \<a class='button style2 fit' onclick='reject("+i+")'>理由:"+requestarray[i].answer_msg+"</a>"
-              }
-              else if(requestarray[i].state == "matched")
-              {
-                  box.innerHTML+=
-                  "\<button class='button style2 fit' onclick='accept("+i+")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
+                var popContent = "";
+                if (requestarray[i].user_id == requestarray[i].dri_id) {
+                  if (requestarray[i].post_haveHat == true)
+                    popContent += '<br>駕駛有安全帽';
+                  else
+                    popContent += '<br>駕駛沒有安全帽';
+                  if (requestarray[i].post_raincoat == true)
+                    popContent += '<br>駕駛有雨衣';
+                  else
+                    popContent += '<br>駕駛沒有雨衣';
+                }
+                else {
+                  if (requestarray[i].post_haveHat == true)
+                    popContent += '<br>乘客需要安全帽';
+                  else
+                    popContent += '<br>乘客不需要安全帽';
+                  if (requestarray[i].post_raincoat == true)
+                    popContent += '<br>乘客需要雨衣';
+                  else
+                    popContent += '<br>乘客不需要雨衣';
+                }
+                box.innerHTML += popContent;
+                box.innerHTML +=
+                  "<p>備註:" + requestarray[i].note + "</p></div></div>";
+                var box = document.getElementById("list" + i);
+                if (requestarray[i].state == "waiting") {
+                  box.innerHTML +=
+                    "\<button class='button style2 fit' onclick='accept(" + i + ")' disabled=true>等待回應中...</button>\
+                \<a class='button style3 fit' onclick='cancel("+ i + ")'>取消</a>\
+                \<a class='button style3 fit' href='chatRoom?"+ requestarray[i].requ_id + "'>聊天</a>"
+                }
+                else if (requestarray[i].state == "refuse") {
+                  box.innerHTML +=
+                    "\<button class='button style2 fit' onclick='accept(" + i + ")' disabled=true>已被對方拒絕</button>\
+                \<a class='button style2 fit' onclick='reject("+ i + ")'>理由:" + requestarray[i].answer_msg + "</a>"
+                }
+                else if (requestarray[i].state == "matched") {
+                  box.innerHTML +=
+                    "\<button class='button style2 fit' onclick='accept(" + i + ")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
                   \<a class='button style3 fit' onclick=javascript:location.href='/matchedPost'>前往查看</a>\
-                  \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
+                  \<a class='button style3 fit' href='chatRoom?"+ requestarray[i].requ_id + "'>聊天</a>"
+                }
+                else if (requestarray[i].state == "due") {
+                  box.innerHTML +=
+                    "\<button class='button style3 fit' disabled=true>該要求已過期</button>"
+                }
+                else if (requestarray[i].state == "cancelled") {
+                  box.innerHTML +=
+                    "\<button class='button style2 fit' disabled=true>該要求已取消</button>"
+                }
+                else if (requestarray[i].state == "failed") {
+                  box.innerHTML +=
+                    "\<button class='button style2 fit' disabled=true>共乘系統未完成QQ</button>"
+                }
               }
-              else if(requestarray[i].state == "due")
-              {
-                box.innerHTML+=
-                "\<button class='button style3 fit' disabled=true>該要求已過期</button>"
+            }
+          }
+        }
+        else {
+
+
+          for (i = 0; i < requestarray.length; i++) {
+            if (requestarray[i].state != "completed") {
+              var id = "list" + i;
+              requestlist.innerHTML +=
+                "\<div class='box' id=" + id + " style='position:relative'>"
+              var box = document.getElementById("list" + i);
+              if (requestarray[i].state == "failed" || requestarray[i].state == "refuse" || requestarray[i].state == "cancelled" || requestarray[i].state == "due") {
+                box.innerHTML += "<img class='Delete' src='static/images/delete.jpg' width=25px z-index=5' onclick=Delete(" + i + ") >"
               }
-              else if(requestarray[i].state == "cancelled")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' disabled=true>該要求已取消</button>"
+              box.innerHTML +=
+                "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            <div class='inner'>"
+              if (requestarray[i].dri_id == requestarray[i].user_id) {
+                box.innerHTML +=
+                  "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a class='userinfo'id='post"+ i + "' onclick='posterInfo(" + i + ")'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <div id='posterInfo"+ i + "'></div>";
               }
-              else if(requestarray[i].state == "failed")
-              {
-                box.innerHTML+=
-                "\<button class='button style2 fit' disabled=true>共乘系統未完成QQ</button>"
+              else if (requestarray[i].pas_id == requestarray[i].user_id) {
+                box.innerHTML +=
+                  "<h3><a class='userinfo' id='post" + i + "' onclick='posterInfo(" + i + ")'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <div id='posterInfo"+ i + "'></div>\
+              <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>";
+
+              }
+              box.innerHTML +=
+                "<p style='color:pink'>上車時間:<span style='font-size:20px color:'>" + TT[i] + "</span></p>\
+              <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
+              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>"
+              var popContent = "";
+              if (requestarray[i].user_id == requestarray[i].dri_id) {
+                if (requestarray[i].post_haveHat == true)
+                  popContent += '<br>駕駛有安全帽';
+                else
+                  popContent += '<br>駕駛沒有安全帽';
+                if (requestarray[i].post_raincoat == true)
+                  popContent += '<br>駕駛有雨衣';
+                else
+                  popContent += '<br>駕駛沒有雨衣';
+              }
+              else {
+                if (requestarray[i].post_haveHat == true)
+                  popContent += '<br>乘客需要安全帽';
+                else
+                  popContent += '<br>乘客不需要安全帽';
+                if (requestarray[i].post_raincoat == true)
+                  popContent += '<br>乘客需要雨衣';
+                else
+                  popContent += '<br>乘客不需要雨衣';
+              }
+              box.innerHTML += popContent;
+              box.innerHTML +=
+                "<p>備註:" + requestarray[i].note + "</p></div></div>";
+              var box = document.getElementById("list" + i);
+              if (requestarray[i].state == "waiting") {
+                box.innerHTML +=
+                  "\<button class='button style2 fit' onclick='accept(" + i + ")' disabled=true>等待回應中...</button>\
+                \<a class='button style3 fit' onclick='cancel("+ i + ")'>取消</a>\
+                \<a class='button style3 fit' href='chatRoom?"+ requestarray[i].requ_id + "'>聊天</a>"
+              }
+              else if (requestarray[i].state == "refuse") {
+                box.innerHTML +=
+                  "\<button class='button style2 fit' onclick='accept(" + i + ")' disabled=true>已被對方拒絕</button>\
+                \<a class='button style2 fit' onclick='reject("+ i + ")'>理由:" + requestarray[i].answer_msg + "</a>"
+              }
+              else if (requestarray[i].state == "matched") {
+                box.innerHTML +=
+                  "\<button class='button style2 fit' onclick='accept(" + i + ")' disabled=true>已被對方接受，尚未完成共乘系統</button>\
+                  \<a class='button style3 fit' onclick=javascript:location.href='/matchedPost'>前往查看</a>\
+                  \<a class='button style3 fit' href='chatRoom?"+ requestarray[i].requ_id + "'>聊天</a>"
+              }
+              else if (requestarray[i].state == "due") {
+                box.innerHTML +=
+                  "\<button class='button style3 fit' disabled=true>該要求已過期</button>"
+              }
+              else if (requestarray[i].state == "cancelled") {
+                box.innerHTML +=
+                  "\<button class='button style2 fit' disabled=true>該要求已取消</button>"
+              }
+              else if (requestarray[i].state == "failed") {
+                box.innerHTML +=
+                  "\<button class='button style2 fit' disabled=true>共乘系統未完成QQ</button>"
               }
             }
             else {
-          document.getElementById("RequestList").innerHTML += "尚未發出請求";
-        }
+              document.getElementById("RequestList").innerHTML += "尚未發出請求";
+            }
+          }
         }
       }
+      else {
+        document.getElementById("RequestList").innerHTML += "尚未發出請求";
       }
-        else {
-          document.getElementById("RequestList").innerHTML += "尚未發出請求";
-        }
       document.getElementById("RequestList").innerHTML +=
         '<a class="button style fit" onclick="location.reload()">重新整理</a>';
-      }
-      function cancel(i)
-      {
-        if(requestarray[i].state=="waiting")
-        {
-          $.ajax({
-                type: 'POST',
-                url: "/cancelRequest",
-                data: JSON.stringify({'cancel_id': requestarray[i].requ_id}),
-                contentType: 'application/json; charset=utf-8',
-                success: function(data) {
-                  var tmp=data;
-                  window.location.href='https://' + document.domain + '/passengerRespond';
-                }
-                });
-        }
-        else
-          window.alert("取消失敗，已完成配對!!");
-      }
-      function posterInfo(i){
-        console.log(i);
-        var tmp;
-        if(requestarray[i].dri_id==requestarray[i].user_id)
-          tmp=requestarray[i].pas_id;
-        else
-          tmp=requestarray[i].dri_id;
-      $.ajax({
-        type: 'POST',
-        url: "/getAnotherUserData",
-        data: JSON.stringify({'_id' : tmp}),
-        contentType: 'application/json; charset=utf-8',
-        success: function(data){
-          var tmp=data;
-          var avgRating = 0;
-          var popPosterInfo="";
-          popPosterInfo += '<img src = "static/userPhotos/'+data._user_photo+'"><br>';
-          
-          if(data._rate.length){
-            popPosterInfo +="平均評價:"
-            for(var j = 0; j < data._rate.length;j++)
-              avgRating += data._rate[j];
-            avgRating /= (data._rate.length);
-            popPosterInfo += avgRating; 
-            popPosterInfo += '顆星!';
-          }
-          else
-            popPosterInfo += "尚無評價";
-          popPosterInfo += '<br>電話號碼:' + data._phone+"</br>";
-          
-          console.log('posterInfo'+i)
-          document.getElementById('posterInfo'+i).innerHTML=""
-          document.getElementById('posterInfo'+i).innerHTML += popPosterInfo;
-        }
-      });
     }
-    var TT=[]
-    function convertion()
-    {
+    function cancel(i) {
+      if (requestarray[i].state == "waiting") {
+        $.ajax({
+          type: 'POST',
+          url: "/cancelRequest",
+          data: JSON.stringify({ 'cancel_id': requestarray[i].requ_id }),
+          contentType: 'application/json; charset=utf-8',
+          success: function (data) {
+            var tmp = data;
+            window.location.href = 'https://' + document.domain + '/passengerRespond';
+          }
+        });
+      }
+      else
+        window.alert("取消失敗，已完成配對!!");
+    }
+    function posterInfo(i) {
+      console.log(i);
+      count++;
+      if (count % 2 == 0)
+        document.getElementById('posterInfo' + i).innerHTML = "";
+      else {
+        var tmp;
+        if (requestarray[i].dri_id == requestarray[i].user_id)
+          tmp = requestarray[i].pas_id;
+        else
+          tmp = requestarray[i].dri_id;
+        $.ajax({
+          type: 'POST',
+          url: "/getAnotherUserData",
+          data: JSON.stringify({ '_id': tmp }),
+          contentType: 'application/json; charset=utf-8',
+          success: function (data) {
+            var tmp = data;
+            var avgRating = 0;
+            var popPosterInfo = "";
+            popPosterInfo += '<img src = "static/userPhotos/' + data._user_photo + '"><br>';
+
+            if (data._rate.length) {
+              popPosterInfo += "平均評價:"
+              for (var j = 0; j < data._rate.length; j++)
+                avgRating += data._rate[j];
+              avgRating /= (data._rate.length);
+              popPosterInfo += avgRating;
+              popPosterInfo += '顆星!';
+            }
+            else
+              popPosterInfo += "尚無評價";
+            popPosterInfo += '<br>電話號碼:' + data._phone + "</br>";
+
+            console.log('posterInfo' + i)
+            document.getElementById('posterInfo' + i).innerHTML = ""
+            document.getElementById('posterInfo' + i).innerHTML += popPosterInfo;
+          }
+        });
+      }
+
+    }
+    var TT = []
+    function convertion() {
       if (requestarray.length) {
         for (i = 0; i < requestarray.length; i++) {
-          month=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-          Month=["1","2","3","4","5","6","7","8","9","10","11","12"];
-          week=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-          Week=["禮拜一","禮拜二","禮拜三","禮拜四","禮拜五","禮拜六","禮拜日"];
-          var tmp1=requestarray[i].time;
-          var tmp=tmp1.split(",");
-          var tmp2=tmp1.split(" ");
+          month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          Month = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+          week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+          Week = ["禮拜一", "禮拜二", "禮拜三", "禮拜四", "禮拜五", "禮拜六", "禮拜日"];
+          var tmp1 = requestarray[i].time;
+          var tmp = tmp1.split(",");
+          var tmp2 = tmp1.split(" ");
           console.log(tmp1);
-          var output="";
-          output+=tmp2[3]+"/";
-          for(j=0;j<12;j++)
-            if(tmp2[2]==month[j])
-              output+=Month[j]+"/";
-          output+=tmp2[1]+" ";
-          for(j=0;j<7;j++)
-            if(tmp[0]==week[j])
-              output+=Week[j]+" ";
-          output+=tmp2[4];
+          var output = "";
+          output += tmp2[3] + "/";
+          for (j = 0; j < 12; j++)
+            if (tmp2[2] == month[j])
+              output += Month[j] + "/";
+          output += tmp2[1] + " ";
+          for (j = 0; j < 7; j++)
+            if (tmp[0] == week[j])
+              output += Week[j] + " ";
+          output += tmp2[4];
           TT.push(output);
         }
       }
       console.log(TT);
     }
-    
-    function jsonToStruct(){
+
+    function jsonToStruct() {
       var i;
-      
-      for(i = 0;i < string.length;i++){
-        var list={
-          'driver' : string[i].driverName,
-          'passenger' : string[i].passengerName,
-          'starting' : string[i].Goto,
-          'destination' : string[i].Location,
-          'time' : string[i].getonTime,
-          'dri_id' : string[i].driver_id,
-          'pas_id' : string[i].passenger_id,
-          'user_id' : string[i].user_id,
-          'note' : string[i].notice,
-          'state' : string[i].state,
-          'requ_id' : string[i].requ_id
+
+      for (i = 0; i < string.length; i++) {
+        var list = {
+          'driver': string[i].driverName,
+          'passenger': string[i].passengerName,
+          'starting': string[i].Goto,
+          'destination': string[i].Location,
+          'time': string[i].getonTime,
+          'dri_id': string[i].driver_id,
+          'pas_id': string[i].passenger_id,
+          'user_id': string[i].user_id,
+          'note': string[i].notice,
+          'state': string[i].state,
+          'requ_id': string[i].requ_id
         };
-        
+
         requestarray.push(list);
       }
     }
-    function Delete(i)
-    {
-      if(requestarray[i].state=="completed" || requestarray[i].state=="refuse" || requestarray[i].state=="cancelled" || requestarray[i].state=="failed")
-      {
+    function Delete(i) {
+      if (requestarray[i].state == "completed" || requestarray[i].state == "refuse" || requestarray[i].state == "cancelled" || requestarray[i].state == "failed") {
         $.ajax({
-            type: 'POST',
-            url: "/deleteRequest",
-            data: JSON.stringify({'delete_id': requestarray[i].requ_id}),
-            contentType: 'application/json; charset=utf-8',
-            success: function() {
-              window.location.href='https://' + document.domain + '/passengerRespond';
-            }
-            });
+          type: 'POST',
+          url: "/deleteRequest",
+          data: JSON.stringify({ 'delete_id': requestarray[i].requ_id }),
+          contentType: 'application/json; charset=utf-8',
+          success: function () {
+            window.location.href = 'https://' + document.domain + '/passengerRespond';
+          }
+        });
       }
       else
-        window.alert("刪除失敗，發出請求者才能刪除請求!!"); 
+        window.alert("刪除失敗，發出請求者才能刪除請求!!");
     }
   </script>
 

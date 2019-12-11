@@ -157,7 +157,7 @@
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "post") {
-        displaystr += '<div class="box"><div class="inner"><a href="https://' + document.domain + '/myPost?'+data["_target"]+'" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">' + TT + ' </a></div></div>';
+        displaystr += '<div class="box"><div class="inner"><a href="https://' + document.domain + '/allPost?'+data["_target"]+'" class="button style2 fit">' + data["_msg"] + '<span class="timestyle">' + TT + ' </a></div></div>';
         displayobj.innerHTML = displaystr;
       }
       if (data["_type"] == "rate") {
