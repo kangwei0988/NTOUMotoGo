@@ -27,6 +27,19 @@
     opacity: 0.6;
     transition: 0.3s
   }
+  .mybutton2 {
+    background-color: blueviolet;
+    /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    text-align: center;
+
+  }
 </style>
 
 <body style="background-color: #202024">
@@ -45,8 +58,8 @@
 
   <!-- Top menu on small screens -->
   <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
-    <span class="w3-center w3-padding w3-text-light-grey">乘客 <a href="10-driverPost.html"
-        style="text-decoration:none; background-color:blue;">切換身分</a></span>
+    <span class="w3-center w3-padding w3-text-light-grey">乘客 
+      <button onclick=changetype() class="mybutton2">切換身分</button></span>
     <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey"
       onclick="w3_open()">&#9776;</a>
   </header>
@@ -167,7 +180,10 @@
         + "-" + date.getDate() + "'> 時間: <input type = 'time'  id = 'tem_time' required value = '" + date.getHours() + ":" + date.getMinutes() + "'>";
 
     }
-
+    function changetype()
+    {
+      window.location.href="https://"+document.domain+"/driverPost";
+    }
     function submit() {
       var dateControl = document.getElementById("tem_date").value;
       var timeControl = document.querySelector('input[type="time"]').value;
