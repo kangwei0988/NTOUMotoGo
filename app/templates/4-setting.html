@@ -155,7 +155,7 @@
             style="background-color: red;  width:100%;" value = "登出" >\
           </a>'
       }
-      else if (string._new_notifications == true && string._want_mail != true) {
+      else if (string._new_notifications == true && string._want_mail  == false) {
         document.getElementById("watch").innerHTML =
           '<form action="/setNotiMail" method="POST">\
             <h1 class="w3-center">\
@@ -176,7 +176,7 @@
             style="background-color: red;  width:100%;" value = "登出" >\
           </a>'
       }
-      else if (string._new_notifications != true && string._want_mail == true) {
+      else if (string._new_notifications == false && string._want_mail == true) {
         document.getElementById("watch").innerHTML =
           '<form action="/setNotiMail" method="POST">\
             <h1 class="w3-center">\
@@ -197,7 +197,7 @@
             style="background-color: red;  width:100%;" value = "登出" >\
           </a>'
       }
-      else if (string._new_notifications != true && string._want_mail != true) {
+      else if (string._new_notifications == false && string._want_mail == false) {
         document.getElementById("watch").innerHTML =
           '<form action="/setNotiMail" method="POST">\
             <h1 class="w3-center">\
