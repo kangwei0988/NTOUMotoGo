@@ -134,72 +134,92 @@
       var note;
       var popContent = "";
       convertion(postResult);
-      url=location.href.split("?")[1];
-      if(url!=undefined)
-        {
-      for (var i = 0; i < postResult.length; i++) {
-        if(postResult[i]._id==url)
-        {
+      url = location.href.split("?")[1];
+      if (url != undefined) {
+        for (var i = 0; i < postResult.length; i++) {
+          if (postResult[i]._id == url) {
+            thisType = postResult[i].post_type;
+            if (thisType == 'dri')
+              note = '的後座空空的覺得好寂寞';
+            else
+              note = '是邊緣人需要別人載他';
+            popContent += '<div class="box">\
+                          <div class="inner">\
+                            <h2 id="post'+ i + '" onclick="posterInfo(this)">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
+                            <div id="posterInfo'+ i + '"></div>\
+                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;">' + TT[i] + '</span>';
+            if (postResult[i].post_type == 'pas') {
+              if (postResult[i].post_haveHat == true)
+                popContent += '<br>我需要安全帽';
+              else
+                popContent += '<br>我不需要安全帽';
+              if (postResult[i].post_raincoat == true)
+                popContent += '<br>我需要雨衣';
+              else
+                popContent += '<br>我不需要雨衣';
+            }
+            else {
+              if (postResult[i].post_haveHat == true)
+                popContent += '<br>我有安全帽';
+              else
+                popContent += '<br>我沒有安全帽';
+              if (postResult[i].post_raincoat == true)
+                popContent += '<br>我有雨衣';
+              else
+                popContent += '<br>我沒有雨衣';
+            }
+            popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
+            if (postResult[i].post_matched)
+              popContent += '<a class="button style3 fit" disabled=true>已配對</a>';
+            else {
+              popContent += '<a class="button style3 fit"disabled=true>尚未配對</a>';
+              popContent += '<a class="button style2 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
+            }
+            popContent += '</div></div>';
+          }
+        }
+      }
+      else {
+        for (var i = 0; i < postResult.length; i++) {
           thisType = postResult[i].post_type;
-        if (thisType == 'dri')
-          note = '的後座空空的覺得好寂寞';
-        else
-          note = '是邊緣人需要別人載他';
-        popContent += '<div class="box">\
+          if (thisType == 'dri')
+            note = '的後座空空的覺得好寂寞';
+          else
+            note = '是邊緣人需要別人載他';
+          popContent += '<div class="box">\
                           <div class="inner">\
-                            <h3 id="post'+ i + '">' + postResult[i].post_name + note + '</h3>\
+                            <h2 id="post'+ i + '" onclick="posterInfo(this)">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
-                            <p style="text-align: left;">目的地:'+ postResult[i].post_goto + '<br>上車時間:' + TT[i] + '<br>上車地點:' + postResult[i].post_location;
-        if (postResult[i].post_haveHat == true)
-          popContent += '<br>安全帽 : 有';
-        else
-          popContent += '<br>安全帽 : 無';
-        if (postResult[i].post_raincoat == true)
-          popContent += '<br>雨衣 : 有';
-        else
-          popContent += '<br>雨衣 : 無';
-        popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
-        if (postResult[i].post_matched)
-          popContent += '<a class="button style3 fit" disabled=true>已配對</a>';
-        else {
-          popContent += '<a class="button style3 fit"disabled=true>尚未配對</a>';
-          popContent += '<a class="button style2 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
+                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;">' + TT[i] + '</span>';
+          if (postResult[i].post_type == 'pas') {
+            if (postResult[i].post_haveHat == true)
+              popContent += '<br>我需要安全帽';
+            else
+              popContent += '<br>我不需要安全帽';
+            if (postResult[i].post_raincoat == true)
+              popContent += '<br>我需要雨衣';
+            else
+              popContent += '<br>我不需要雨衣';
+          }
+          else {
+            if (postResult[i].post_haveHat == true)
+              popContent += '<br>我有安全帽';
+            else
+              popContent += '<br>我沒有安全帽';
+            if (postResult[i].post_raincoat == true)
+              popContent += '<br>我有雨衣';
+            else
+              popContent += '<br>我沒有雨衣';
+          }
+          popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
+          if (postResult[i].post_matched)
+            popContent += '<a class="button style3 fit" disabled=true>已配對</a>';
+          else {
+            popContent += '<a class="button style3 fit"disabled=true>未配對</a>';
+            popContent += '<a class="button style2 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
+          }
+          popContent += '</div></div>';
         }
-        popContent += '</div></div>';
-        }
-      }
-        }
-      else{
-
-      
-      for (var i = 0; i < postResult.length; i++) {
-        thisType = postResult[i].post_type;
-        if (thisType == 'dri')
-          note = '的後座空空的覺得好寂寞';
-        else
-          note = '是邊緣人需要別人載他';
-        popContent += '<div class="box">\
-                          <div class="inner">\
-                            <h3 id="post'+ i + '">' + postResult[i].post_name + note + '</h3>\
-                            <div id="posterInfo'+ i + '"></div>\
-                            <p style="text-align: left;">目的地:'+ postResult[i].post_goto + '<br>上車時間:' + TT[i] + '<br>上車地點:' + postResult[i].post_location;
-        if (postResult[i].post_haveHat == true)
-          popContent += '<br>安全帽 : 有';
-        else
-          popContent += '<br>安全帽 : 無';
-        if (postResult[i].post_raincoat == true)
-          popContent += '<br>雨衣 : 有';
-        else
-          popContent += '<br>雨衣 : 無';
-        popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
-        if (postResult[i].post_matched)
-          popContent += '<a class="button style3 fit" disabled=true>已配對</a>';
-        else {
-          popContent += '<a class="button style3 fit"disabled=true>未配對</a>';
-          popContent += '<a class="button style2 fit" onclick=cancel(' + i + ')>刪除此刊登</a>';
-        }
-        popContent += '</div></div>';
-      }
       }
       document.getElementById("myPostList").innerHTML = popContent;
     }
