@@ -166,10 +166,33 @@
               
             }
             box.innerHTML+=
-            "<p style='color:pink'>上車時間:<span style='font-size:20px'>" + TT[i] + "</span></p>\
+            "<p style='color:pink'>上車時間:<span style='font-size:20px color:'>" + TT[i] + "</span></p>\
               <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
-              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>\
-              <p>備註:" + requestarray[i].note + "</p></div></div>";
+              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>"
+              var popContent="";
+              if (requestarray[i].user_id == requestarray[i].dri_id) {
+            if (requestarray[i].post_haveHat == true)
+              popContent += '<br>駕駛有安全帽';
+            else
+              popContent += '<br>駕駛沒有安全帽';
+            if (requestarray[i].post_raincoat == true)
+              popContent += '<br>駕駛有雨衣';
+            else
+              popContent += '<br>駕駛沒有雨衣';
+          }
+          else {
+            if (requestarray[i].post_haveHat == true)
+              popContent += '<br>乘客需要安全帽';
+            else
+              popContent += '<br>乘客不需要安全帽';
+            if (requestarray[i].post_raincoat == true)
+              popContent += '<br>乘客需要雨衣';
+            else
+              popContent += '<br>乘客不需要雨衣';
+          }
+          box.innerHTML+=popContent;
+          box.innerHTML+=
+              "<p>備註:" + requestarray[i].note + "</p></div></div>";
               
               if(requestarray[i].matched == "waiting")
               {
@@ -256,10 +279,33 @@
               
             }
             box.innerHTML+=
-              "<p style='color:pink'>上車時間:<span style='font-size:20px'>" + TT[i] + "</span></p>\
+            "<p style='color:pink'>上車時間:<span style='font-size:20px color:'>" + TT[i] + "</span></p>\
               <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
-              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>\
-              <p>備註:" + requestarray[i].note + "</p></div></div>";
+              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>"
+              var popContent="";
+              if (requestarray[i].user_id == requestarray[i].dri_id) {
+            if (requestarray[i].post_haveHat == true)
+              popContent += '<br>駕駛有安全帽';
+            else
+              popContent += '<br>駕駛沒有安全帽';
+            if (requestarray[i].post_raincoat == true)
+              popContent += '<br>駕駛有雨衣';
+            else
+              popContent += '<br>駕駛沒有雨衣';
+          }
+          else {
+            if (requestarray[i].post_haveHat == true)
+              popContent += '<br>乘客需要安全帽';
+            else
+              popContent += '<br>乘客不需要安全帽';
+            if (requestarray[i].post_raincoat == true)
+              popContent += '<br>乘客需要雨衣';
+            else
+              popContent += '<br>乘客不需要雨衣';
+          }
+          box.innerHTML+=popContent;
+          box.innerHTML+=
+              "<p>備註:" + requestarray[i].note + "</p></div></div>";
               
               if(requestarray[i].matched == "waiting")
               {

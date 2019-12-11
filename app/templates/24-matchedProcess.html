@@ -28,6 +28,16 @@
     opacity: 0.6;
     transition: 0.3s
   }
+  .userinfo{
+    text-decoration:underline;;
+    color:yellow;
+  }
+  .userinfo:hover{
+    text-decoration:none;
+    text-decoration-color:orange;
+    color:yellow;
+    cursor: pointer;
+  }
 </style>
 
 <body style="background-color: #202024">
@@ -141,30 +151,42 @@
         else
           note = '是邊緣人需要別人載他';
         popContent += '<div class="box">\
-                          <div class="inner">\
-                            <h2 id="post'+ i + '" onclick="posterInfo(this)" style=color:yellow;>' + matchedPosts[i].post.post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
+                          <div class="inner">'
+                      if(matchedPosts[i].post.owner_id==matchedPosts[i].target_id)
+                      {
+                        popContent +=     '<h2 id="post'+ i + '" class="userinfo" onclick="posterInfo('+i+')" style=color:yellow;>' + matchedPosts[i].post.post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
                             <p style="text-align: left;">刊登接受者:<span style="font-size:20px; font-weight:bold; color:orange;">'+ matchedPosts[i].sender_name + '</span><br>\
                             目的地:<span style="font-size:20px; font-weight:bold; color:skyblue">'+ matchedPosts[i].post.post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:red;">' + matchedPosts[i].post.post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:pink">' + TT[i] + '</span>';
+                      }
+                      else
+                      {
+                        popContent +=     '<h2   style=color:yellow;>' + matchedPosts[i].post.post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
+                            <div id="posterInfo'+ i + '"></div>\
+                            <p style="text-align: left;">刊登接受者:<span id="post'+ i + '" onclick="posterInfo('+i+')" class="userinfo"style="font-size:20px; font-weight:bold; color:orange;">'+ matchedPosts[i].sender_name + '</span><br>\
+                            目的地:<span style="font-size:20px; font-weight:bold; color:skyblue">'+ matchedPosts[i].post.post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:red;">' + matchedPosts[i].post.post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:pink">' + TT[i] + '</span>';
+
+                      }
+                      
         if (matchedPosts[i].post.post_type == 'pas') {
           if (matchedPosts[i].post.post_haveHat == true)
-            popContent += '<br>我需要安全帽';
+            popContent += '<br>乘客需要安全帽';
           else
-            popContent += '<br>我不需要安全帽';
+            popContent += '<br>乘客不需要安全帽';
           if (matchedPosts[i].post.post_raincoat == true)
-            popContent += '<br>我需要雨衣';
+            popContent += '<br>乘客需要雨衣';
           else
-            popContent += '<br>我不需要雨衣';
+            popContent += '<br>乘客不需要雨衣';
         }
         else{
           if (matchedPosts[i].post.post_haveHat == true)
-            popContent += '<br>我有安全帽';
+            popContent += '<br>駕駛有安全帽';
           else
-            popContent += '<br>我沒有安全帽';
+            popContent += '<br>駕駛沒有安全帽';
           if (matchedPosts[i].post.post_raincoat == true)
-            popContent += '<br>我有雨衣';
+            popContent += '<br>駕駛有雨衣';
           else
-            popContent += '<br>我沒有雨衣';
+            popContent += '<br>駕駛沒有雨衣';
         }
 
 
@@ -189,6 +211,38 @@
         popContent += '</div></div>';
       }
       document.getElementById("myPostList").innerHTML = popContent;
+    }
+    function posterInfo(i){
+        console.log(i);
+        var tmp;
+      $.ajax({
+        type: 'POST',
+        url: "/getAnotherUserData",
+        data: JSON.stringify({'_id' : strings[i].target_id}),
+        contentType: 'application/json; charset=utf-8',
+        success: function(data){
+          var tmp=data;
+          var avgRating = 0;
+          var popPosterInfo="";
+          popPosterInfo += '<img src = "'+data._photo+'"><br>';
+          
+          if(data._rate.length){
+            popPosterInfo +="平均評價:"
+            for(var j = 0; j < data._rate.length;j++)
+              avgRating += data._rate[j];
+            avgRating /= (data._rate.length);
+            popPosterInfo += avgRating; 
+            popPosterInfo += '顆星!';
+          }
+          else
+            popPosterInfo += "尚無評價";
+          popPosterInfo += '<br>電話號碼:' + data._phone+"</br>";
+          
+          console.log('posterInfo'+i)
+          document.getElementById('posterInfo'+i).innerHTML=""
+          document.getElementById('posterInfo'+i).innerHTML += popPosterInfo;
+        }
+      });
     }
     function map(message) {
       console.log("SDFSF")
