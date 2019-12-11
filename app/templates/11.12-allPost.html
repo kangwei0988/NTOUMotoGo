@@ -182,7 +182,7 @@
         document.getElementById("myType").innerHTML = "乘客";
       }
     }
-
+    var postResult;
     function roadPostData() {
       $.ajax({
         type: 'POST',
@@ -190,13 +190,14 @@
         data: JSON.stringify({ 'post_type': searchType }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-          displayPost(data);
+          postResult=data;
+          displayPost();
           allPostList = data;
         }
       });
     }
 
-    function displayPost(postResult) {
+    function displayPost() {
       console.log(postResult);
       convertion(postResult);
       var note;
@@ -208,7 +209,7 @@
         myID = postResult[0].yourID;
         var popContent = "";
         for (var i = 0; i < postResult.length; i++) {
-          popContent += '<div class="box">\
+          popContent += '<div class="box" id=box'+i+'>\
                           <div class="inner">\
                             <h2 id="post'+ i + '" onclick="posterInfo(this)" style="color:yellow" class="userinfo">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
@@ -235,7 +236,7 @@
           }
           popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
           if (postResult[i].owner_id != myID)
-            popContent += '<button class="button style2 fit" type="button" onclick="sendRequest(\'' + postResult[i]._id + '\')" >送出請求</button>\
+            popContent += '<button class="button style2 fit" type="button" onclick="beforesendRequest('+i+')" >送出請求</button>\
                           </div>\
                         </div>';
           else
@@ -248,7 +249,63 @@
       else
         document.getElementById("allPost").innerHTML = "目前沒有刊登資訊";
     }
-
+    function beforesendRequest(i)
+    {
+      $.ajax({
+        type: 'POST',
+        url: "/checkBusy",
+        data: JSON.stringify({ 'type':'post', 'target': postResult[i].post_getOnTime }),
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          if(data)
+            window.alert("按下 確認送出 已發送該請求");
+          else
+            window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認送出")
+          console.log("SSSS");
+      var note;
+      document.getElementById("box"+i).innerHTML = "";
+      if (myType == 'dri')
+        note = '是邊緣人需要別人載他';
+      else
+        note = '的後座空空的覺得好寂寞';
+        var popContent = "";
+          popContent += '<div class="inner">\
+                        <h2 id="post'+ i + '" onclick="posterInfo(this)" style="color:yellow" class="userinfo">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
+                        <div id="posterInfo'+ i + '"></div>\
+                        <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold; color:skyblue;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:pink;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:orange;">' + TT[i] + '</span>';
+      if (myType == 'pas') {
+            if (postResult[i].post_haveHat == true)
+              popContent += '<br>我有安全帽';
+            else
+              popContent += '<br>我沒有安全帽';
+            if (postResult[i].post_raincoat == true)
+              popContent += '<br>我有雨衣';
+            else
+              popContent += '<br>我沒有雨衣';
+          }
+          else {
+            if (postResult[i].post_haveHat == true)
+              popContent += '<br>我需要安全帽';
+            else
+              popContent += '<br>我不需要安全帽';
+            if (postResult[i].post_raincoat == true)
+              popContent += '<br>我需要雨衣';
+            else
+              popContent += '<br>我不需要雨衣';
+          }
+          popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
+          if (postResult[i].owner_id != myID)
+            popContent += '<button class="button style2 fit" type="button" onclick="sendRequest(\'' + postResult[i]._id + '\')" >確認送出</button>\
+                          </div>\
+                        </div>';
+          else
+            popContent += '<button class="button style2 fit" type="button" disabled=true" >這是您的刊登資訊</button>\
+                          </div>';
+        document.getElementById("box"+i).innerHTML += popContent;
+        }
+      });
+      
+    }
     var TT = []
     function convertion(requestarray) {
       if (requestarray.length) {

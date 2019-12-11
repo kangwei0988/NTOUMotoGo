@@ -310,7 +310,7 @@
               if(requestarray[i].matched == "waiting")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit' onclick='accept_api("+i+")'>接受</a>\
+                "\<a class='button style3 fit' onclick='beforeaccept("+i+")'>接受</a>\
                 \<a class='button style3 fit' onclick='reject("+i+")'>拒絕</a>\
                 \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
@@ -479,24 +479,72 @@
     }
     
   
-   /* function accept(i)
+    function beforeaccept(i)
     {
+      $.ajax({
+        type: 'POST',
+        url: "/checkBusy",
+        data: JSON.stringify({ 'type':'requ','target': requestarray[i].requ_id }),
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          if(data)
+            window.alert("按下 確認接受 已接受該請求");
+          else
+            window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認接受")
         var id = "list"+i;
         var box=document.getElementById("list"+i);
         box.innerHTML="";
         box.innerHTML+=
-        "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
-        <div class='inner'>\
-          <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
-          <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-          <p>上車時間:" + TT[i] + "</p>\
-          <p>上車地點:" + requestarray[i].starting + "</p>\
-          <p>目的地:" + requestarray[i].destination + "</p>\
-          <p>備註:" + requestarray[i].note + "</p>\
-          <button class='button style2 fit' disabled=true>配對成功，尚未完成完成共乘系統</button>\
-          <a class='button style3 fit' onclick='javascript:location.href='/matchedProcess'>前往查看</a>\
-          <a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
-    }*/
+            "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            <div class='inner'>"
+              if(requestarray[i].dri_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a class='userinfo'id='post"+i+"' onclick='posterInfo("+i+")'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>"
+            }
+            else if(requestarray[i].pas_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo("+i+")'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>\
+              <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>"
+              
+            }
+            box.innerHTML+=
+            "<p style='color:pink'>上車時間:<span style='font-size:20px color:'>" + TT[i] + "</span></p>\
+              <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
+              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>"
+              var popContent="";
+              if (requestarray[i].user_id == requestarray[i].dri_id) {
+            if (requestarray[i].post_haveHat == true)
+              popContent += '<br>駕駛有安全帽';
+            else
+              popContent += '<br>駕駛沒有安全帽';
+            if (requestarray[i].post_raincoat == true)
+              popContent += '<br>駕駛有雨衣';
+            else
+              popContent += '<br>駕駛沒有雨衣';
+          }
+          else {
+            if (requestarray[i].post_haveHat == true)
+              popContent += '<br>乘客需要安全帽';
+            else
+              popContent += '<br>乘客不需要安全帽';
+            if (requestarray[i].post_raincoat == true)
+              popContent += '<br>乘客需要雨衣';
+            else
+              popContent += '<br>乘客不需要雨衣';
+          }
+          box.innerHTML+=popContent;
+          box.innerHTML+=
+              "<p>備註:" + requestarray[i].note + "</p></div></div>";
+          box.innerHTML+=
+            "\<a class='button style3 fit' onclick='accept_api("+i+")'>確認接受</a>\
+            \<a class='button style3 fit' onclick='reject("+i+")'>拒絕</a>\
+            \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
+          }
+      });
+    }
     function accept_api(i)
     {
           if(requestarray[i].dri_id == requestarray[i].user_id)
@@ -529,23 +577,56 @@
       var id = "list"+i;
         var box=document.getElementById("list"+i);
         box.innerHTML="";
-        box.innerHTML +=
-            "<img class='Delete' src='static/images/delete.jpg' width=25px z-index=2' onclick=Delete("+i+") >\
-            \<img class='image fit' src='static/images/pic01.jpg' alt='' />\
-            <div class='inner'>\
-              <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
-              <h3><a onclick=javascript:location.href='userInfo' class='userinfo'>乘客:" + requestarray[i].passenger + "</a></h3>\
-              <p>上車時間:" + TT[i] + "</p>\
-              <p>上車地點:" + requestarray[i].starting + "</p>\
-              <p>目的地:" + requestarray[i].destination + "</p>\
-              <p>備註:" + requestarray[i].note + "</p>\
-                <a class='button style2 fit' onclick='accept_api("+i+")'>接受</a>\
+        box.innerHTML+=
+            "<img class='image fit' src='static/images/pic01.jpg' alt='' />\
+            <div class='inner'>"
+              if(requestarray[i].dri_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userInfo'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <h3><a class='userinfo'id='post"+i+"' onclick='posterInfo("+i+")'>乘客:" + requestarray[i].passenger + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>"
+            }
+            else if(requestarray[i].pas_id==requestarray[i].user_id){
+              box.innerHTML+=
+              "<h3><a class='userinfo' id='post"+i+"' onclick='posterInfo("+i+")'>駕駛:" + requestarray[i].driver + "</a></h3>\
+              <div id='posterInfo"+i+"'></div>\
+              <h3><a class='userInfo'>乘客:" + requestarray[i].passenger + "</a></h3>"
+              
+            }
+            box.innerHTML+=
+            "<p style='color:pink'>上車時間:<span style='font-size:20px color:'>" + TT[i] + "</span></p>\
+              <p style='color:skyblue'>從<span style='font-size:20px'>" + requestarray[i].starting + "</span></p>\
+              <p style='color:red' >到 <span style='font-size:20px'>" + requestarray[i].destination + "</span></p>"
+              var popContent="";
+              if (requestarray[i].user_id == requestarray[i].dri_id) {
+            if (requestarray[i].post_haveHat == true)
+              popContent += '<br>駕駛有安全帽';
+            else
+              popContent += '<br>駕駛沒有安全帽';
+            if (requestarray[i].post_raincoat == true)
+              popContent += '<br>駕駛有雨衣';
+            else
+              popContent += '<br>駕駛沒有雨衣';
+          }
+          else {
+            if (requestarray[i].post_haveHat == true)
+              popContent += '<br>乘客需要安全帽';
+            else
+              popContent += '<br>乘客不需要安全帽';
+            if (requestarray[i].post_raincoat == true)
+              popContent += '<br>乘客需要雨衣';
+            else
+              popContent += '<br>乘客不需要雨衣';
+          }
+          box.innerHTML+=popContent;
+          box.innerHTML+=
+              "<p>備註:" + requestarray[i].note + "</p></div></div>";
+          box.innerHTML+=
+          "<a class='button style2 fit' onclick='beforeaccept("+i+")'>接受</a>\
                 \<p>理由:</p>\
                 \<input type='text' id='reason'>\
                 \<a class='button style2 fit' onclick='sendReason("+i+")'>送出</a>\
-                \<a class='button style2 fit' onclick=''>聊天</a>\
-                </div>\
-              </div>";
+                \<a class='button style2 fit' onclick=''>聊天</a>";
     }
     function sendReason(i)
     {
