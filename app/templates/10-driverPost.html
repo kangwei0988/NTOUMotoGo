@@ -196,31 +196,43 @@
       else {
         haveHat = false;
       }
-      if (goto == location) {
-        window.alert("地點不能相同");
+      var posttime = new Date(year, mon - 1, day, hour, min);
+      console.log(posttime);
+      console.log(now.getTime());
+      console.log(posttime.getTime());
+
+      if (posttime.getTime() > now.getTime()) {
+
+        if (goto == location) {
+          window.alert("地點不能相同");
+        }
+        else {
+          var list = {
+            "post_type": 0,
+            "post_getOnTime": time2,
+            "post_location": location,
+            "post_goto": goto,
+            "post_notice": notice,
+            "post_haveHat": haveHat,
+            "post_raincoat": haveCoat
+          };
+          //console.log(list);
+          $.ajax({
+            type: 'POST',
+            url: "/driPost",
+            data: JSON.stringify(list),
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+              window.location.href = 'https://' + document.domain + '/myPost';
+            }
+          });
+        }
       }
       else {
-        var list = {
-          "post_type": 0,
-          "post_getOnTime": time2,
-          "post_location": location,
-          "post_goto": goto,
-          "post_notice": notice,
-          "post_haveHat": haveHat,
-          "post_raincoat": haveCoat
-        };
-        //console.log(list);
-        $.ajax({
-          type: 'POST',
-          url: "/driPost",
-          data: JSON.stringify(list),
-          contentType: 'application/json; charset=utf-8',
-          success: function() {
-                  window.location.href='https://' + document.domain + '/myPost';
-                }
-          });
-
+        window.alert("時間錯誤");
       }
+
+
 
     }
 
@@ -238,6 +250,8 @@
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
   <script src="static/assets/js/notifation.js"></script>
   <!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
+
 
 
 
