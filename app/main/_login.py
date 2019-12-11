@@ -44,6 +44,7 @@ def newAccount():
         newUser['_want_mail'] = True
         newUser['_user_photo'] = '#'
         newUser['_license_photo'] = '#'
+        newUser['_studentCard'] = '#'
         if '_studentCard' in request.files:
             file = request.files['_studentCard']
             if file and allowed_file(file.filename):
