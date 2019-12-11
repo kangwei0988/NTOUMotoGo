@@ -12,10 +12,10 @@ app.config["MONGODB_DB"] = True
 app.config['SECRET_KEY'] = 'ntouMOTOgo' #os.environ.get('SECRET_KEY')
 app.config['BCRYPT_LOG_ROUNDS'] = 10
 app.jinja_env.auto_reload = True
-app.config['TEMPLATES_AUTO_RELOAD'] = True
+# app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.permanent_session_lifetime = datetime.timedelta(days=1) #登入時效
 app.config['UPLOAD_FOLDER'] = 'app/static/userPhotos'
 
 socketio = SocketIO(app)
 
-from .main import backend, _socket, _login, _userInfo,_error
+from .main import backend, _socket, _login, _userInfo,_error,_bonus
