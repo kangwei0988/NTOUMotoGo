@@ -296,9 +296,10 @@
         data: JSON.stringify({ '_id': allPostList[whoName].owner_id }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
+
           var i, avgRating = 0;
           var popPosterInfo = "";
-          popPosterInfo += '<img src = "static/userPhotos/' + data._photo + '"><br>';
+          popPosterInfo += '<img src = "static/userPhotos/' + data._user_photo + '"><br>';
 
           if (data._rate.length) {
 
