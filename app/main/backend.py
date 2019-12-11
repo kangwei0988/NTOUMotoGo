@@ -198,7 +198,7 @@ def cancelPost():
                 return ''
             else:
                 postCol.delete_one({'_id':ObjectId(cancelID['cancel_id'])})
-                requestCol.update({'post_id':postcancel['id']},{"$set": {'_state' : "cancelled"}})
+                requestCol.update({'post_id':postcancel['_id']},{"$set": {'_state' : "cancelled"}})
                 socketio.start_background_task(notifation, app, user['_id'], False, 'post', '取消刊登成功')     
                 return ''
         else:
