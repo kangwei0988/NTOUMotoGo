@@ -427,23 +427,24 @@ def getMyRequests():
         if requ:
             if requ['sender_id'] != user['_id']:
                 Post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
-                result={
-                    'requ_id'   :   str(requ['_id']),
-                    'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
-                    'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
-                    'Location' : Post['post_location'],
-                    'Goto' : Post['post_goto'],
-                    'getonTime' : Post['post_getOnTime'],
-                    'driver_id' : str(requ['dri_id']),
-                    'passenger_id' : str(requ['pas_id']),
-                    'user_id'   :   str(user['_id']),
-                    'notice'    :   Post['post_notice'],
-                    'state'     :   requ['_state'],
-                    'answer_msg':   requ['answer_msg'],
-                    'post_haveHat': Post['post_haveHat'],
-                    'post_raincoat':Post['post_raincoat']
-                }
-                results.insert(0,result)
+                if Post:
+                    result={
+                        'requ_id'   :   str(requ['_id']),
+                        'driverName' :  userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name'],
+                        'passengerName' : userCol.find_one({'_id':ObjectId(requ['pas_id'])})['_name'],
+                        'Location' : Post['post_location'],
+                        'Goto' : Post['post_goto'],
+                        'getonTime' : Post['post_getOnTime'],
+                        'driver_id' : str(requ['dri_id']),
+                        'passenger_id' : str(requ['pas_id']),
+                        'user_id'   :   str(user['_id']),
+                        'notice'    :   Post['post_notice'],
+                        'state'     :   requ['_state'],
+                        'answer_msg':   requ['answer_msg'],
+                        'post_haveHat': Post['post_haveHat'],
+                        'post_raincoat':Post['post_raincoat']
+                    }
+                    results.insert(0,result)
         else:
             requests.remove(requid)
     userCol.update_one({'_id':user['_id']},{'$set':{'_requestHistory' : requests}})
