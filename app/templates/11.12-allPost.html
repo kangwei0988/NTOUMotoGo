@@ -30,11 +30,13 @@
   }
 
   .mybox {
-    margin:10px;
-  
+    margin: 10px;
+
   }
-  .mybutton{
-    background-color: #4CAF50; /* Green */
+
+  .mybutton {
+    background-color: #4CAF50;
+    /* Green */
     border: none;
     color: white;
     text-align: center;
@@ -45,8 +47,10 @@
     text-align: center;
 
   }
-  .mybutton2{
-    background-color:blueviolet; /* Green */
+
+  .mybutton2 {
+    background-color: blueviolet;
+    /* Green */
     border: none;
     color: white;
     text-align: center;
@@ -61,17 +65,15 @@
   .wrapper {
     text-align: center;
   }
-
-
 </style>
 
 <body id="top">
   <!-- Sidebar/menu -->
   <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
     style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
-    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a> 
-    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a> 
-    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a> 
+    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a>
+    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a>
+    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
     <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
     <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
     <a href="/logout" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">登出</a>
@@ -82,28 +84,30 @@
   <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
     <span class="w3-center w3-padding w3-text-light-grey">
       <span id="myType"></span>
-      <button class = "mybutton2" onclick="changeType()">切換身分</button>
+      <button class="mybutton2" onclick="changeType()">切換身分</button>
       <button type="button" class="mybutton" id="search" onclick="inputSearch()">搜尋</button>
     </span>
-    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey" onclick="w3_open()">&#9776;</a>
+    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey"
+      onclick="w3_open()">&#9776;</a>
   </header>
-  
+
   <!-- Main -->
   <br><br><br><br>
   <div id="main">
-    <div id = "searchBar"></div>
+    <div id="searchBar"></div>
     <div class="inner">
 
-      
-      <!--Post Section  --> 
-      <div class="thumbnails" id="allPost"></div> 
+
+      <!--Post Section  -->
+      <div class="thumbnails" id="allPost"></div>
     </div>
   </div>
 
 
   <script src="static/assets/js/jquery.min.js"></script>
-  <script src="static/assets/js/getCoords.js" ></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap" async defer></script>
+  <script src="static/assets/js/getCoords.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap"
+    async defer></script>
   <script src="static/assets/js/jquery.scrolly.min.js"></script>
   <script src="static/assets/js/skel.min.js"></script>
   <script src="static/assets/js/util.js"></script>
@@ -137,54 +141,53 @@
       document.getElementById("modal01").style.display = "block";
       var captionText = document.getElementById("caption");
       captionText.innerHTML = element.alt;
-    } 
+    }
 
-//////////////////////////////////////////
-   
+    //////////////////////////////////////////
+
     // ! 進入頁面就顯示預設刊登 
-    window.onload = function(){
+    window.onload = function () {
       myType = location.href.split("?")[1];
-      if(myType == 'dri')
-      {
+      if (myType == 'dri') {
         searchType = 'pas'
-        document.getElementById("myType").innerHTML="駕駛";
+        document.getElementById("myType").innerHTML = "駕駛";
       }
-      else
-      {
+      else {
         searchType = 'dri';
-        document.getElementById("myType").innerHTML="乘客";
+        document.getElementById("myType").innerHTML = "乘客";
       }
       roadPostData();
     }
 
-    function changeType(){
-      if(myType == 'pas')
-      {
+    function changeType() {
+      if (myType == 'pas') {
         myType = 'dri';
         searchType = 'pas';
         roadPostData();
-        document.getElementById("myType").innerHTML="駕駛";
+        document.getElementById("myType").innerHTML = "駕駛";
       }
-      else
-      {
+      else {
         myType = 'pas';
         searchType = 'dri';
         roadPostData();
-        document.getElementById("myType").innerHTML="乘客";
+        document.getElementById("myType").innerHTML = "乘客";
       }
     }
 
-    function roadPostData(){
+    function roadPostData() {
       $.ajax({
         type: 'POST',
         url: "/postBoard",
-        data: JSON.stringify({'post_type' : searchType}),
+        data: JSON.stringify({ 'post_type': searchType }),
         contentType: 'application/json; charset=utf-8',
-        success: displayPost
+        success: function (data) {
+          displayPost(data);
+          allPostList = data;
+        }
       });
     }
 
-    function displayPost(postResult){
+    function displayPost(postResult) {
       console.log(postResult);
       convertion(postResult);
       var note;
@@ -192,112 +195,105 @@
         note = '是邊緣人需要別人載他';
       else
         note = '的後座空空的覺得好寂寞';
-      allPostList = postResult;
-      if(postResult.length)
-      {
+      if (postResult.length) {
         myID = postResult[0].yourID;
-        var popContent="";
-        for(var i=0;i<postResult.length;i++){      
-          popContent +='<div class="box">\
+        var popContent = "";
+        for (var i = 0; i < postResult.length; i++) {
+          popContent += '<div class="box">\
                           <div class="inner">\
-                            <h3 id="post'+i+'" onclick="posterInfo(this)">'+ postResult[i].post_name+'<span style:"position:relative; top:5px;">'+note+'</span>'+'</h3>\
-                            <div id="posterInfo'+i+'"></div>\
-                            <p style="text-align: left;">目的地:'+ postResult[i].post_goto +'<br>上車時間:' + TT[i] + '<br>上車地點:' + postResult[i].post_location   ;      
-          if(myType=='pas')
-          {
-            if(postResult[i].post_haveHat==true)
-              popContent+='<br>我有安全帽';
-            else 
-              popContent+='<br>我沒有安全帽';
-            if(postResult[i].post_raincoat==true)
-              popContent+='<br>我有雨衣';
-            else 
-              popContent+='<br>我沒有雨衣';
+                            <h2 id="post'+ i + '" onclick="posterInfo(this)">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
+                            <div id="posterInfo'+ i + '"></div>\
+                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;">' + TT[i] + '</span>';
+          if (myType == 'pas') {
+            if (postResult[i].post_haveHat == true)
+              popContent += '<br>我有安全帽';
+            else
+              popContent += '<br>我沒有安全帽';
+            if (postResult[i].post_raincoat == true)
+              popContent += '<br>我有雨衣';
+            else
+              popContent += '<br>我沒有雨衣';
           }
-          else{
-            if(postResult[i].post_haveHat==true)
-              popContent+='<br>我需要安全帽';
-            else 
-              popContent+='<br>我不需要安全帽';
-            if(postResult[i].post_raincoat==true)
-              popContent+='<br>我需要雨衣';
-            else 
-              popContent+='<br>我不需要雨衣';
+          else {
+            if (postResult[i].post_haveHat == true)
+              popContent += '<br>我需要安全帽';
+            else
+              popContent += '<br>我不需要安全帽';
+            if (postResult[i].post_raincoat == true)
+              popContent += '<br>我需要雨衣';
+            else
+              popContent += '<br>我不需要雨衣';
           }
-          popContent+='<br>備註 :'+ postResult[i].post_notice +'</p>';
-          if(postResult[i].owner_id != myID)
-            popContent+='<button class="button style2 fit" type="button" onclick="sendRequest(\''+postResult[i]._id+'\')" >送出請求</button>\
+          popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
+          if (postResult[i].owner_id != myID)
+            popContent += '<button class="button style2 fit" type="button" onclick="sendRequest(\'' + postResult[i]._id + '\')" >送出請求</button>\
                           </div>\
                         </div>';
           else
-          popContent+='<button class="button style2 fit" type="button" disabled=true)" >這是您的刊登資訊</button>\
+            popContent += '<button class="button style2 fit" type="button" disabled=true)" >這是您的刊登資訊</button>\
                           </div>\
                         </div>';
         }
-        //console.log(typeof(postResult[0]._id));
         document.getElementById("allPost").innerHTML = popContent;
       }
       else
         document.getElementById("allPost").innerHTML = "目前沒有刊登資訊";
     }
-    
-    var TT=[]
-    function convertion(requestarray)
-    {
+
+    var TT = []
+    function convertion(requestarray) {
       if (requestarray.length) {
         for (i = 0; i < requestarray.length; i++) {
-          month=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-          Month=["1","2","3","4","5","6","7","8","9","10","11","12"];
-          week=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-          Week=["禮拜一","禮拜二","禮拜三","禮拜四","禮拜五","禮拜六","禮拜日"];
-          var tmp1=requestarray[i].post_getOnTime;
-          var tmp=tmp1.split(",");
-          var tmp2=tmp1.split(" ");
-          console.log(tmp1);
-          var output="";
-          output+=tmp2[3]+"/";
-          for(j=0;j<12;j++)
-            if(tmp2[2]==month[j])
-              output+=Month[j]+"/";
-          output+=tmp2[1]+" ";
-          for(j=0;j<7;j++)
-            if(tmp[0]==week[j])
-              output+=Week[j]+" ";
-          output+=tmp2[4];
+          month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          Month = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+          week = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+          Week = ["禮拜一", "禮拜二", "禮拜三", "禮拜四", "禮拜五", "禮拜六", "禮拜日"];
+          var tmp1 = requestarray[i].post_getOnTime;
+          var tmp = tmp1.split(",");
+          var tmp2 = tmp1.split(" ");
+          var output = "";
+          output += tmp2[3] + "/";
+          for (j = 0; j < 12; j++)
+            if (tmp2[2] == month[j])
+              output += Month[j] + "/";
+          output += tmp2[1] + " ";
+          for (j = 0; j < 7; j++)
+            if (tmp[0] == week[j])
+              output += Week[j] + " ";
+          output += tmp2[4];
           TT.push(output);
         }
       }
-      console.log(TT);
     }
     //是否要已送出過就無法再按
-    function sendRequest(postID){
+    function sendRequest(postID) {
       $.ajax({
         type: 'POST',
         url: "/sendRequest",
-        data: JSON.stringify({'post_id' : postID}),
+        data: JSON.stringify({ 'post_id': postID }),
         contentType: 'application/json; charset=utf-8',
-        success: function() {
-                  window.location.href='https://' + document.domain + '/passengerRespond';
-                }
-          });
-    }      
+        success: function () {
+          window.location.href = 'https://' + document.domain + '/passengerRespond';
+        }
+      });
+    }
 
     //刊登人個人資訊 
-    function posterInfo(obj){
+    function posterInfo(obj) {
       var whoName = obj.id.charAt(4);
       $.ajax({
         type: 'POST',
         url: "/getAnotherUserData",
-        data: JSON.stringify({'_id' : allPostList[whoName].owner_id}),
+        data: JSON.stringify({ '_id': allPostList[whoName].owner_id }),
         contentType: 'application/json; charset=utf-8',
-        success: function(data){
+        success: function (data) {
           var i, avgRating = 0;
-          var popPosterInfo="";
-          popPosterInfo += '<img src = "'+data._photo+'"><br>';
-          
-          if(data._rate.length){
-            
-            for(i = 0; i < data._rate.length;i++)
+          var popPosterInfo = "";
+          popPosterInfo += '<img src = "' + data._photo + '"><br>';
+
+          if (data._rate.length) {
+
+            for (i = 0; i < data._rate.length; i++)
               avgRating += data._rate[i];
             avgRating /= (data._rate.length);
             popPosterInfo += avgRating;
@@ -305,22 +301,23 @@
           }
           else
             popPosterInfo += "尚無評價";
-          popPosterInfo += '<br>電話號碼:' + data._phone+"</br>";
-          
+          popPosterInfo += '<br>電話號碼:' + data._phone + "</br>";
 
-          document.getElementById('posterInfo'+whoName).innerHTML = popPosterInfo;
+
+          document.getElementById('posterInfo' + whoName).innerHTML = popPosterInfo;
         }
       });
     }
-    
+
     //填入搜尋資訊
-    function inputSearch(){
+    function inputSearch() {
       postReg = 0;
       $('#searchBar').empty();
-      			
-      var popContent =  '<div class="w3-section">\
+
+      var popContent = '<div class="w3-section">\
                           <label>搭車地點</label>\
                           <select class="w3-input w3-border" type="text" name="post_location" required id="loc" style="background-color: #3c3c44;">\
+                              <option value=""></option>\
                             　<option value="瑞芳車站">瑞芳車站</option>\
                             　<option value="山海觀">山海觀</option>\
                             　<option value="海洋大學體育館">海洋大學體育館</option>\
@@ -348,7 +345,8 @@
                         <div class="w3-section">\
                           <label>目的地</label>\
                           <select class="w3-input w3-border" type="text" name="post_goto" required id="des" style="background-color: #3c3c44;">\
-                            　<option value="瑞芳車站">瑞芳車站</option>\
+                              <option value=""></option>\
+                              <option value="瑞芳車站">瑞芳車站</option>\
                             　<option value="山海觀">山海觀</option>\
                             　<option value="海洋大學體育館">海洋大學體育館</option>\
                             　<option value="海洋大學濱海校門">海洋大學濱海校門</option>\
@@ -371,36 +369,68 @@
                             　<option value="基隆海事">基隆海事</option>\
                             　<option value="祥豐市場">祥豐市場</option>\
                           </select>\
-                        </div>\
+                          </div>\
+                        <div class="inner">名字搜尋:<input type="text" name="searchEventName" id="searchName" placeholder="請輸入名字"></div>\
+                        <button type="button" class="mybutton" onclick="submitSearch()" style="width: 15%;">搜尋</button>\
                         <button type="button" class="mybutton" onclick="clearSearch()" style="width: 15%;">取消</button>';
 
       $('#searchBar').append(popContent);
       //return newNode;
     }
 
-  
-function submitSearch(){
-  var i;
-  var j = 0;
-  console.log(document.getElementById("loc").value);
-  console.log(document.getElementById("des").value);
-  var temp = [];
-  for(i = 0;i < allPostList.length;i++){
-    if(allPostList[i].post_goto == document.getElementById("goto").value)
-      temp[j++] = allPostList[i];
-  }
-  j = 0;
-  for(i = 0;i < temp.length;i++){
-    if(allPostList[i].post_location == document.getElementById("loc").value)
-      mySearch[j++] = temp[i];
-  }
-  displayPost(mySearch);
-}
 
-function clearSearch(){
-  $('#searchBar').empty();
-  displayPost(allPostList);
-}
+    function submitSearch() {
+      var i;
+      var j = 0;
+      var temp = [];
+      if (document.getElementById("searchName").value && document.getElementById("des").value && document.getElementById("loc").value)
+        for (i = 0; i < allPostList.length; i++) {
+          if (allPostList[i].post_goto == document.getElementById("des").value)
+            if (allPostList[i].post_location == document.getElementById("loc").value)
+              if (allPostList[i].post_name == document.getElementById("searchName").value)
+                mySearch[j++] = allPostList[i];
+        }
+      else if (!document.getElementById("searchName").value && document.getElementById("des").value && document.getElementById("loc").value)
+        for (i = 0; i < allPostList.length; i++) {
+          if (allPostList[i].post_goto == document.getElementById("des").value)
+            if (allPostList[i].post_location == document.getElementById("loc").value)
+              mySearch[j++] = allPostList[i];
+        }
+      else if (document.getElementById("searchName").value && !document.getElementById("des").value && document.getElementById("loc").value)
+        for (i = 0; i < allPostList.length; i++) {
+          if (allPostList[i].post_location == document.getElementById("loc").value)
+            if (allPostList[i].post_name == document.getElementById("searchName").value)
+              mySearch[j++] = allPostList[i];
+        }
+      else if (document.getElementById("searchName").value && document.getElementById("des").value && !document.getElementById("loc").value)
+        for (i = 0; i < allPostList.length; i++) {
+          if (allPostList[i].post_goto == document.getElementById("des").value)
+            if (allPostList[i].post_name == document.getElementById("searchName").value)
+              mySearch[j++] = allPostList[i];
+        }
+      else if (!document.getElementById("searchName").value && !document.getElementById("des").value && document.getElementById("loc").value)
+        for (i = 0; i < allPostList.length; i++) {
+          if (allPostList[i].post_location == document.getElementById("loc").value)
+            mySearch[j++] = allPostList[i];
+        }
+      else if (!document.getElementById("searchName").value && document.getElementById("des").value && !document.getElementById("loc").value)
+        for (i = 0; i < allPostList.length; i++) {
+          if (allPostList[i].post_goto == document.getElementById("des").value)
+            mySearch[j++] = allPostList[i];
+        }
+      else if (document.getElementById("searchName").value && !document.getElementById("des").value && !document.getElementById("loc").value) {
+        for (i = 0; i < allPostList.length; i++) {
+          if (allPostList[i].post_name == document.getElementById("searchName").value)
+            mySearch[j++] = allPostList[i];
+        }
+      }
+      displayPost(mySearch);
+    }
+
+    function clearSearch() {
+      displayPost(allPostList);
+      document.getElementById("searchBar").innerHTML = "";
+    }
 
   </script>
 
