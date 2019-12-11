@@ -20,7 +20,8 @@ def search():
     
     results = [] 
     resultsId = []    
-    setGoto = set(tmp["post_goto"])
+    setGoto = set()
+    setGoto.add(tmp["post_goto"])
 
     setA = {"瑞芳車站"}
     setB = {"山海觀"}
@@ -30,19 +31,18 @@ def search():
     setF = {"基隆海事","祥豐市場"}
 
 
-    if set(tmp['post_goto']) == (setGoto & setA):
+    if setGoto == (setGoto & setA):
         setGoto = setA
-    elif set(tmp['post_goto']) == (setGoto & setB):
+    elif setGoto == (setGoto & setB):
         setGoto = setB
-    elif set(tmp['post_goto']) == (setGoto & setC):
+    elif setGoto == (setGoto & setC):
         setGoto = setC
-    elif set(tmp['post_goto']) == (setGoto & setD):
+    elif setGoto == (setGoto & setD):
         setGoto = setD
-    elif set(tmp['post_goto']) == (setGoto & setE):
+    elif setGoto == (setGoto & setE):
         setGoto = setE
-    elif set(tmp['post_goto']) == (setGoto & setF):
+    elif setGoto == (setGoto & setF):
         setGoto = setF
-
 
     posts = postCol.find({'post_location':tmp["post_location"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
 
