@@ -12,6 +12,57 @@ import datetime
 from .backend import userCol,postCol
 from math import radians, cos, sin, asin, sqrt
 
+
+#搜尋
+@app.route('/search',methods=['GET','POST'])
+def search():
+    tmp = request.get_json(silent=True)
+    
+    results = []    
+    setGoto = set(tmp["post_goto"])
+
+    setA = {"瑞芳車站"}
+    setB = {"山海觀"}
+    setC = {"海洋大學體育館","海洋大學濱海校門","海洋大學祥豐校門","中正路加油站"}
+    setD = {"基隆市立圖書館","長榮桂冠","基隆市政府","海洋廣場","基隆火車站","廟口","基隆女子高級中學"}
+    setE = {"微笑台北","深溪路愛買","海中天","巴賽隆納","海洋世界","新豐麥當勞"}
+    setF = {"基隆海事","祥豐市場"}
+
+
+    if set(tmp['post_goto']) == (setGoto & setA):
+        setGoto = setA
+    elif set(tmp['post_goto']) == (setGoto & setB):
+        setGoto = setB
+    elif set(tmp['post_goto']) == (setGoto & setC):
+        setGoto = setC
+    elif set(tmp['post_goto']) == (setGoto & setD):
+        setGoto = setD
+    elif set(tmp['post_goto']) == (setGoto & setE):
+        setGoto = setE
+    elif set(tmp['post_goto']) == (setGoto & setF):
+        setGoto = setF
+
+
+    Posts = postCol.find({'post_location':tmp["post_location"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+    results.append(Posts)
+
+    for goto in setGoto:
+        x = postCol.find({'post_goto':goto,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+        results.append(x)
+
+    myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
+
+    for result in results:
+        result['_id'] = str(result['_id'])
+        result['owner_id'] = str(result['owner_id'])
+        result['post_name'] = userCol.find_one({'_id' : ObjectId(result['owner_id'])})['_name']
+        result['yourID'] = str(myId)
+
+    return jsonify(results)
+
+
+    
+    
 # location = {
 #     "瑞芳車站":{"lat":25.108789,"lng":121.805969},
 #     "山海觀":{"lat":25.137714,"lng":121.794330},
@@ -71,81 +122,8 @@ from math import radians, cos, sin, asin, sqrt
 #     c = 2 * asin(sqrt(a)) 
 #     r = 6378137 #地球半徑公尺
 #     return c * r
-
-#搜尋
-@app.route('/search',methods=['GET','POST'])
-def search():
-    tmp = request.get_json(silent=True)
-    
-    results = []
-    ResultId = set()
-    setLocation =set(tmp["location"])
-    setGoto = set(tmp["goto"])
-
-    setA = {"瑞芳車站"}
-    setB = {"山海觀"}
-    setC = {"海洋大學體育館","海洋大學濱海校門","海洋大學祥豐校門","中正路加油站"}
-    setD = {"基隆市立圖書館","長榮桂冠","基隆市政府","海洋廣場","基隆火車站","廟口","基隆女子高級中學"}
-    setE = {"微笑台北","深溪路愛買","海中天","巴賽隆納","海洋世界","新豐麥當勞"}
-    setF = {"基隆海事","祥豐市場"}
-
-
-    if set(tmp['post_goto']) == (setGoto & setA):
-        setGoto = setA
-    elif set(tmp['post_goto']) == (setGoto & setB):
-        setGoto = setB
-    elif set(tmp['post_goto']) == (setGoto & setC):
-        setGoto = setC
-    elif set(tmp['post_goto']) == (setGoto & setD):
-        setGoto = setD
-    elif set(tmp['post_goto']) == (setGoto & setE):
-        setGoto = setE
-    elif set(tmp['post_goto']) == (setGoto & setF):
-        setGoto = setF
-
-
-    Posts = postCol.find({'post_location':tmp["post_location"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
-    results.append(Posts)
-
-    for goto in setGoto:
-        x = postCol.find({'post_goto':goto,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
-        results.append(x)
-
-    for result in results:
-        result['_id'] = str(result['_id'])
-        result['owner_id'] = str(result['owner_id'])
-        result['post_name'] = userCol.find_one({'_id' : ObjectId(result['owner_id'])})['_name']
-        result['yourID'] = str(myId)
-
-    return jsonify(results)
-
-
-    
-
-    # for post in Posts:#判斷搭乘地點，相符的objectid加入
-    #     if set(post['post_location']) == (setLocation & setA):
-    #         ResultId.add(post['_id'])
-    #     elif set(post['post_location']) == (setLocation & setB):
-    #         ResultId.add(post['_id'])
-    #     elif set(post['post_location']) == (setLocation & setC):
-    #         ResultId.add(post['_id'])
-    #     elif set(post['post_location']) == (setLocation & setD):
-    #         ResultId.add(post['_id'])
-    #     elif set(post['post_location']) == (setLocation & setE):
-    #         ResultId.add(post['_id'])
-    #     elif set(post['post_location']) == (setLocation & setF):
-    #         ResultId.add(post['_id'])
-
-    
-        
             
     
 
     
         
-       
-
-
-
-
-    return redirect(url_for('homePage'))
