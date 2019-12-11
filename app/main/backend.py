@@ -185,6 +185,29 @@ def returnLocation():
 
 
 ###########################post#########################################
+#取消刊登
+@app.route('/cancelPost',methods=['GET','POST'])
+def cancelPost():
+    cancelID = request.get_json(silent=True)
+    user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
+    postcancel = postCol.find_one({'_id':ObjectId(cancelID['cancel_id'])})#cancel_id配合front end
+    if postcancel:
+        if user['_id'] == postcancel['owner_id']:
+            if postcancel['post_matched'] == True:   
+                socketio.start_background_task(notifation, app, user['_id'], postcancel['_id'], 'post', '此刊登已配對，無法取消')
+                return ''
+            else:
+                postCol.delete_one({'_id':ObjectId(cancelID['cancel_id'])})
+                requestCol.update({'post_id':postcancel['id']},{"$set": {'_state' : "cancelled"}})
+                socketio.start_background_task(notifation, app, user['_id'], False, 'post', '取消刊登成功')     
+                return ''
+        else:
+            socketio.start_background_task(notifation, app, user['_id'], postcancel['_id'], 'post', '發出刊登者才有權限取消此刊登')    
+            return ''
+    else:
+        socketio.start_background_task(notifation, app, user['_id'], False, 'post', '找不到此刊登')     
+        return ''
+
 #乘客刊登
 @app.route('/pasPost',methods=['GET','POST'])
 def pasPost():
@@ -275,35 +298,37 @@ def deleteRequest():
             userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_requestHistory' : temp}})       
             # thr = Thread(target=notifation, args=[app, user['_id'], deleteID['delete_id'], 'requ', '刪除請求紀錄成功']) #呼叫通知函式，回報刪除成功
             # thr.start()
-            socketio.start_background_task(notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除請求紀錄成功')
+            socketio.start_background_task(notifation, app, user['_id'], False, 'requ', '刪除請求紀錄成功')
             return ''
     # thr = Thread(target=notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除失敗，該請求紀錄可能已被刪除') #呼叫通知函式，回報刪除失敗
     # thr.start()        
-    socketio.start_background_task(notifation, app, user['_id'], deleteID['delete_id'], 'requ', '刪除失敗，該請求紀錄可能已被刪除')
+    socketio.start_background_task(notifation, app, user['_id'], False, 'requ', '刪除失敗，該請求紀錄可能已被刪除')
     return ''
+
 #取消請求
 @app.route('/cancelRequest',methods=['GET','POST'])
 def cancelRequest():
     cancelID = request.get_json(silent=True)
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
     requcancel = requestCol.find_one({'_id':ObjectId(cancelID['cancel_id'])})#cancel_id配合front end
-    if requcancel is None:
-            socketio.start_background_task(notifation, app, user['_id'], '', 'requ', '找不到該請求')      
-            return redirect(request.url)
-    if user['_id'] == requcancel['sender_id']:
-        if requcancel['_state'] == "cancelled":   
-            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '取消失敗，該請求已被取消')
-            return redirect(request.url)
-        elif requcancel['_state'] == "waiting":    
-            requestCol.update({'_id':ObjectId(cancelID['cancel_id'])},{"$set": {'_state' : "cancelled"}})
-            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '取消請求成功')
-            return redirect(request.url)
+    if requcancel:
+        if user['_id'] == requcancel['sender_id']:
+            if requcancel['_state'] == "cancelled":   
+                socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '取消失敗，該請求已被取消')
+                return ''
+            elif requcancel['_state'] == "waiting":    
+                requestCol.update({'_id':ObjectId(cancelID['cancel_id'])},{"$set": {'_state' : "cancelled"}})
+                socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '取消請求成功')
+                return ''
+            else:
+                socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '該請求無法取消')     
+                return ''
         else:
-            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '該請求無法取消')     
-            return redirect(request.url)
+            socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '發出請求者才有權限取消該請求')    
+            return ''
     else:
-        socketio.start_background_task(notifation, app, user['_id'], requcancel['_id'], 'requ', '發出請求者才有權限取消該請求')    
-        return redirect(request.url)
+        socketio.start_background_task(notifation, app, user['_id'], False, 'requ', '找不到該請求')     
+        return ''
 
 #駕駛乘客發出請求
 @app.route('/sendRequest',methods=['GET','POST'])
@@ -543,22 +568,26 @@ def getSelfPost():
 @app.route('/getMatchedPost',methods=['GET','POST'])
 def getMatchedPost():
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
+    
     matchHistory = user['_matchHistory']
     results = []
 
     for requestId in matchHistory:
         result = requestCol.find_one({'_id':ObjectId(requestId)})
+        sender = userCol.find_one({'_id' : result['sender_id']})
         if result['_state'] == 'matched':
             if user['_id'] == result['pas_id']: #設定map要看的目標
                 result.update({'target_id':str(result['dri_id'])})
             if user['_id'] == result['dri_id']: #設定map要看的目標
                 result.update({'target_id':str(result['pas_id'])})
 
+            result.update({'sender_name': sender['_name']})
             result['_id'] = str(result['_id'])
             result['post_id'] = str(result['post_id'])
             result['sender_id'] = str(result['sender_id'])
             result['pas_id'] = str(result['pas_id'])
             result['dri_id'] = str(result['dri_id'])
+
             if type(result['pas_rate']) is not bool:
                 result['pas_rate'] = str(result['pas_rate'])
             if type(result['dri_rate']) is not bool:
