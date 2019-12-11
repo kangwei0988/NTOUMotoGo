@@ -502,11 +502,11 @@ def getHistory():
             result['driver']    = {'_name' : driUser['_name'], '_id' : str(driUser['_id'])} #填入乘客資料
             result['pas_ok'] = history['pas_ok']
             result['dri_ok'] = history['dri_ok']
-            if str(history['pas_rate']) in user['_rateHistory']: #如果乘客有寫評價且被評價者為自己
+            if history['pas_rate']: #如果乘客有寫評價
                 pasRate = rateCol.find_one({'_id':ObjectId(history['pas_rate'])})
                 if pasRate: #如果該評價存在
                     result['pas_rate'] = {'_name' : pasUser['_name'] , 'rate_range' : pasRate['rate_range'], 'rate_note' : pasRate['rate_note']} #加入乘客評價
-            if str(history['dri_rate']) in user['_rateHistory']: #如果駕駛有寫評價且被評價者為自己
+            if history['dri_rate']: #如果駕駛有寫評價
                 pasRate = rateCol.find_one({'_id':ObjectId(history['dri_rate'])})
                 if pasRate: #如果該評價存在
                     result['dri_rate'] = {'_name' : pasUser['_name'] , 'rate_range' : pasRate['rate_range'], 'rate_note' : pasRate['rate_note']} #加入駕駛評價
