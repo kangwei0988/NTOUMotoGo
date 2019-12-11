@@ -204,10 +204,6 @@
           popContent += '<a class="button style3 fit" href="chatRoom?' + strings[i]._id + '">聊天室</a>';
         }
         ///////////////////////////////////////////////////////////////////////////////////
-        if (!matchedPosts[i].post.post_matched) {
-          popContent += '<button class="button style2 fit">未配對</button>';
-          popContent += '<button class="button style3 fit">刪除此刊登</button>';
-        }
         popContent += '</div></div>';
       }
       document.getElementById("myPostList").innerHTML = popContent;
