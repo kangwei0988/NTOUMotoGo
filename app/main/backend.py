@@ -400,7 +400,9 @@ def getRequests():
                     'user_id'   :   str(user['_id']),
                     'notice'    :   Post['post_notice'],
                     'state'     :   requ['_state'],
-                    'answer_msg':   requ['answer_msg']
+                    'answer_msg':   requ['answer_msg'],
+                    'post_haveHat': Post['post_haveHat'],
+                    'post_raincoat':Post['post_raincoat']
                 }
                 results.insert(0,result)
         else:
@@ -431,7 +433,9 @@ def getMyRequests():
                     'user_id'   :   str(user['_id']),
                     'notice'    :   Post['post_notice'],
                     'state'     :   requ['_state'],
-                    'answer_msg':   requ['answer_msg']
+                    'answer_msg':   requ['answer_msg'],
+                    'post_haveHat': Post['post_haveHat'],
+                    'post_raincoat':Post['post_raincoat']
                 }
                 results.insert(0,result)
         else:
