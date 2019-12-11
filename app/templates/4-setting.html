@@ -140,15 +140,9 @@
     }
 
     function show() {
-      if (string._new_notifications == true && string._want_mail == true) {
+      if (string._want_mail == "true") {
         document.getElementById("watch").innerHTML =
           '<form action="/setNotiMail" method="POST">\
-            <h1 class="w3-center">\
-              通知\
-              <label><input name="_new_notifications" type="radio" value=true checked>開</label>\
-              <label><input name="_new_notifications" type="radio" value=false>關</label>\
-            </h1>\
-            <h1 class="w3-center">\
               email\
               <label><input name="_want_mail" type="radio" value=true checked>開</label>\
               <label><input name="_want_mail" type="radio" value=false>關</label>\
@@ -161,15 +155,9 @@
             style="background-color: red;  width:100%;" value = "登出" >\
           </a>'
       }
-      else if (string._new_notifications == true && string._want_mail  == false) {
+      else if (string._want_mail  == "false") {
         document.getElementById("watch").innerHTML =
           '<form action="/setNotiMail" method="POST">\
-            <h1 class="w3-center">\
-              通知\
-              <label><input name="_new_notifications" type="radio" value=true checked>開</label>\
-              <label><input name="_new_notifications" type="radio" value=false>關</label>\
-            </h1>\
-            <h1 class="w3-center">\
               email\
               <label><input name="_want_mail" type="radio" value=true >開</label>\
               <label><input name="_want_mail" type="radio" value=false checked>關</label>\
@@ -180,48 +168,6 @@
           <a href="login.html">\
           <input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
             style="background-color: red;  width:100%;" value = "登出" >\
-          </a>'
-      }
-      else if (string._new_notifications == false && string._want_mail == true) {
-        document.getElementById("watch").innerHTML =
-          '<form action="/setNotiMail" method="POST">\
-            <h1 class="w3-center">\
-              通知\
-              <label><input name="_new_notifications" type="radio" value=true >開</label>\
-              <label><input name="_new_notifications" type="radio" value=false checked>關</label>\
-            </h1>\
-            <h1 class="w3-center">\
-              email\
-              <label><input name="_want_mail" type="radio" value=true checked>開</label>\
-              <label><input name="_want_mail" type="radio" value=false >關</label>\
-            </h1>\
-            <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"\
-              style="background-color: #7f92cf;width:100%;">確定</button>\
-          </form>\
-          <a href="login.html">\
-          <input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
-            style="background-color: red;  width:100%;" value = "登出" >\
-          </a>'
-      }
-      else if (string._new_notifications == false && string._want_mail == false) {
-        document.getElementById("watch").innerHTML =
-          '<form action="/setNotiMail" method="POST">\
-            <h1 class="w3-center">\
-              通知\
-              <label><input name="_new_notifications" type="radio" value=true >開</label>\
-              <label><input name="_new_notifications" type="radio" value=false checked>關</label>\
-            </h1>\
-            <h1 class="w3-center">\
-              email\
-              <label><input name="_want_mail" type="radio" value=true >開</label>\
-              <label><input name="_want_mail" type="radio" value=false checked>關</label>\
-            </h1>\
-            <button type="submit" class="w3-button w3-block w3-margin-bottom w3-round-large"\
-              style="background-color: #7f92cf;width:100%;">確定</button>\
-          </form>\
-          <a href="login.html">\
-          <input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
-            style="background-color: red;  width:100%;" value = "登出">\
           </a>'
       }
 
