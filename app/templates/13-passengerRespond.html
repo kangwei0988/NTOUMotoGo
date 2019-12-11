@@ -324,7 +324,7 @@
               else if (requestarray[i].state == "refuse") {
                 box.innerHTML +=
                   "\<button class='button style2 fit' onclick='accept(" + i + ")' disabled=true>已被對方拒絕</button>\
-                \<a class='button style2 fit' onclick='reject("+ i + ")'>理由:" + requestarray[i].answer_msg + "</a>"
+                \<a class='button style2 fit' onclick='reject("+ i + ")'>理由:" + string[i].answer_msg + "</a>"
               }
               else if (requestarray[i].state == "matched") {
                 box.innerHTML +=
@@ -344,9 +344,6 @@
                 box.innerHTML +=
                   "\<button class='button style2 fit' disabled=true>共乘系統未完成QQ</button>"
               }
-            }
-            else {
-              document.getElementById("RequestList").innerHTML += "尚未發出請求";
             }
           }
         }
