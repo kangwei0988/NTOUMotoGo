@@ -201,6 +201,7 @@
       var day = dateControl.substr(8,2);
       var hour = timeControl.substr(0,2);
       var min = timeControl.substr(3,2);
+      var now = new Date();
       var posttime = new Date(year, mon - 1, day, hour, min);
       console.log(posttime);
       // console.log(posttime);
