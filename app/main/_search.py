@@ -18,7 +18,8 @@ from math import radians, cos, sin, asin, sqrt
 def search():
     tmp = request.get_json(silent=True)
     
-    results = []    
+    results = [] 
+    resultsId = []    
     setGoto = set(tmp["post_goto"])
 
     setA = {"瑞芳車站"}
@@ -43,20 +44,27 @@ def search():
         setGoto = setF
 
 
-    Posts = postCol.find({'post_location':tmp["post_location"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
-    results.append(Posts)
+    posts = postCol.find({'post_location':tmp["post_location"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+
+    for i in posts:
+        resultsId.append(str(i['_id']))
 
     for goto in setGoto:
-        x = postCol.find({'post_goto':goto,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
-        results.append(x)
+        postgo = postCol.find({'post_goto':goto,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+        for x in postgo:
+            resultsId.append(str(x['_id']))
+        
 
     myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
 
-    for result in results:
+
+    for id in resultsId:
+        result = postCol.find_one({'_id' : ObjectId(id)})
         result['_id'] = str(result['_id'])
         result['owner_id'] = str(result['owner_id'])
         result['post_name'] = userCol.find_one({'_id' : ObjectId(result['owner_id'])})['_name']
         result['yourID'] = str(myId)
+        results.append(result)
 
     return jsonify(results)
 
