@@ -257,7 +257,7 @@
         data: JSON.stringify({ 'type':'post', 'target': postResult[i].post_getOnTime }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-          if(data)
+          if(!data.result)
             window.alert("按下 確認送出 已發送該請求");
           else
             window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認送出")
