@@ -197,6 +197,7 @@
     }
 
     function displayPost(postResult) {
+      var TT = convertion(postResult);
       console.log(postResult);
       convertion(postResult);
       var note;
@@ -305,8 +306,9 @@
       });
       
     }
-    var TT = []
+    
     function convertion(requestarray) {
+      var TT = [];
       if (requestarray.length) {
         for (i = 0; i < requestarray.length; i++) {
           month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -329,6 +331,7 @@
           TT.push(output);
         }
       }
+      return TT;
     }
     //是否要已送出過就無法再按
     function sendRequest(postID) {
