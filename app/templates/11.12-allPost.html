@@ -61,16 +61,19 @@
     text-align: center;
 
   }
-  .userinfo{
-    text-decoration:underline;
-    color:yellow;
+
+  .userinfo {
+    text-decoration: underline;
+    color: yellow;
   }
-  .userinfo:hover{
-    text-decoration:none;
-    text-decoration-color:orange;
-    color:yellow;
+
+  .userinfo:hover {
+    text-decoration: none;
+    text-decoration-color: orange;
+    color: yellow;
     cursor: pointer;
   }
+
   .wrapper {
     text-align: center;
   }
@@ -189,7 +192,7 @@
         data: JSON.stringify({ 'post_type': searchType }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-          postResult=data;
+          postResult = data;
           displayPost(postResult);
           allPostList = data;
         }
@@ -209,7 +212,7 @@
         myID = postResult[0].yourID;
         var popContent = "";
         for (var i = 0; i < postResult.length; i++) {
-          popContent += '<div class="box" id=box'+i+'>\
+          popContent += '<div class="box" id=box' + i + '>\
                           <div class="inner">\
                             <h2 id="post'+ i + '" onclick="posterInfo(this)" style="color:yellow" class="userinfo">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
@@ -236,7 +239,7 @@
           }
           popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
           if (postResult[i].owner_id != myID)
-            popContent += '<button class="button style2 fit" type="button" onclick="beforesendRequest('+i+')" >送出請求</button>\
+            popContent += '<div id = "sendButton' + i + '"><button class="button style2 fit" type="button" onclick="beforesendRequest(' + i + ')" >送出請求</button></div>\
                           </div>\
                         </div>';
           else
@@ -249,69 +252,27 @@
       else
         document.getElementById("allPost").innerHTML = "目前沒有刊登資訊";
     }
-    function beforesendRequest(i)
-    {
+    function beforesendRequest(i) {
       var getOnTime = new Date(postResult[i].post_getOnTime)
-      console.log(typeof(getOnTime))
-      var postTime =  getOnTime.toISOString();
+      console.log(typeof (getOnTime))
+      var postTime = getOnTime.toISOString();
       postTime = postTime.split('Z')[0]
       postTime += '+00:00'
       $.ajax({
         type: 'POST',
         url: "/checkBusy",
-        data: JSON.stringify({ 'type':'post', 'target': postTime}),
+        data: JSON.stringify({ 'type': 'post', 'target': postTime }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-          if(!data.result)
+          if (!data.result)
             window.alert("按下 確認送出 已發送該請求");
           else
             window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認送出")
-          console.log("SSSS");
-      var note;
-      document.getElementById("box"+i).innerHTML = "";
-      if (myType == 'dri')
-        note = '是邊緣人需要別人載他';
-      else
-        note = '的後座空空的覺得好寂寞';
-        var popContent = "";
-          popContent += '<div class="inner">\
-                        <h2 id="post'+ i + '" onclick="posterInfo(this)" style="color:yellow" class="userinfo">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
-                        <div id="posterInfo'+ i + '"></div>\
-                        <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold; color:skyblue;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:pink;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:orange;">' + TT[i] + '</span>';
-      if (myType == 'pas') {
-            if (postResult[i].post_haveHat == true)
-              popContent += '<br>我有安全帽';
-            else
-              popContent += '<br>我沒有安全帽';
-            if (postResult[i].post_raincoat == true)
-              popContent += '<br>我有雨衣';
-            else
-              popContent += '<br>我沒有雨衣';
-          }
-          else {
-            if (postResult[i].post_haveHat == true)
-              popContent += '<br>我需要安全帽';
-            else
-              popContent += '<br>我不需要安全帽';
-            if (postResult[i].post_raincoat == true)
-              popContent += '<br>我需要雨衣';
-            else
-              popContent += '<br>我不需要雨衣';
-          }
-          popContent += '<br>備註 :' + postResult[i].post_notice + '</p>';
-          if (postResult[i].owner_id != myID)
-            popContent += '<button class="button style2 fit" type="button" onclick="sendRequest(\'' + postResult[i]._id + '\')" >確認送出</button>\
-                          </div>\
-                        </div>';
-          else
-            popContent += '<button class="button style2 fit" type="button" disabled=true" >這是您的刊登資訊</button>\
-                          </div>';
-        document.getElementById("box"+i).innerHTML += popContent;
+          document.getElementById("sendButton" + i).innerHTML = '<button class="button style2 fit" type="button" onclick="sendRequest(\'' + postResult[i]._id + '\')" >確認送出</button>';
         }
       });
-      
     }
-    
+
     function convertion(requestarray) {
       var TT = [];
       if (requestarray.length) {
@@ -351,46 +312,45 @@
       });
     }
     var count = new Array(100);
-    for(var j = 0;j<100;j++)
+    for (var j = 0; j < 100; j++)
       count[j] = 0;
     //刊登人個人資訊 
     function posterInfo(obj) {
       var whoName = obj.id.charAt(4);
       whoName = parseInt(whoName);
       count[whoName]++;
-      if(count[whoName]%2==0)
+      if (count[whoName] % 2 == 0)
         document.getElementById('posterInfo' + whoName).innerHTML = "";
-      else
-      {
+      else {
         $.ajax({
-        type: 'POST',
-        url: "/getAnotherUserData",
-        data: JSON.stringify({ '_id': allPostList[whoName].owner_id }),
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
+          type: 'POST',
+          url: "/getAnotherUserData",
+          data: JSON.stringify({ '_id': allPostList[whoName].owner_id }),
+          contentType: 'application/json; charset=utf-8',
+          success: function (data) {
 
-          var i, avgRating = 0;
-          var popPosterInfo = "";
-          popPosterInfo += '<img style="width:300px;height:200px;" src = "static/userPhotos/' + data._user_photo + '"><br>';
+            var i, avgRating = 0;
+            var popPosterInfo = "";
+            popPosterInfo += '<img style="width:300px;height:200px;" src = "static/userPhotos/' + data._user_photo + '"><br>';
 
-          if (data._rate.length) {
+            if (data._rate.length) {
 
-            for (i = 0; i < data._rate.length; i++)
-              avgRating += data._rate[i];
-            avgRating /= (data._rate.length);
-            popPosterInfo += avgRating;
-            popPosterInfo += '顆星!';
+              for (i = 0; i < data._rate.length; i++)
+                avgRating += data._rate[i];
+              avgRating /= (data._rate.length);
+              popPosterInfo += avgRating;
+              popPosterInfo += '顆星!';
+            }
+            else
+              popPosterInfo += "尚無評價";
+            popPosterInfo += '<br>電話號碼:' + data._phone + "</br>";
+
+
+            document.getElementById('posterInfo' + whoName).innerHTML = popPosterInfo;
           }
-          else
-            popPosterInfo += "尚無評價";
-          popPosterInfo += '<br>電話號碼:' + data._phone + "</br>";
-
-
-          document.getElementById('posterInfo' + whoName).innerHTML = popPosterInfo;
-        }
-      });
+        });
       }
-      
+
     }
 
     //填入搜尋資訊
