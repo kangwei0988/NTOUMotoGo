@@ -127,8 +127,9 @@
           <label><input name="post_raincoat" id="coat" type="checkbox" value=false>雨衣</label>
           <label><input name="post_haveHat" id="hat" type="checkbox" value=false>安全帽</label>
         </div>
+        <div id = "input">
         <input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"
-          style="background-color: #7f92cf;" onclick="beforesubmit()" value="發布">
+          style="background-color: #7f92cf;" onclick="beforesubmit()" value="發布"></div>
       </div>
     </div>
 
@@ -149,6 +150,25 @@
     }
     function beforesubmit()
     {
+      var location = document.getElementById("loc").value;
+      var goto = document.getElementById("des").value;
+      var notice = document.getElementById("noti").value;
+      var haveCoat;
+      var haveHat;
+      var isChecked1 = $("#coat").prop("checked");
+      if (isChecked1) {
+        haveCoat = true;
+      }
+      else {
+        haveCoat = false;
+      }
+      var isChecked2 = $("#hat").prop("checked");
+      if (isChecked2) {
+        haveHat = true;
+      }
+      else {
+        haveHat = false;
+      }
       var dateControl = document.getElementById("tem_date").value;
       var timeControl = document.querySelector('input[type="time"]').value;
       console.log(dateControl);
@@ -165,81 +185,15 @@
             window.alert("按下 確認刊登 以刊登該請求");
           else
             window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認刊登");
-          document.getElementById("contact").innerHTML="";
-          document.getElementById("contact").innerHTML+=
-          '<div class="w3-content  w3-text-light-grey" style="max-width:600px">\
-        <h4 class="w3-center"><b>刊登</b></h4>\
-        <div class="w3-section" id="time">\
-        </div>\
-        <div class="w3-section">\
-          <label>搭車地點</label>\
-          <select class="w3-input w3-border" type="text" name="post_location" required id="loc">\
-            　<option value="瑞芳車站">瑞芳車站</option>\
-            　<option value="山海觀">山海觀</option>\
-            　<option value="海洋大學體育館">海洋大學體育館</option>\
-            　<option value="海洋大學濱海校門">海洋大學濱海校門</option>\
-            　<option value="海洋大學祥豐校門">海洋大學祥豐校門</option>\
-            　<option value="中正路加油站">中正路加油站</option>\
-            　<option value="基隆市立圖書館">基隆市立圖書館</option>\
-            　<option value="長榮桂冠">長榮桂冠</option>\
-            　<option value="基隆市政府">基隆市政府</option>\
-            　<option value="海洋廣場">海洋廣場</option>\
-            　<option value="基隆火車站">基隆火車站</option>\
-            　<option value="廟口">廟口</option>\
-            　<option value="基隆女子高級中學">基隆女子高級中學</option>\
-            　<option value="微笑台北">微笑台北</option>\
-            　<option value="深溪路愛買">深溪路愛買</option>\
-            　<option value="海中天">海中天</option>\
-            　<option value="巴賽隆納">巴賽隆納</option>\
-            　<option value="海洋世界">海洋世界</option>\
-            　<option value="新豐麥當勞">新豐麥當勞</option>\
-            　<option value="和平島和平國小">和平島和平國小</option>\
-            　<option value="基隆海事">基隆海事</option>\
-            　<option value="祥豐市場">祥豐市場</option>\
-          </select>\
-        </div>\
-        <div class="w3-section">\
-          <label>目的地</label>\
-          <select class="w3-input w3-border" type="text" name="post_goto" required id="des">\
-            　<option value="瑞芳車站">瑞芳車站</option>\
-            　<option value="山海觀">山海觀</option>\
-            　<option value="海洋大學體育館">海洋大學體育館</option>\
-            　<option value="海洋大學濱海校門">海洋大學濱海校門</option>\
-            　<option value="海洋大學祥豐校門">海洋大學祥豐校門</option>\
-            　<option value="中正路加油站">中正路加油站</option>\
-            　<option value="基隆市立圖書館">基隆市立圖書館</option>\
-            　<option value="長榮桂冠">長榮桂冠</option>\
-            　<option value="基隆市政府">基隆市政府</option>\
-            　<option value="海洋廣場">海洋廣場</option>\
-            　<option value="基隆火車站">基隆火車站</option>\
-            　<option value="廟口">廟口</option>\
-            　<option value="基隆女子高級中學">基隆女子高級中學</option>\
-            　<option value="微笑台北">微笑台北</option>\
-            　<option value="深溪路愛買">深溪路愛買</option>\
-            　<option value="海中天">海中天</option>\
-            　<option value="巴賽隆納">巴賽隆納</option>\
-            　<option value="海洋世界">海洋世界</option>\
-            　<option value="新豐麥當勞">新豐麥當勞</option>\
-            　<option value="和平島和平國小">和平島和平國小</option>\
-            　<option value="基隆海事">基隆海事</option>\
-            　<option value="祥豐市場">祥豐市場</option>\
-          </select>\
-        </div>\
-        <div class="w3-section">\
-          <label>備註</label>\
-          <input class="w3-input w3-border" type="text" name="post_notice" required id="noti">\
-        </div>\
-        <div class="w3-section">\
-          <label>提供物品:</label>\
-          <label><input name="post_raincoat" id="coat" type="checkbox" value=false>雨衣</label>\
-          <label><input name="post_haveHat" id="hat" type="checkbox" value=false>安全帽</label>\
-        </div>\
-        <input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
-          style="background-color: #7f92cf;" onclick="submit()" value="確認刊登">'
+          document.getElementById("loc").value=location;
+          document.getElementById("des").value=goto;
+          document.getElementById("noti").value=notice; 
+          document.getElementById("input").innerHTML= 
+        '<input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
+          style="background-color: #7f92cf;" onclick="submit()" value="確認刊登">';
           var message = "<label>搭車時間</label><input type='datetime-local'>";
           var date = new Date();
-      document.getElementById("time").innerHTML = "日期:<input type='date' id = 'tem_date' required value = '" + date.getFullYear() + "-" + (date.getMonth() + 1)
-        + "-" + date.getDate() + "'> 時間: <input type = 'time'  id = 'tem_time' required value = '" + date.getHours() + ":" + date.getMinutes() + "'>";
+      document.getElementById("time").innerHTML = "日期:<input type='date' id = 'tem_date' required value = '" + dateControl + "'> 時間: <input type = 'time'  id = 'tem_time' required value = '" + timeControl + "'>";
         }
       });
     }
