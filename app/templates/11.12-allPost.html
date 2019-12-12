@@ -350,13 +350,17 @@
         }
       });
     }
-
+    var count = new Array(100);
+    for(var j = 0;j<100;j++)
+      count[j] = 0;
     //刊登人個人資訊 
     function posterInfo(obj) {
-      count++;
+      var whoName = obj.id.charAt(4);
+      whoName = parseInt(whoName);
+      count[whoName]++;
       var whoName = obj.id.charAt(4);
       if(count%2==0)
-        document.getElementById('posterInfo' + whoName).innerHTML = popPosterInfo;
+        document.getElementById('posterInfo' + whoName).innerHTML = "";
       else
       {
         $.ajax({
