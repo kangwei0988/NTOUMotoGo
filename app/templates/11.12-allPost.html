@@ -191,13 +191,13 @@
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
           postResult=data;
-          displayPost();
+          displayPost(postResult);
           allPostList = data;
         }
       });
     }
 
-    function displayPost() {
+    function displayPost(postResult) {
       console.log(postResult);
       convertion(postResult);
       var note;
@@ -254,7 +254,7 @@
       $.ajax({
         type: 'POST',
         url: "/checkBusy",
-        data: JSON.stringify({ 'type':'post', 'target': postResult[i].post_getOnTime }),
+        data: JSON.stringify({ 'type':'requ', 'target': postResult[i]._id }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
           if(!data.result)
@@ -498,6 +498,8 @@
             mySearch[j++] = allPostList[i];
         }
       }
+      console.log('-------');
+      console.log(mySearch);
       displayPost(mySearch);
     }
 
