@@ -251,10 +251,15 @@
     }
     function beforesendRequest(i)
     {
+      var getOnTime = new Date(postResult[i].post_getOnTime)
+      console.log(typeof(getOnTime))
+      var postTime =  getOnTime.toISOString();
+      postTime = postTime.split('Z')[0]
+      postTime += '+00:00'
       $.ajax({
         type: 'POST',
         url: "/checkBusy",
-        data: JSON.stringify({ 'type':'post', 'target': postResult[i].post_getOnTime + '+00:00' }),
+        data: JSON.stringify({ 'type':'post', 'target': postTime}),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
           if(!data.result)
