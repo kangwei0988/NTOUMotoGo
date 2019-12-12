@@ -254,7 +254,7 @@
       $.ajax({
         type: 'POST',
         url: "/checkBusy",
-        data: JSON.stringify({ 'type':'requ', 'target': postResult[i]._id }),
+        data: JSON.stringify({ 'type':'post', 'target': postResult[i].post_getOnTime + '+00:00' }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
           if(!data.result)
