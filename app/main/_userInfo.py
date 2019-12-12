@@ -31,14 +31,14 @@ def setInfo():
                 if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
                     os.mkdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'])
                 file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], user['Account_name']+"_user_photo.jpg"))
-                userCol.update_one({'_id':user['_id']},{'$set':{'_user_photo' : user['Account_name']+"_user_photo.jpg"}})
+                userCol.update_one({'_id':user['_id']},{'$set':{'_user_photo' : user['Account_name']+'/'+user['Account_name']+"_user_photo.jpg"}})
         if '_license_photo' in request.files:
             file = request.files['_license_photo']
             if file and allowed_file(file.filename):
                 if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
                     os.mkdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'])
                 file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], user['Account_name']+"_license_photo.jpg"))
-                userCol.update_one({'_id':user['_id']},{'$set':{'_license_photo' : user['Account_name']+"_license_photo.jpg"}})
+                userCol.update_one({'_id':user['_id']},{'$set':{'_license_photo' : user['Account_name']+'/'+user['Account_name']+"_license_photo.jpg"}})
     return redirect(url_for('homePage'))
 
 #個人頁面拿資料
