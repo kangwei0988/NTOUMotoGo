@@ -3,8 +3,9 @@ from .backend import userCol, postCol, requestCol
 from flask import request,session,jsonify
 import datetime
 from bson.objectid import ObjectId
+import pytz
 
-@app.route('/checkbusy', methods=['POST'])
+@app.route('/checkBusy', methods=['POST'])
 def checkbusy():
     data = request.get_json()
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
@@ -21,14 +22,17 @@ def checkbusy():
                 return jsonify({'result':False})
         else:
             return jsonify({'result':False})
-    upTime = time + datetime.timedelta(minutes=30)
-    downTime = time - datetime.timedelta(minutes=30)
+    dt = datetime.timedelta(minutes=30)
+    upTime = time + dt
+    downTime = time - dt
+    #upTime.replace(tzinfo=None) #this funtion 'replace' is no longer available
     for requid in user['_matchHistory'] :
         requ = requestCol.find_one({'_id':ObjectId(requid)})
         if requ:
             post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
             if post:
-                if downTime < post['post_getOnTime'] and post['post_getOnTime'] < upTime:
+                postTime = datetime.datetime.fromisoformat(str(post['post_getOnTime'])+'+00:00')
+                if downTime < postTime and postTime < upTime:
                     return jsonify({'result':True})
     return jsonify({'result':False})
     

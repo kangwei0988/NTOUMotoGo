@@ -15,7 +15,7 @@ app.jinja_env.auto_reload = True
 # app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.permanent_session_lifetime = datetime.timedelta(days=1) #登入時效
 app.config['UPLOAD_FOLDER'] = 'app/static/userPhotos'
-
+app.config['REQUEST_SKIP_ENDPOINT'] = ['newAccount','register','loginPage','login','verify','checkAccountStatus','setPsw','static','forgotPasPage','forgotPassword']
 socketio = SocketIO(app)
 
 from .main import backend, _socket, _login, _userInfo,_error,_bonus,_search

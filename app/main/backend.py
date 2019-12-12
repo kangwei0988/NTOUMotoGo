@@ -26,18 +26,16 @@ requestCol = db['requestInfo']
 rateCol = db['rateInfo']
 
 from ._socket import notifation
+
 #每個請求前執行
 @app.before_request
 def before_request():
     #除了註冊，登入功能api及其頁面的請求外，才去判斷登入狀態
-    if request.endpoint not in ['newAccount','register','loginPage','login','verify','checkAccountStatus','setPsw','static']:
-        if 'NTOUmotoGoUser' in session and 'NTOUmotoGoToken' in session:#如果已登入and 'NTOUmotoGoToken' in session
-            # print(session['NTOUmotoGoUser'])
-            # print(session['NTOUmotoGoToken'])
-            # print(userCol.find_one({'Account_name':session['NTOUmotoGoUser']})['_token'])
+    if request.endpoint not in app.config['REQUEST_SKIP_ENDPOINT']:         #app.config['REQUEST_SKIP_ENDPOINT'] 實作在 .__init__
+        if 'NTOUmotoGoUser' in session and 'NTOUmotoGoToken' in session:    #如果已登入and 'NTOUmotoGoToken' in session
             user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
             if user:
-                if session['NTOUmotoGoToken'] == user['_token']:#為什麼不能用ｉｓ要用＝＝阿
+                if session['NTOUmotoGoToken'] == user['_token']:    #為什麼不能用ｉｓ要用＝＝阿
                     userCol.update_one({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_lastLogin' : datetime.datetime.now()}}) #更新登入時間，登入狀態
                     if user['_new_notifications']:
                         socketio.emit('news', {'num' : 1}, room = user['Account_name'])
@@ -219,7 +217,6 @@ def cancelPost():
 def pasPost():
     info = request.get_json(silent=True) #將data拿出
     login_user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
-    print(info['post_getOnTime'])
     info['post_getOnTime'] = datetime.datetime.fromisoformat(info['post_getOnTime'])
     info['post_type'] = 'pas'
     info['owner_id'] = login_user['_id']
@@ -268,7 +265,7 @@ def postBoard():
         p = str(requestCol.find_one({'_id' : ObjectId(requId)})['post_id'])
         not_postsId.append(p)
 
-    posts = postCol.find({'post_type':post_type,'post_matched':False,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+    posts = postCol.find({'post_type':post_type,'post_matched':False,'post_getOnTime' : {'$gt' : datetime.datetime.now()+datetime.timedelta(minutes=2)}}).sort('post_getOnTime')
     
     for i in posts:
         postId.append(str(i['_id']))
@@ -455,9 +452,6 @@ def getMyRequests():
 @app.route('/replyRequest',methods=['GET','POST'])
 def replyRequest():
     reply = request.get_json(silent=True)
-    print(reply)
-    print(request.url)
-    print(request.endpoint)
     requ = requestCol.find_one({'_id' : ObjectId(reply['requ_id'])})
     post = postCol.find_one({'_id' : requ['post_id']})
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
@@ -483,8 +477,7 @@ def replyRequest():
             socketio.start_background_task(notifation, app, user['_id'], requ['_id'], 'requ', '已拒絕'+sender['_name']+'的請求')#呼叫通知函示，回報被請求者
             socketio.start_background_task(notifation, app, sender['_id'], requ['_id'], 'requ', '對'+ user['_name']+'的請求被拒絕') #呼叫通知函示，回報請求者
     else:
-        thr = Thread(target=notifation, args=[app, user['_id'], False, 'requ', '回復請求失敗，該請求已消失']) #呼叫通知函示，回報請求者發出失敗
-        thr.start()
+        socketio.start_background_task(notifation, app, user['_id'], False, 'requ', '回復請求失敗，該請求已消失') # 呼叫通知函示，回報請求者發出失敗
     return 'hehe'
 ######################################################################
 
@@ -554,7 +547,7 @@ def sendRate():
             requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'pas_rate':rate_id}})
         else:                               #如果評價者是駕駛，填入駕駛評價id
             requestCol.update_one({'_id':ObjectId(requ['_id'])},{'$set':{'dri_rate':rate_id}})
-    
+        socketio.start_background_task(notifation, app, receiver['_id'], rate_id, 'rate', '已收到來至'+user['_name']+'的評價') # 呼叫通知函示，通知被評價者
     return '成功'
 
 
@@ -566,7 +559,6 @@ def getSelfPost():
     Posts = postCol.find({'owner_id':user['_id'],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')#,'post_getOnTime' : {'$lt' : datetime.datetime.now()}
     
     for post in Posts:
-        print(post)
         result = post
         result['_id'] = str(result['_id'])
         result['owner_id'] = str(result['owner_id'])
@@ -616,7 +608,6 @@ def getMatchedPost():
 @app.route('/requComplete',methods=['GET','POST'])
 def requComplete():
     tmp = request.get_json(silent=True)
-    print(tmp)
     if tmp['ok']:
         requestCol.update_one({'_id':ObjectId(tmp['requ_id'])},{'$set' : {'_state' : "completed"}})
     else:

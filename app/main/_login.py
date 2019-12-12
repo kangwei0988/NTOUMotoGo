@@ -81,7 +81,7 @@ def login():
     else:
         user["faultAccount_name"] = '帳號不存在喔~'
         return render_template('1-login.html',fault=user)
-
+#2019/12/18 禮拜三 19:26:00
 #使用者登出
 @app.route('/logoutAPI',methods=['GET','POST'])
 def logout():
@@ -89,15 +89,15 @@ def logout():
     session.clear()
     return redirect(url_for('homePage'))
 
-
-@app.route('/verify') #帳號激活頁面
+#帳號激活頁面
+@app.route('/verify') 
 def verify():
     user_id = request.args['id']
     token = request.args['token']
-    if token and user_id:
+    if token and len(user_id)==24:
         user = userCol.find_one({'_id':ObjectId(user_id)})
         if user:
-            if user['_password'] == token:
+            if user['_password'] == token or user['_password'] == token+'.':
                 newtoken = random.random()
                 session['NTOUmotoGoUser'] = user['Account_name'] #建立session
                 session['NTOUmotoGoToken'] = newtoken
@@ -106,7 +106,7 @@ def verify():
     return redirect(url_for('homePage'))
 
 
-
+#修改密碼
 @app.route('/setPsw',methods=['GET','POST'])
 def setPsw():
     info = request.values.to_dict()
@@ -138,13 +138,24 @@ def checkAccountStatus():
 
 @app.route('/forgotPassword')
 def forgotPassword():
-    data = request.get_json(silent=True)
-    user = userCol.find_one({'_email' : data['Account_name']})
+    data = request.values.to_dict()
+    user = userCol.find_one({'Account_name' : data['Account_name'],'_mail' : data['_mail']})
+    fault = {'msg':'密碼重設連結已傳送至填入郵箱','Account_name':data['Account_name'],'_mail' : data['_mail']}
     if user:
         title = "海大機車共乘系統-重設密碼"
-        msg = "前往頁面填寫密碼以重設帳號 \n https://ntoumotogo.kangs.idv.tw/verify?id="+str(user['_id'])+"&token="+str(user['_passsword']) #激活網址
+        msg = "前往頁面填寫密碼以重設帳號 \n https://ntoumotogo.kangs.idv.tw/verify?id="+str(user['_id'])+"&token="+str(user['_password']) #激活網址
         thr = Thread(target=sendMail, args=[app, title,msg,user['_mail']]) #寄送驗證信
         thr.start()
+    else:
+        fault['msg'] = '找不到帳號或郵箱地址與帳號不符'
+    
+    return render_template('27-forgotPassword.html',fault = fault)
+    
+
+
+@app.route('/forgotPasPage',methods=['GET'])
+def forgotPasPage():
+    return render_template('27-forgotPassword.html',fault = '')
     
 
 
