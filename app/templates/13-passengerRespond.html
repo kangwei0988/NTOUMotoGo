@@ -142,7 +142,6 @@
       var captionText = document.getElementById("caption");
       captionText.innerHTML = element.alt;
     }
-    var count=0;
     var string = [];
     var requestarray = [];
     window.onload = function () {
@@ -371,10 +370,13 @@
       else
         window.alert("取消失敗，已完成配對!!");
     }
+    var count=new array(100)
+    for(var k=0;k<100;k++)
+      count[k]=0;
     function posterInfo(i) {
       console.log(i);
-      count++;
-      if (count % 2 == 0)
+      count[i]++;
+      if (count[i] % 2 == 0)
         document.getElementById('posterInfo' + i).innerHTML = "";
       else {
         var tmp;

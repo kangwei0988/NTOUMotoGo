@@ -101,7 +101,6 @@
     //identity
 
     var strings = [];
-    var count=0;
     // Script to open and close sidebar
     function w3_open() {
       document.getElementById("mySidebar").style.display = "block";
@@ -208,9 +207,12 @@
       }
       document.getElementById("myPostList").innerHTML = popContent;
     }
+    var count=new Array(100)
+    for(var k=0;k<100;k++)
+      count[k]=0;
     function posterInfo(i){
-      count++;
-      if(count%2==0)
+      count[i]++;
+      if(count[i]%2==0)
         document.getElementById('posterInfo'+i).innerHTML="";
       else
       {
