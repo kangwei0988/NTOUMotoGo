@@ -129,7 +129,6 @@
   <!-- Scripts -->
   <script>
     var allPostList = [];
-    var mySearch = [];
     var myType;
     var searchType;
     var myID;
@@ -457,6 +456,7 @@
       var i;
       var j = 0;
       var temp = [];
+      var mySearch = [];
       if (document.getElementById("searchName").value && document.getElementById("des").value && document.getElementById("loc").value)
         for (i = 0; i < allPostList.length; i++) {
           if (allPostList[i].post_goto == document.getElementById("des").value)
@@ -472,6 +472,7 @@
         }
       else if (document.getElementById("searchName").value && !document.getElementById("des").value && document.getElementById("loc").value)
         for (i = 0; i < allPostList.length; i++) {
+          console.log("hi");
           if (allPostList[i].post_location == document.getElementById("loc").value)
             if (allPostList[i].post_name == document.getElementById("searchName").value)
               mySearch[j++] = allPostList[i];
