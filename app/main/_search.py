@@ -13,15 +13,17 @@ from .backend import userCol,postCol
 from math import radians, cos, sin, asin, sqrt
 
 
-#搜尋
+#按照地點搜尋
 @app.route('/search',methods=['GET','POST'])
 def search():
     tmp = request.get_json(silent=True)
     
     results = [] 
-    resultsId = []    
+    resultsId = set()    
     setGoto = set()
+    setLoca = set()
     setGoto.add(tmp["post_goto"])
+    setLoca.add(tmp["post_location"])
 
     setA = {"瑞芳車站"}
     setB = {"山海觀"}
@@ -30,6 +32,19 @@ def search():
     setE = {"微笑台北","深溪路愛買","海中天","巴賽隆納","海洋世界","新豐麥當勞"}
     setF = {"基隆海事","祥豐市場"}
 
+
+    if setLoca == (setLoca & setA):
+        setLoca = setA
+    elif setLoca == (setLoca & setB):
+        setLoca = setB
+    elif setLoca == (setLoca & setC):
+        setLoca = setC
+    elif setLoca == (setLoca & setD):
+        setLoca = setD
+    elif setLoca == (setLoca & setE):
+        setLoca = setE
+    elif setLoca == (setLoca & setF):
+        setLoca = setF
 
     if setGoto == (setGoto & setA):
         setGoto = setA
@@ -44,15 +59,16 @@ def search():
     elif setGoto == (setGoto & setF):
         setGoto = setF
 
-    posts = postCol.find({'post_location':tmp["post_location"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
-
-    for i in posts:
-        resultsId.append(str(i['_id']))
+   
+    for Loca in setLoca:
+        postloca = postCol.find({'post_location':Loca,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+        for x in postloca:
+            resultsId.add(str(x['_id']))
 
     for goto in setGoto:
         postgo = postCol.find({'post_goto':goto,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
         for x in postgo:
-            resultsId.append(str(x['_id']))
+            resultsId.add(str(x['_id']))
         
 
     myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
