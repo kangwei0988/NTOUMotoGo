@@ -27,7 +27,7 @@ def setInfo():
         if '_user_photo' in request.files:
             file = request.files['_user_photo']
             if file and allowed_file(file.filename):
-                if not os.listdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
+                if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
                     os.mkdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'])
                 num_files = 0
                 for fn in os.listdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
