@@ -39,6 +39,7 @@ def setInfo():
             if file and allowed_file(file.filename):
                 if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
                     os.mkdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'])
+                num_files = 0
                 for fn in os.listdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
                     num_files += 1
                 file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], str(num_files)+"_license_photo.jpg"))
