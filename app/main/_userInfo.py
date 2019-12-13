@@ -1,5 +1,5 @@
 import os
-from .. import app
+from .. import app,socketio
 from .backend import userCol, homePage, rateCol
 from flask import request,session,redirect,jsonify,url_for
 from werkzeug.utils import secure_filename
@@ -22,23 +22,27 @@ def setInfo():
         print(info)
         print(type(info))
         userCol.update({'_id':user['_id']},{'$set': {'_name' : info['_name'], '_gender' : info['_gender'],'_phone' : info['_phone'], '_mail' : info['_mail']}})
-        thr = Thread(target=notifation, args=[app, user['_id'], user['_id'], 'user', '個人資料修改成功']) #呼叫通知函示
-        thr.start()
+        socketio.start_background_task(notifation, app, user['_id'], user['_id'], 'user', '個人資料修改成功')
         print(request.files)
         if '_user_photo' in request.files:
             file = request.files['_user_photo']
             if file and allowed_file(file.filename):
-                if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
+                if not os.listdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
                     os.mkdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'])
-                file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], user['Account_name']+"_user_photo.jpg"))
-                userCol.update_one({'_id':user['_id']},{'$set':{'_user_photo' : user['Account_name']+'/'+user['Account_name']+"_user_photo.jpg"}})
+                num_files = 0
+                for fn in os.listdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
+                    num_files += 1
+                file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], str(num_files)+"_user_photo.jpg"))
+                userCol.update_one({'_id':user['_id']},{'$set':{'_user_photo' : user['Account_name']+'/'+str(num_files)+"_user_photo.jpg"}})
         if '_license_photo' in request.files:
             file = request.files['_license_photo']
             if file and allowed_file(file.filename):
                 if not os.path.isdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
                     os.mkdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'])
-                file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], user['Account_name']+"_license_photo.jpg"))
-                userCol.update_one({'_id':user['_id']},{'$set':{'_license_photo' : user['Account_name']+'/'+user['Account_name']+"_license_photo.jpg"}})
+                for fn in os.path.listdir(app.config['UPLOAD_FOLDER']+'/'+user['Account_name']):
+                    num_files += 1
+                file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+user['Account_name'], str(num_files)+"_license_photo.jpg"))
+                userCol.update_one({'_id':user['_id']},{'$set':{'_license_photo' : user['Account_name']+'/'+str(num_files)+"_license_photo.jpg"}})
     return redirect(url_for('homePage'))
 
 #個人頁面拿資料
@@ -95,7 +99,6 @@ def getAnotherUata():
 #設置email和通知的開關
 @app.route('/getNotiMail',methods=['GET','POST'])
 def getNotiMail():
-    tmp = request.get_json(silent=True)
     user = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})
     result = {}
     result.update({'_want_mail':user['_want_mail']})
