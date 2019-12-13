@@ -389,7 +389,7 @@
         success: function(data){
           var avgRating = 0;
           var popPosterInfo="";
-          popPosterInfo += '<img style="width:300px;" src = "static/userPhotos/'+data._user_photo+'"><br>';
+          popPosterInfo += '<img style="width:300px;height:200px;" src = "static/userPhotos/'+data._user_photo+'"><br>';
           
           if(data._rate.length){
             popPosterInfo +="平均評價:"
@@ -471,7 +471,7 @@
             data: JSON.stringify({'delete_id': requestarray[i].requ_id}),
             contentType: 'application/json; charset=utf-8',
             success: function(data) {
-              window.location.href='https://' + document.domain + '/checkRequestt';
+              window.location.href='https://' + document.domain + '/checkrequestt';
             }
             });
       }
@@ -488,7 +488,9 @@
         data: JSON.stringify({ 'type':'requ','target': requestarray[i].requ_id }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-          if(data.result)
+          if(!data.result)
+            window.alert("按下 確認接受 已接受該請求");
+          else
             window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認接受")
         var id = "list"+i;
         var box=document.getElementById("list"+i);

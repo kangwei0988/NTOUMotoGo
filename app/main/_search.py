@@ -9,7 +9,7 @@ from bson.objectid import ObjectId
 from threading import Thread
 import urllib.parse
 import datetime
-from .backend import userCol,postCol,rateCol
+from .backend import userCol,postCol
 from math import radians, cos, sin, asin, sqrt
 
 
@@ -83,38 +83,6 @@ def search():
         results.append(result)
 
     return jsonify(results)
-
-
-#用人名找這個人
-@app.route('/searchName',methods=['GET','POST'])
-def searchName():
-    tmp = request.get_json(silent=True)
-
-    users = userCol.find({'_name':tmp['_name']})
-    rate = []
-    result=[]
-
-    for user in users:
-
-        for rateId in user['_rateHistory']:#將每個評價的星數裝進陣列
-            rateObj = rateCol.find_one({'_id' : ObjectId(rateId) })
-            rateNum = rateObj['rate_range']
-            rate.append(rateNum)
-
-        userData = {
-            '_name':user['_name'],
-            '_mail': user['_mail'],
-            '_gender':user['_gender'],
-            '_motoplate':user['_motoplate'],
-            '_phone':user['_phone'],
-            '_user_photo':user['_user_photo'],
-            '_license_photo':user['_license_photo'],
-            '_rate':rate,
-        }
-
-        result.append(userData)
-
-    return jsonify(result)
 
 
     
