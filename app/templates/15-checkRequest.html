@@ -195,7 +195,7 @@
               if(requestarray[i].matched == "waiting")
               {
                 box.innerHTML+=
-                "\<a class='button style3 fit' onclick='accept_api("+i+")'>接受</a>\
+                "\<a class='button style3 fit' onclick='beforeaccept("+i+")'>接受</a>\
                 \<a class='button style3 fit' onclick='reject("+i+")'>拒絕</a>\
                 \<a class='button style3 fit' href='chatRoom?"+requestarray[i].requ_id+"'>聊天</a>"
               }
@@ -488,9 +488,6 @@
         data: JSON.stringify({ 'type':'requ','target': requestarray[i].requ_id }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-          if(!data.result)
-            window.alert("按下 確認接受 已接受該請求");
-          else
             window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認接受")
         var id = "list"+i;
         var box=document.getElementById("list"+i);
