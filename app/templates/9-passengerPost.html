@@ -215,7 +215,7 @@
     window.onload = function () {
       var message = "<label>搭車時間</label><input type='datetime-local'>";
       TTT="日期:<input type='date' id = 'tem_date' required value = '" + date.getFullYear() + "-" + (date.getMonth() + 1)
-        + "-" + date.getDate() + "'> 時間: <input type = 'time'  id = 'tem_time' required value = '" + date.getHours() + ":" + date.getMinutes() + "'>"
+        + "-" + date.getDate() + "'><br><br>時間: <input type = 'time'  id = 'tem_time' required value = '" + date.getHours() + ":" + date.getMinutes() + "'>"
       document.getElementById("time").innerHTML =TTT;
 
     }
