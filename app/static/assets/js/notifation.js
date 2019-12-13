@@ -42,18 +42,18 @@ function alertnotice(notice) {
   x.innerHTML = "新通知";
 
   function alertnoti() {
-    x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16 w3-animate-zoom");
-    setTimeout(function () { x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16") }, 1000);
+    x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16 w3-animate-zoom w3-pale-yellow");
+    setTimeout(function () { x.setAttribute("class", "w3-bar-item w3-button w3-center w3-padding-16") }, 500);
   }
   function alertmenu() {
-    y.setAttribute("class", "w3-right w3-button w3-border w3-animate-zoom");
-    setTimeout(function () { y.setAttribute("class", "w3-right w3-button w3-border") }, 1000);
+    y.setAttribute("class", "w3-right w3-button w3-border w3-animate-zoom w3-pale-yellow");
+    setTimeout(function () { y.setAttribute("class", "w3-right w3-button w3-border") }, 500);
   }
 
   if(!notice)
   {
-    setInterval(alertnoti, 1500);
-    alertProgram = setInterval(alertmenu, 1500);
+    setInterval(alertnoti, 1000);
+    alertProgram = setInterval(alertmenu, 1000);
   }
   
   window.addEventListener("click", function () { clearInterval(alertProgram); y.setAttribute("class", "w3-right w3-button w3-border"); console.log("clear"); noti=false }, false);
