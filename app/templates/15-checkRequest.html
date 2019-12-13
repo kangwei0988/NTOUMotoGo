@@ -48,7 +48,7 @@
   }
   .Delete{
     position:absolute;
-    left:326px;
+    right:0px;
     top:0px;
     z-index:1;
     cursor: pointer;
@@ -142,7 +142,7 @@
             {
               var id = "list"+i;
             requestlist.innerHTML +=
-            "\<div class='box' id="+id+" style='position:relative color:red'>";
+            "\<div class='box' id="+id+" style='position:relative; color:red;'>";
             var box=document.getElementById("list"+i);
             if(requestarray[i].matched == "completed" || requestarray[i].matched == "failed" || requestarray[i].matched == "refuse" || requestarray[i].matched == "cancelled" || requestarray[i].matched == "due")
             {

@@ -44,7 +44,7 @@
 
   .Delete {
     position: absolute;
-    left: 326px;
+    right:0px;
     top: 0px;
     z-index: 2;
     cursor: pointer;
@@ -174,7 +174,7 @@
               if (requestarray[i].state != "completed") {
                 var id = "list" + i;
                 requestlist.innerHTML +=
-                  "\<div class='box' id=" + id + " style='position:relative'>"
+                  "\<div class='box' id=" + id + " style='position:relative;'>"
                 var box = document.getElementById("list" + i);
                 if (requestarray[i].state == "failed" || requestarray[i].state == "refuse" || requestarray[i].state == "cancelled" || requestarray[i].state == "due") {
                   box.innerHTML += "<img class='Delete' src='static/images/delete.jpg' width=25px z-index=5' onclick=Delete(" + i + ") >"
