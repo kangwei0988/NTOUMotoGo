@@ -257,7 +257,9 @@
       console.log(typeof (getOnTime))
       var postTime = getOnTime.toISOString();
       postTime = postTime.split('Z')[0]
+      postTime = postTime.split('.')[0]
       postTime += '+00:00'
+      console.log(postTime)
       $.ajax({
         type: 'POST',
         url: "/checkBusy",
@@ -331,7 +333,7 @@
 
             var i, avgRating = 0;
             var popPosterInfo = "";
-            popPosterInfo += '<img style="width:300px;height:200px;" src = "static/userPhotos/' + data._user_photo + '"><br>';
+            popPosterInfo += '<img style="width:300px;" src = "static/userPhotos/' + data._user_photo + '"><br>';
 
             if (data._rate.length) {
 
