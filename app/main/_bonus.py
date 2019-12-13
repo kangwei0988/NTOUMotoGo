@@ -17,7 +17,7 @@ def checkbusy():
         if _requ:
             _post = postCol.find_one({'_id':_requ['post_id']})
             if _post:
-                time = _post['post_getOnTime']
+                time = datetime.datetime.fromisoformat(str(_post['post_getOnTime'])+'+00:00')
             else:
                 return jsonify({'result':False})
         else:
@@ -32,6 +32,8 @@ def checkbusy():
             post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
             if post:
                 postTime = datetime.datetime.fromisoformat(str(post['post_getOnTime'])+'+00:00')
+                print(postTime)
+                print(time)
                 if downTime < postTime and postTime < upTime:
                     return jsonify({'result':True})
     return jsonify({'result':False})
