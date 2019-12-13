@@ -264,9 +264,7 @@
         data: JSON.stringify({ 'type': 'post', 'target': postTime }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-          if (!data.result)
-            window.alert("按下 確認送出 已發送該請求");
-          else
+          if (data.result)
             window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認送出")
           document.getElementById("sendButton" + i).innerHTML = '<button class="button style2 fit" type="button" onclick="sendRequest(\'' + postResult[i]._id + '\')" >確認送出</button>';
         }
