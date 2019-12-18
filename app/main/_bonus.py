@@ -1,9 +1,10 @@
 from .. import app
 from .backend import userCol, postCol, requestCol
-from flask import request,session,jsonify
+from flask import request,session,jsonify,jsonify,redirect
 import datetime
 from bson.objectid import ObjectId
 import pytz
+import os
 
 @app.route('/checkBusy', methods=['POST'])
 def checkbusy():
@@ -32,10 +33,8 @@ def checkbusy():
             post = postCol.find_one({'_id' : ObjectId(requ['post_id'])})
             if post:
                 postTime = datetime.datetime.fromisoformat(str(post['post_getOnTime'])+'+00:00')
-                print(postTime)
-                print(time)
                 if downTime < postTime and postTime < upTime:
                     return jsonify({'result':True})
     return jsonify({'result':False})
     
-    #posts = postCol.find({'post_type':post_type,'post_matched':False,'post_getOnTime' : {'$gt' : datetime.datetime.now()+datetime.timedelta(minutes=30)}}).sort('post_getOnTime')
+

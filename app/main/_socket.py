@@ -7,6 +7,9 @@ from flask import session,request
 import datetime
 from threading import Thread
 from ._mail import sendMail
+from pywebpush import webpush
+import json
+import os
 
 #########################socketio########################################
 #黑阿，就是websocket，每次io.connect會呼叫
@@ -39,6 +42,15 @@ def notifation(app,notiid, targetId, Type, msg):#(app:context上下文， notiid
         title = '你在海大機車共乘系統中有一則新信息'
         thr = Thread(target=sendMail,args=[app,title,msg,target['_mail']])
         thr.start()
+    if target['_want_webPush']:
+        print('通知呢?')
+        pushtoken = target['push_token']
+        pushtoken.replace("null","None")
+        pushtoken = json.loads(pushtoken)
+        webpush(pushtoken,
+        msg,
+        vapid_private_key=os.environ.get('PUSH_PRIVATE_KEY'),
+        vapid_claims={"sub": "mailto:ntoumotogo@kangs.idv.tw"})
     socketio.emit('news', {'num' : len(notifications)}, room = target['Account_name']) #向room推播
 ###########################################################################
 
@@ -51,7 +63,6 @@ def joined(message):
     room = message['room']
     join_room(room)
     requ = requestCol.find_one({'_id' : ObjectId(room)})
-    tarName = ''
     tarName1 = userCol.find_one({'_id':ObjectId(requ['dri_id'])})['_name']
     tarName2 = userCol.find_one({'_id' : ObjectId(requ['pas_id'])})['_name']
     emit('status', {'msg':  requ['chat_record'], 'tarName1' : tarName1, 'tarName2' : tarName2}, room=room)

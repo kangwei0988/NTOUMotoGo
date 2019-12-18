@@ -68,6 +68,11 @@ def register():
 #跳轉頁面到3-index.html
 @app.route('/home')
 def homePage():
+    if 'id' in request.args and 'pushToken' in request.args:
+        _id = request.args.get('id')
+        ptoken = request.args.get('pushToken')
+        if len(_id) == 24:
+            userCol.update({'_id':ObjectId(_id)},{'$set':{"push_token":ptoken,'_want_webPush':True}})
     return render_template('3-index.html')
 #跳轉頁面到4-setting.html
 @app.route('/setting')
@@ -154,6 +159,10 @@ def chatRoom():
 @app.route('/test')
 def test():
     return render_template('test.html')
+@app.route('/webPush', methods=['GET'])
+def webPush():
+    user = userCol.find_one({'Account_name': session['NTOUmotoGoUser']})
+    return redirect('https://ntoumotogo.kangs.idv.tw:80?sid='+str(user['_id']))
 
 
 ##############################

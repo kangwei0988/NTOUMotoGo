@@ -13,7 +13,7 @@ app.config.update(
     MAIL_USE_TLS=True,
     MAIL_USERNAME=os.environ.get('MAIL_USERNAME'),
     MAIL_PASSWORD=os.environ.get('MAIL_PASSWORD'),
-    MAIL_DEFAULT_SENDER = ('海大機車共乘系統',os.environ.get('MAIL_PASSWORD'))
+    MAIL_DEFAULT_SENDER = ('海大機車共乘系統',os.environ.get('MAIL_USERNAME'))
 )
 mail = Mail(app)
 

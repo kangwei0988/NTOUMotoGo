@@ -75,7 +75,7 @@ def login():
             session['NTOUmotoGoUser'] = login_user['Account_name'] #建立session
             session['NTOUmotoGoToken'] = token
             session.permanent = True #設定session時效
-            return redirect(url_for('homePage'))
+            return redirect(url_for('webPush'))
         user["fault_password"] = '錯誤的密碼'
         return render_template('1-login.html',fault=user)
     else:
