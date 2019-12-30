@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>海大共乘go</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="icon" href="static/images/helmet.ico" type="image/x-icon">
+
+<head>
+  <style>
+    @import url(https://fonts.googleapis.com/earlyaccess/notosanstc.css);
+
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-family: "Noto Sans TC", "Raleway", sans-serif
+    }
+
+    .w3-quarter img {
+      margin-bottom: -6px;
+      cursor: pointer
+    }
+
+    .w3-quarter img:hover {
+      opacity: 0.6;
+      transition: 0.3s
+    }
+
+    #name {
+      font-size: 50px;
+    }
+
+    input[type="file"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .custom-file-upload {
+      background-color: cadetblue;
+      border: 1px solid #ccc;
+      display: inline-block;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    #preview_progressbarTW_img {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      top: auto;
+    }
+  </style>
+
+  <script>
+
+    function readURL(input) {
+
+      if (input.files && input.files[0]) {
+
+        var imageTagID = input.getAttribute("targetID");
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+
+          var img = document.getElementById(imageTagID);
+
+          img.setAttribute("src", e.target.result)
+
+        }
+
+        reader.readAsDataURL(input.files[0]);
+
+      }
+
+    }
+
+  </script>
+
+</head>
+
+<body style="background-color: #202024">
+
+  <!-- Sidebar/menu -->
+  <nav class="w3-sidebar w3-bar-block w3-black w3-animate-right w3-top w3-text-light-grey w3-large"
+    style="z-index:3;width:250px;font-weight:bold;display:none;right:0;" id="mySidebar">
+    <a href="javascript:void()" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-32">CLOSE</a>
+    <a href="/notice" id="notice" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">通知</a>
+    <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
+    <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
+    <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
+    <a href="/logout" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">登出</a>
+
+  </nav>
+
+  <!-- Top menu on small screens -->
+  <header class="w3-container w3-top w3-xlarge w3-padding-16" style="background-color: #3c3c44;">
+    <span class="w3-center w3-padding w3-text-light-grey">搜尋使用者</span>
+    <a href="javascript:void(0)" id="menu" class="w3-right w3-button w3-border w3-text-light-grey"
+      onclick="w3_open()">&#9776;</a>
+  </header>
+
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+    id="myOverlay"></div>
+
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main w3-content" style="max-width:1600px;margin-top:100px">
+    <div class="w3-container w3-padding-32 w3-padding-large">
+      <div class="w3-section">
+        <span style="color: white; font-size: large;">輸入使用者</span>
+        <input class="w3-input w3-border" id="user" type="text" name="_name" required>
+      </div>
+      <input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large" style="background-color: #7f92cf;"
+        value="搜尋" onclick="sendName()">
+    </div>
+
+
+    <div id="show">
+
+
+    </div>
+
+
+
+
+
+    <!-- Footer -->
+
+    <div class="w3-center w3-padding-24 w3-text-white" style="background-color: #3c3c44;">Made by
+      <a href="https://youtu.be/NL2e8U0hays" title="W3.CSS" target="_blank" class="w3-hover-opacity">
+        山海關快打旋風程門雞蛋糕猜猜幾把刀
+      </a>
+    </div>
+
+    <!-- End page content -->
+  </div>
+
+  <script src="static/assets/js/jquery.min.js"></script>
+  <script src="static/assets/js/getCoords.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANZaNJNJcia9SoIrpfKiUEXVVLu0PaWac&callback=initMap"
+    async defer></script>
+  <script src="static/assets/js/jquery.scrolly.min.js"></script>
+  <script src="static/assets/js/skel.min.js"></script>
+  <script src="static/assets/js/util.js"></script>
+  <script src="static/assets/js/main.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+  <script src="static/assets/js/notifation.js"></script>
+  <!-- <script src="static/assets/js/jquery.poptrox.min.js"></script> 要使用彈出視窗在加，不然href不能用-->
+
+
+  <script src="https://code.jquery.com/jquery-3.1.0.js">
+
+  </script>
+
+
+
+  <script>
+
+    // Script to open and close sidebar
+    function w3_open() {
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("myOverlay").style.display = "block";
+    }
+
+    function w3_close() {
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("myOverlay").style.display = "none";
+    }
+
+    // Modal Image Gallery
+    function onClick(element) {
+      document.getElementById("img01").src = element.src;
+      document.getElementById("modal01").style.display = "block";
+      var captionText = document.getElementById("caption");
+      captionText.innerHTML = element.alt;
+    }
+
+    function sendName() {
+      if (document.getElementById("user").value) {
+        var myJson = { "_name": document.getElementById("user").value };
+        $.ajax({
+          type: 'POST',
+          url: "/searchName",
+          data: JSON.stringify(myJson),
+          contentType: 'application/json; charset=utf-8',
+          success: function (data) {
+            console.log("send success");
+            getJson();
+            display();
+          }
+        });
+      }
+
+      else {
+        window.alert("請輸入使用者");
+      }
+
+    }
+
+
+    var string = [];
+    var requestarray = [];
+
+    function getJson() {
+      $.ajax({
+        type: 'POST',
+        url: "/searchName",
+        data: "",
+        contentType: 'application/json; charset=utf-8',
+        success: function (data) {
+          if (data) {
+            // data.redirect contains the string URL to redirect to
+            console.log(data);
+            strings = data;
+            jsonToStruct();
+            //display();
+          }
+
+        }
+      });
+    }
+    function display() {
+      console.log("ssssssssssssss");
+      if (requestarray.length) {
+        var mes = "";
+        for (var i = 0; i < requestarray.length; i++) {
+          mes +='\
+            <div class="w3-center w3-content"\
+              style="color: white;background-color:rgb(86, 88, 90); max-width:320px;margin-top:20px">\
+              <div class="w3-section">\
+                <img src = "static/userPhotos/' + requestarray[i]._user_photo + '" id="preview_progressbarTW_img"  />\
+              </div>\
+              <div class="w3-section">\
+                <img src = "static/userPhotos/' + requestarray[i]._license_photo + '" id="preview_progressbarTW_img"  />\
+              </div>\
+              <div class="w3-section">\
+                <label>姓名:</label>\
+                '+ requestarray[i]._name +'\
+              </div>\
+              <div class="w3-section">\
+                <label>性別:</label>\
+                '+ requestarray[i]._name +'\
+              </div>\
+            </div>'
+        }
+      }
+      else {
+        window.alert("查無此人");
+      }
+
+    }
+
+    function jsonToStruct() {
+      var i;
+
+      for (i = 0; i < string.length; i++) {
+        var list = {
+          '_user_photo': string[i]._user_photo,
+          '_license_photo': string[i]._license_photo,
+          '_name': string[i]._name,
+          '_gender': string[i]._gender,
+          '_phone': string[i]._phone,
+          '_mail': string[i]._mail,
+        };
+
+        requestarray.push(list);
+      }
+    }
+  </script>
+
+
+</body>
+
+</html>
