@@ -214,9 +214,88 @@
       var message = "<label>搭車時間</label><input type='datetime-local'>";
       document.getElementById("time").innerHTML = "日期:<input type='date' id = 'tem_date'  required value = '" + date.getFullYear() + "-" + (date.getMonth() + 1)
         + "-" + date.getDate() + "'><br><br>時間: <input type = 'time'  id = 'tem_time' required value = '" + date.getHours() + ":" + date.getMinutes() + "'>";
+      url=location.href.split("?")[1];
+      if(url!=undefined)
+      {
+        document.getElementById("input").innerHTML =
+        '<input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
+          style="background-color: #7f92cf;" onclick="sendPrivaterequest()" value="發布">'
+      }
+    }
+    function sendPrivaterequest()
+    {
+      var dateControl = document.getElementById("tem_date").value;
+      var timeControl = document.querySelector('input[type="time"]').value;
+      console.log(dateControl);
+      console.log(timeControl);
+
+      var time2 = dateControl + "T" + timeControl + ":" + "00+00:00";
+      console.log(typeof (time2));
+      //console.log(time2);
+      var location = document.getElementById("loc").value;
+      var goto = document.getElementById("des").value;
+      var notice = document.getElementById("noti").value;
+      var haveCoat;
+      var haveHat;
+      var isChecked1 = $("#coat").prop("checked");
+      if (isChecked1) {
+        haveCoat = true;
+      }
+      else {
+        haveCoat = false;
+      }
+      var isChecked2 = $("#hat").prop("checked");
+      if (isChecked2) {
+        haveHat = true;
+      }
+      else {
+        haveHat = false;
+      }
+      var year = dateControl.substr(0,4);
+      var mon = dateControl.substr(5,2);
+      var day = dateControl.substr(8,2);
+      var hour = timeControl.substr(0,2);
+      var min = timeControl.substr(3,2);
+      var now = new Date();
+      var posttime = new Date(year, mon - 1, day, hour, min);
+      console.log(posttime);
+      // console.log(posttime);
+      // console.log(now.getTime());
+      // console.log(posttime.getTime());
+
+      if (posttime.getTime() > now.getTime()) {
+
+        if (goto == location) {
+          window.alert("地點不能相同");
+        }
+        else {
+          var list = {
+            "post_type": 0,
+            "post_getOnTime": time2,
+            "post_location": location,
+            "post_goto": goto,
+            "post_notice": notice,
+            "post_haveHat": haveHat,
+            "post_raincoat": haveCoat,
+            "owner_id": url=location.href.split("?")[1]
+          };
+          //console.log(list);
+          $.ajax({
+            type: 'POST',
+            url: "/sendPrivateDriRequest",
+            data: JSON.stringify(list),
+            contentType: 'application/json; charset=utf-8',
+            success: function () {
+              window.location.href = 'https://' + document.domain + '/passengerRespond';
+            }
+          });
+        }
+      }
+      else {
+        window.alert("時間錯誤");
+      }
 
     }
-
     function submit() {
       var dateControl = document.getElementById("tem_date").value;
       var timeControl = document.querySelector('input[type="time"]').value;
