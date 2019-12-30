@@ -201,7 +201,7 @@ def cancelPost():
     if postcancel:
         if user['_id'] == postcancel['owner_id']:
             if postcancel['post_matched'] == True:   
-                socketio.start_background_task(notifation, app, user['_id'], postcancel['_id'], 'post', '此刊登已配對，無法取消')
+                socketio.start_background_task(notifation, app, user['_id'], postcancel['_id'], 'post', '此刊登已配對，無法刪除')
                 return ''
             else:
                 postCol.delete_one({'_id':ObjectId(cancelID['cancel_id'])})
@@ -212,10 +212,10 @@ def cancelPost():
                     if eachRequest == cancelID['cancel_id']:#delete_id配合front end
                         temp.remove(cancelID['cancel_id'])
                         userCol.update({'Account_name' : session['NTOUmotoGoUser']}, {"$set": {'_requestHistory' : temp}})
-                socketio.start_background_task(notifation, app, user['_id'], False, 'post', '取消刊登成功')     
+                socketio.start_background_task(notifation, app, user['_id'], False, 'post', '刪除刊登成功')     
                 return ''
         else:
-            socketio.start_background_task(notifation, app, user['_id'], postcancel['_id'], 'post', '發出刊登者才有權限取消此刊登')    
+            socketio.start_background_task(notifation, app, user['_id'], postcancel['_id'], 'post', '發出刊登者才有權限刪除此刊登')    
             return ''
     else:
         socketio.start_background_task(notifation, app, user['_id'], False, 'post', '找不到此刊登')     
@@ -306,7 +306,7 @@ def sendPrivateDriRequest():
     other = userCol.find_one({'_id' : ObjectId(info['owner_id'])})
     info['post_getOnTime'] = datetime.datetime.fromisoformat(info['post_getOnTime'])
     info['post_type'] = 'pas_pri'
-    #info['owner_id'] = info['other_id']#被發送請求者的ID 前台用owner_id設
+    info['owner_id'] = other['_id']#被發送請求者的ID
     info['_uptime'] = datetime.datetime.now()
     info['post_matched'] = False
     post_id = postCol.insert_one(info).inserted_id #資料庫內建立一筆刊登資訊
@@ -326,7 +326,7 @@ def sendPrivateDriRequest():
     if post['post_matched']:
         socketio.start_background_task(notifation, app, post['owner_id'], False, 'requ', '發出請求失敗，該刊登已消失')
     else:
-        info = {'post_id' : post['_id'],
+        requinfo = {'post_id' : post['_id'],
                 'sender_id': login_user['_id'],
                 'pas_id' : '',
                 'dri_id' : '',
@@ -340,16 +340,16 @@ def sendPrivateDriRequest():
                 'answer_msg':''
                 } #請求資料初始
         if post['post_type'] == 'pas_pri':  #如果請求人是駕駛
-            info['dri_id'] = login_user['_id']
-            info['dri_ok'] = True
-            info['pas_id'] = post['owner_id']
-            info['pas_ok'] = False
+            requinfo['dri_id'] = login_user['_id']
+            requinfo['dri_ok'] = True
+            requinfo['pas_id'] = post['owner_id']
+            requinfo['pas_ok'] = False
         if post['post_type'] == 'dri_pri': #如果請求人是乘客
-            info['dri_id'] = post['owner_id']
-            info['dri_ok'] = False
-            info['pas_id'] = login_user['_id']
-            info['pas_ok'] = True
-        request_id =requestCol.insert_one(info).inserted_id     #請求資料的id
+            requinfo['dri_id'] = post['owner_id']
+            requinfo['dri_ok'] = False
+            requinfo['pas_id'] = login_user['_id']
+            requinfo['pas_ok'] = True
+        request_id =requestCol.insert_one(requinfo).inserted_id     #請求資料的id
         if request_id:
             postUser = userCol.find_one({'_id' : post['owner_id']})
             postOwnerRequHis = postUser['_requestHistory']   #更改被請求者請求歷史紀錄
@@ -358,8 +358,8 @@ def sendPrivateDriRequest():
             userRequHis = userCol.find_one({'_id' : login_user['_id']})['_requestHistory']  #更改請求者請求歷史紀錄
             userRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : login_user['_id']},{'$set' : {'_requestHistory' : userRequHis}})
-            socketio.start_background_task(notifation, app, post['owner_id'], request_id, 'requ', '來自'+login_user['_name']+'新的請求')
-            socketio.start_background_task(notifation, app, login_user['_id'], request_id, 'requ', '成功對'+postUser['_name']+'發出請求')
+            socketio.start_background_task(notifation, app, post['owner_id'], request_id, 'requ', '來自'+login_user['_name']+'新的私人請求')
+            socketio.start_background_task(notifation, app, login_user['_id'], request_id, 'requ', '成功對'+postUser['_name']+'發出私人請求')
         else:
             socketio.start_background_task(notifation, app, login_user['_id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次')
     return redirect(url_for('allPost'))
@@ -372,7 +372,7 @@ def sendPrivatePasRequest():
     other = userCol.find_one({'_id' : ObjectId(info['owner_id'])})
     info['post_getOnTime'] = datetime.datetime.fromisoformat(info['post_getOnTime'])
     info['post_type'] = 'dri_pri'
-    #info['owner_id'] = info['other_id']#被發送請求者的ID 前台用owner_id設
+    info['owner_id'] = other['_id']#被發送請求者的ID 前台用owner_id設
     info['_uptime'] = datetime.datetime.now()
     info['post_matched'] = False
     post_id = postCol.insert_one(info).inserted_id #資料庫內建立一筆刊登資訊
@@ -392,7 +392,7 @@ def sendPrivatePasRequest():
     if post['post_matched']:
         socketio.start_background_task(notifation, app, post['owner_id'], False, 'requ', '發出請求失敗，該刊登已消失')
     else:
-        info = {'post_id' : post['_id'],
+        requinfo = {'post_id' : post['_id'],
                 'sender_id': login_user['_id'],
                 'pas_id' : '',
                 'dri_id' : '',
@@ -406,16 +406,16 @@ def sendPrivatePasRequest():
                 'answer_msg':''
                 } #請求資料初始
         if post['post_type'] == 'pas_pri':  #如果請求人是駕駛
-            info['dri_id'] = login_user['_id']
-            info['dri_ok'] = True
-            info['pas_id'] = post['owner_id']
-            info['pas_ok'] = False
+            requinfo['dri_id'] = login_user['_id']
+            requinfo['dri_ok'] = True
+            requinfo['pas_id'] = post['owner_id']
+            requinfo['pas_ok'] = False
         if post['post_type'] == 'dri_pri': #如果請求人是乘客
-            info['dri_id'] = post['owner_id']
-            info['dri_ok'] = False
-            info['pas_id'] = login_user['_id']
-            info['pas_ok'] = True
-        request_id =requestCol.insert_one(info).inserted_id     #請求資料的id
+            requinfo['dri_id'] = post['owner_id']
+            requinfo['dri_ok'] = False
+            requinfo['pas_id'] = login_user['_id']
+            requinfo['pas_ok'] = True
+        request_id =requestCol.insert_one(requinfo).inserted_id     #請求資料的id
         if request_id:
             postUser = userCol.find_one({'_id' : post['owner_id']})
             postOwnerRequHis = postUser['_requestHistory']   #更改被請求者請求歷史紀錄
@@ -424,8 +424,8 @@ def sendPrivatePasRequest():
             userRequHis = userCol.find_one({'_id' : login_user['_id']})['_requestHistory']  #更改請求者請求歷史紀錄
             userRequHis.insert(0,str(request_id))
             userCol.update_one({'_id' : login_user['_id']},{'$set' : {'_requestHistory' : userRequHis}})
-            socketio.start_background_task(notifation, app, post['owner_id'], request_id, 'requ', '來自'+login_user['_name']+'新的請求')
-            socketio.start_background_task(notifation, app, login_user['_id'], request_id, 'requ', '成功對'+postUser['_name']+'發出請求')
+            socketio.start_background_task(notifation, app, post['owner_id'], request_id, 'requ', '來自'+login_user['_name']+'新的私人請求')
+            socketio.start_background_task(notifation, app, login_user['_id'], request_id, 'requ', '成功對'+postUser['_name']+'發出私人請求')
         else:
             socketio.start_background_task(notifation, app, login_user['_id'], request_id, 'requ', '發出請求失敗，請重新嘗試一次')
     return redirect(url_for('allPost'))
