@@ -221,7 +221,7 @@
           success: function (data) {
             console.log("send success");
             console.log(data);
-            strings = data;
+            string = data;
             jsonToStruct();
             display();
           }
@@ -256,7 +256,10 @@
     // }
     function display() {
       console.log("ssssssssssssss");
+      console.log(requestarray);
+
       if (requestarray.length) {
+        
         var mes = "";
         for (var i = 0; i < requestarray.length; i++) {
           mes += '\
