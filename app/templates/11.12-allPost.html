@@ -88,8 +88,6 @@
     <a href="/userInfo" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">個人資訊</a>
     <a href="/home" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">主頁面</a>
     <a href="/history" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">瀏覽歷史資訊</a>
-    <a href="/setting" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">設置</a>
-    <a href="/Search" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">搜尋使用者</a>
     <a href="/logout" onclick="w3_close()" class="w3-bar-item w3-button w3-center w3-padding-16">登出</a>
 
   </nav>
@@ -218,7 +216,7 @@
                           <div class="inner">\
                             <h2 id="post'+ i + '" onclick="posterInfo(this)" style="color:yellow" class="userinfo">' + postResult[i].post_name + '<span style = "position:relative; top:5px;font-size:15px; font-weight:lighter;">' + note + '</span>' + '</h2>\
                             <div id="posterInfo'+ i + '"></div>\
-                            <p style="text-align: left;">目的地:<span style="font-size:20px; font-weight:bold; color:skyblue;">'+ postResult[i].post_goto + '</span><br>上車地點:<span style="font-size:20px; font-weight:bold;color:pink;">' + postResult[i].post_location + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:orange;">' + TT[i] + '</span>';
+                            <p style="text-align: left;">上車地點:<span style="font-size:20px; font-weight:bold; color:skyblue;">'+ postResult[i].post_location + '</span><br>目的地:<span style="font-size:20px; font-weight:bold;color:pink;">' + postResult[i].post_goto + '</span><br>上車時間:<span style="font-size:20px; font-weight:bold;color:orange;">' + TT[i] + '</span>';
           if (myType == 'pas') {
             if (postResult[i].post_haveHat == true)
               popContent += '<br>我有安全帽';
@@ -319,10 +317,13 @@
     for (var j = 0; j < 100; j++)
       count[j] = 0;
     //刊登人個人資訊 
+
+
     function posterInfo(obj) {
       var whoName = obj.id.charAt(4);
       whoName = parseInt(whoName);
       count[whoName]++;
+      console.log(allPostList[whoName].owner_id)
       if (count[whoName] % 2 == 0)
         document.getElementById('posterInfo' + whoName).innerHTML = "";
       else {
@@ -426,57 +427,29 @@
       //return newNode;
     }
 
-
     function submitSearch() {
-      var i;
-      var j = 0;
-      var temp = [];
-      var mySearch = [];
-      if (document.getElementById("searchName").value && document.getElementById("des").value && document.getElementById("loc").value)
-        for (i = 0; i < allPostList.length; i++) {
-          if (allPostList[i].post_goto == document.getElementById("des").value)
-            if (allPostList[i].post_location == document.getElementById("loc").value)
-              if (allPostList[i].post_name == document.getElementById("searchName").value)
-                mySearch[j++] = allPostList[i];
-        }
-      else if (!document.getElementById("searchName").value && document.getElementById("des").value && document.getElementById("loc").value)
-        for (i = 0; i < allPostList.length; i++) {
-          if (allPostList[i].post_goto == document.getElementById("des").value)
-            if (allPostList[i].post_location == document.getElementById("loc").value)
-              mySearch[j++] = allPostList[i];
-        }
-      else if (document.getElementById("searchName").value && !document.getElementById("des").value && document.getElementById("loc").value)
-        for (i = 0; i < allPostList.length; i++) {
-          console.log("hi");
-          if (allPostList[i].post_location == document.getElementById("loc").value)
-            if (allPostList[i].post_name == document.getElementById("searchName").value)
-              mySearch[j++] = allPostList[i];
-        }
-      else if (document.getElementById("searchName").value && document.getElementById("des").value && !document.getElementById("loc").value)
-        for (i = 0; i < allPostList.length; i++) {
-          if (allPostList[i].post_goto == document.getElementById("des").value)
-            if (allPostList[i].post_name == document.getElementById("searchName").value)
-              mySearch[j++] = allPostList[i];
-        }
-      else if (!document.getElementById("searchName").value && !document.getElementById("des").value && document.getElementById("loc").value)
-        for (i = 0; i < allPostList.length; i++) {
-          if (allPostList[i].post_location == document.getElementById("loc").value)
-            mySearch[j++] = allPostList[i];
-        }
-      else if (!document.getElementById("searchName").value && document.getElementById("des").value && !document.getElementById("loc").value)
-        for (i = 0; i < allPostList.length; i++) {
-          if (allPostList[i].post_goto == document.getElementById("des").value)
-            mySearch[j++] = allPostList[i];
-        }
-      else if (document.getElementById("searchName").value && !document.getElementById("des").value && !document.getElementById("loc").value) {
-        for (i = 0; i < allPostList.length; i++) {
-          if (allPostList[i].post_name == document.getElementById("searchName").value)
-            mySearch[j++] = allPostList[i];
-        }
-      }
-      console.log('-------');
-      console.log(mySearch);
-      displayPost(mySearch);
+      if (document.getElementById("des").value && document.getElementById("loc").value)
+        $.ajax({
+          type: 'POST',
+          url: "/search",
+          data: JSON.stringify({ 'post_goto': document.getElementById("des").value, 'post_location': document.getElementById("loc").value }),
+          contentType: 'application/json; charset=utf-8',
+          success: function (data) {
+            console.log(data);
+            allPostList = data;
+            if (document.getElementById("searchName").value) {
+              var temp = [];
+              for (var i = 0; i < allPostList.length; i++) {
+                if (allPostList[i].post_name == document.getElementById("searchName").value)
+                  temp.push(allPostList[i]);
+              }
+              allPostList = temp;
+            }
+            displayPost(allPostList);
+          }
+        });
+      else
+        window.alert("上車地點和目的地都要數入唷");
     }
 
     function clearSearch() {
