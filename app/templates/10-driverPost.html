@@ -150,6 +150,7 @@
       document.getElementById("mySidebar").style.display = "block";
       document.getElementById("myOverlay").style.display = "block";
     }
+    var Url;
     function beforesubmit()
     {
       var location = document.getElementById("loc").value;
@@ -216,8 +217,8 @@
       var message = "<label>搭車時間</label><input type='datetime-local'>";
       document.getElementById("time").innerHTML = "日期:<input type='date' id = 'tem_date'  required value = '" + date.getFullYear() + "-" + (date.getMonth() + 1)
         + "-" + date.getDate() + "'><br><br>時間: <input type = 'time'  id = 'tem_time' required value = '" + date.getHours() + ":" + date.getMinutes() + "'>";
-      url=location.href.split("?")[1];
-      if(url!=undefined)
+      Url=location.href.split("?")[1];
+      if(Url!=undefined)
       {
         document.getElementById("input").innerHTML =
         '<input type="button" class="w3-button w3-block w3-margin-bottom w3-round-large"\
@@ -279,7 +280,7 @@
             "post_notice": notice,
             "post_haveHat": haveHat,
             "post_raincoat": haveCoat,
-            "owner_id": url=location.href.split("?")[1]
+            "owner_id": Url
           };
           //console.log(list);
           $.ajax({
