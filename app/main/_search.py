@@ -89,7 +89,7 @@ def search():
 def searchName():
     info = request.get_json(silent=True)
     
-    userArray = userCol.find({'_id':ObjectId(info['_id'])})
+    userArray = userCol.find({'_name':ObjectId(info['_name'])})
     userDataArray = []
 
 
