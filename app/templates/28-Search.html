@@ -259,10 +259,11 @@
       console.log(requestarray);
 
       if (requestarray.length) {
-        
         var mes = "";
         for (var i = 0; i < requestarray.length; i++) {
-          mes += '\
+          if(requestarray[i]._id !=  requestarray[i]._myid)
+          {
+            mes += '\
             <div class="w3-center w3-content"\
               style="color: white;background-color:rgb(86, 88, 90); max-width:320px;margin-top:20px">\
               <div class="w3-section">\
@@ -290,8 +291,18 @@
              <button onclick = "link1('+ i + ')" style="background-color: red;">發出請求被載</button>\
              <button onclick = "link2('+ i + ')" style="background-color: red;">發出請求載人</button>\
             </div>'
+          }
+          
         }
-        document.getElementById("show").innerHTML = mes;
+        if(mes)
+        {
+          document.getElementById("show").innerHTML = mes;
+        }
+        else
+        {
+          window.alert("請不要搜尋自己開玩笑");
+        }
+        
       }
       else {
         window.alert("查無此人");
@@ -319,6 +330,7 @@
           '_phone': string[i]._phone,
           '_mail': string[i]._mail,
           '_id': string[i]._id,
+          '_myid': string[i]._myid,
         };
 
         requestarray.push(list);
