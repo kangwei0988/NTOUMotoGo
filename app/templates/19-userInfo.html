@@ -192,16 +192,19 @@
             strings = data;
             display();
           }
-          
+
         }
       });
     }
-  function display(){
-    var hisGrade = 0;
-    //   for (var i = 0; i < strings[_rateHistory].length; i++) {
-    //     hisGrade += strings[_rateHistory][i];
-    //   }
-    //   hisGrade /= i;
+    function display() {
+      var hisGrade = 0;
+      if (strings[_rateHistory].length) {
+        for (var i = 0; i < strings[_rateHistory].length; i++) {
+          hisGrade += strings[_rateHistory][i];
+        }
+        hisGrade /= i;
+      }
+
       console.log("ssssssssssssss");
 
       //{driverName:"name", passengerName:"name",Location :"post_location", 
@@ -215,7 +218,7 @@
                   </label>\
                   <input id="file-upload1" type="file" onchange="readURL(this)" name="_user_photo" targetID="preview_progressbarTW_img1"\
                     accept="image/gif, image/jpeg, image/png" />\
-                  <img src = "static/userPhotos/' +strings["_user_photo"] + '" id="preview_progressbarTW_img1"  />\
+                  <img src = "static/userPhotos/' + strings["_user_photo"] + '" id="preview_progressbarTW_img1"  />\
                 </div>\
                 <div class="w3-section">\
                   <label for="file-upload2" class="custom-file-upload">\
@@ -223,7 +226,7 @@
                   </label>\
                   <input id="file-upload2" type="file" onchange="readURL(this)" name="_license_photo" targetID="preview_progressbarTW_img2"\
                     accept="image/gif, image/jpeg, image/png" />\
-                  <img src = "static/userPhotos/' +'/'+strings["_license_photo"] + '" id="preview_progressbarTW_img2"  />\
+                  <img src = "static/userPhotos/' + '/' + strings["_license_photo"] + '" id="preview_progressbarTW_img2"  />\
                 </div>\
                 <div class="w3-section">\
                   <label>姓名</label>\
@@ -255,7 +258,7 @@
                   style="background-color: lightcoral;">取消\
                 </a>\
             </div>'
-  }
+    }
   </script>
 
 
