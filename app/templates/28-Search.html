@@ -205,6 +205,8 @@
     var string = [];
     var requestarray = [];
     function sendName() {
+      string = [];
+      requestarray = [];
       if (document.getElementById("user").value) {
         var myJson = { "_name": document.getElementById("user").value };
         $.ajax({
@@ -256,7 +258,9 @@
         
         var mes = "";
         for (var i = 0; i < requestarray.length; i++) {
-          mes += '\
+          if(requestarray[i]._id != requestarray[i]._myid)
+          {
+            mes += '\
             <div class="w3-center w3-content"\
               style="color: white;background-color:rgb(86, 88, 90); max-width:320px;margin-top:20px">\
               <div class="w3-section">\
@@ -284,8 +288,18 @@
              <button onclick = "link1('+ i + ')" style="background-color: red;">發出請求被載</button>\
              <button onclick = "link2('+ i + ')" style="background-color: red;">發出請求載人</button>\
             </div>'
+          }
+          
         }
-        document.getElementById("show").innerHTML = mes;
+        if(mes)
+        {
+          document.getElementById("show").innerHTML = mes;
+        }
+        else
+        {
+          window.alert("搜尋步道自己唷");
+        }
+        
       }
       else {
         window.alert("查無此人");
