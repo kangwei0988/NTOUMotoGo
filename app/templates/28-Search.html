@@ -128,7 +128,26 @@
 
     <div id="show">
 
-
+      <!-- <div class="w3-center w3-content"
+        style="color: white;background-color:rgb(86, 88, 90); max-width:320px;margin-top:20px">
+        <div class="w3-section">
+          <img src="static/userPhotos/' + requestarray[i]._user_photo + '" id="preview_progressbarTW_img" />
+        </div>
+        <div class="w3-section">
+          <img src="static/userPhotos/' + requestarray[i]._license_photo + '" id="preview_progressbarTW_img" />
+        </div>
+        <div class="w3-section">
+          <label>姓名:</label>
+          黃旋風
+        </div>
+        <div class="w3-section">
+          <label>性別:</label>
+          南
+        </div>
+        <a href="9-passengerPost.html"><button style="background-color: red;">發出請求被載</button></a>
+        <a href="10-driverPost.html"><button style="background-color:skyblue;">發出請求載人</button></a>
+      </div> -->
+      
     </div>
 
 
@@ -224,7 +243,7 @@
             console.log(data);
             strings = data;
             jsonToStruct();
-            //display();
+            display();
           }
 
         }
@@ -235,7 +254,7 @@
       if (requestarray.length) {
         var mes = "";
         for (var i = 0; i < requestarray.length; i++) {
-          mes +='\
+          mes += '\
             <div class="w3-center w3-content"\
               style="color: white;background-color:rgb(86, 88, 90); max-width:320px;margin-top:20px">\
               <div class="w3-section">\
@@ -246,19 +265,41 @@
               </div>\
               <div class="w3-section">\
                 <label>姓名:</label>\
-                '+ requestarray[i]._name +'\
+                '+ requestarray[i]._name + '\
+              </div>\
+              <div class="w3-section">\
+                <label>電話:</label>\
+                '+ requestarray[i]._phone + '\
               </div>\
               <div class="w3-section">\
                 <label>性別:</label>\
-                '+ requestarray[i]._name +'\
+                '+ requestarray[i]._gender + '\
               </div>\
+              <div class="w3-section">\
+                <label>信箱:</label>\
+                '+ requestarray[i]._mail + '\
+              </div>\
+             <button onclick = "link1('+ i + ')" style="background-color: red;">發出請求被載</button>\
+             <button onclick = "link1('+ i + ')" style="background-color: red;">發出請求載人</button>\
             </div>'
         }
+        document.getElementById("show").innerHTML = mes;
       }
       else {
         window.alert("查無此人");
       }
 
+
+    }
+
+    function link1(i)
+    {
+      window.location.herf = 'https://' + document.domain + 'passengerPost?' + requestarray[i]._id ;
+    }
+
+    function link2(i)
+    {
+      window.location.herf = 'https://' + document.domain + 'driverPost?' + requestarray[i]._id ;
     }
 
     function jsonToStruct() {
@@ -272,6 +313,7 @@
           '_gender': string[i]._gender,
           '_phone': string[i]._phone,
           '_mail': string[i]._mail,
+          '_id' : string[i]._id,
         };
 
         requestarray.push(list);
