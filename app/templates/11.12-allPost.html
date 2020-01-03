@@ -184,7 +184,6 @@
         document.getElementById("myType").innerHTML = "乘客";
       }
     }
-    var postResult;
     function roadPostData() {
       $.ajax({
         type: 'POST',
@@ -192,9 +191,8 @@
         data: JSON.stringify({ 'post_type': searchType }),
         contentType: 'application/json; charset=utf-8',
         success: function (data) {
-          postResult = data;
-          displayPost(postResult);
           allPostList = data;
+          displayPost(allPostList);
         }
       });
     }
@@ -252,8 +250,10 @@
       else
         document.getElementById("allPost").innerHTML = "目前沒有刊登資訊";
     }
+
+
     function beforesendRequest(i) {
-      var getOnTime = new Date(postResult[i].post_getOnTime)
+      var getOnTime = new Date(allPostList[i].post_getOnTime)
       console.log(typeof (getOnTime))
       var postTime = getOnTime.toISOString();
       postTime = postTime.split('Z')[0]
@@ -270,7 +270,7 @@
             window.alert("按下 確認送出 已發送該請求");
           else
             window.alert("這個時間點您已有其他共乘進行中!若要繼續，請按下 確認送出")
-          document.getElementById("sendButton" + i).innerHTML = '<button class="button style2 fit" type="button" onclick="sendRequest(\'' + postResult[i]._id + '\')" >確認送出</button>';
+          document.getElementById("sendButton" + i).innerHTML = '<button class="button style2 fit" type="button" onclick="sendRequest(\'' + allPostList[i]._id + '\')" >確認送出</button>';
         }
       });
     }
