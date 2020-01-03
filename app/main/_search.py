@@ -19,7 +19,7 @@ def search():
     tmp = request.get_json(silent=True)
     
     results = [] 
-    resultsId = set()    
+    resultsId = []  
     setGoto = set()
     setLoca = set()
     setGoto.add(tmp["post_goto"])
@@ -59,20 +59,31 @@ def search():
     elif setGoto == (setGoto & setF):
         setGoto = setF
 
-   
+    both = postCol.find({'post_goto':tmp["post_goto"],'post_location':tmp["post_location"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+    for x in both:
+        resultsId.append(str(x['_id']))
+
+    only1 = postCol.find({'post_location':tmp["post_location"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+    for x in only1:
+        resultsId.append(str(x['_id']))
+
+    only2 = postCol.find({'post_goto':tmp["post_goto"],'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
+    for x in only2:
+        resultsId.append(str(x['_id']))
+
     for Loca in setLoca:
         postloca = postCol.find({'post_location':Loca,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
         for x in postloca:
-            resultsId.add(str(x['_id']))
+            resultsId.append(str(x['_id']))
 
     for goto in setGoto:
         postgo = postCol.find({'post_goto':goto,'post_getOnTime' : {'$gt' : datetime.datetime.now()}}).sort('post_getOnTime')
         for x in postgo:
-            resultsId.add(str(x['_id']))
+            resultsId.append(str(x['_id']))
         
 
     myId = userCol.find_one({'Account_name' : session['NTOUmotoGoUser']})['_id']
-
+    resultsId = sorted(set(resultsId), key = resultsId.index)
 
     for id in resultsId:
         result = postCol.find_one({'_id' : ObjectId(id)})
