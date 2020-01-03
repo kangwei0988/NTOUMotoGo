@@ -143,6 +143,12 @@ def myPost():
 @app.route('/matchedPost')
 def matchedPost():
     return render_template('24-matchedProcess.html')
+
+#跳轉頁面到28-Search.html
+@app.route('/Search')
+def Search():
+    return render_template('28-Search.html')
+
 @app.route('/chatRoom')
 def chatRoom():
     user = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
