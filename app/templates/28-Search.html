@@ -149,7 +149,7 @@
         <a href="9-passengerPost.html"><button style="background-color: red;">發出請求被載</button></a>
         <a href="10-driverPost.html"><button style="background-color:skyblue;">發出請求載人</button></a>
       </div> -->
-      
+
     </div>
 
 
@@ -207,6 +207,9 @@
       captionText.innerHTML = element.alt;
     }
 
+
+    var string = [];
+    var requestarray = [];
     function sendName() {
       if (document.getElementById("user").value) {
         var myJson = { "_name": document.getElementById("user").value };
@@ -217,7 +220,9 @@
           contentType: 'application/json; charset=utf-8',
           success: function (data) {
             console.log("send success");
-            getJson();
+            console.log(data);
+            strings = data;
+            jsonToStruct();
             display();
           }
         });
@@ -230,27 +235,25 @@
     }
 
 
-    var string = [];
-    var requestarray = [];
 
-    function getJson() {
-      $.ajax({
-        type: 'POST',
-        url: "/searchName",
-        data: "",
-        contentType: 'application/json; charset=utf-8',
-        success: function (data) {
-          if (data) {
-            // data.redirect contains the string URL to redirect to
-            console.log(data);
-            strings = data;
-            jsonToStruct();
-            display();
-          }
+    // function getJson() {
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: "/searchName",
+    //     data: "",
+    //     contentType: 'application/json; charset=utf-8',
+    //     success: function (data) {
+    //       if (data) {
+    //         // data.redirect contains the string URL to redirect to
+    //         console.log(data);
+    //         strings = data;
+    //         jsonToStruct();
+    //         display();
+    //       }
 
-        }
-      });
-    }
+    //     }
+    //   });
+    // }
     function display() {
       console.log("ssssssssssssss");
       if (requestarray.length) {
@@ -294,14 +297,12 @@
 
     }
 
-    function link1(i)
-    {
-      window.location.herf = 'https://' + document.domain + 'passengerPost?' + requestarray[i]._id ;
+    function link1(i) {
+      window.location.herf = 'https://' + document.domain + 'passengerPost?' + requestarray[i]._id;
     }
 
-    function link2(i)
-    {
-      window.location.herf = 'https://' + document.domain + 'driverPost?' + requestarray[i]._id ;
+    function link2(i) {
+      window.location.herf = 'https://' + document.domain + 'driverPost?' + requestarray[i]._id;
     }
 
     function jsonToStruct() {
@@ -315,7 +316,7 @@
           '_gender': string[i]._gender,
           '_phone': string[i]._phone,
           '_mail': string[i]._mail,
-          '_id' : string[i]._id,
+          '_id': string[i]._id,
         };
 
         requestarray.push(list);
