@@ -88,7 +88,8 @@ def search():
 @app.route('/searchName',methods=['GET','POST'])
 def searchName():
     info = request.get_json(silent=True)
-    
+
+    me = userCol.find_one({'Account_name':session['NTOUmotoGoUser']})
     userArray = userCol.find({'_name':info['_name']})
     userDataArray = []
 
@@ -102,6 +103,7 @@ def searchName():
             rate.append(rateNum)
 
         userData = {
+            '_myid':str(me['_id']),
             '_id':str(user['_id']),
             '_name':user['_name'],
             '_mail': user['_mail'],
@@ -114,6 +116,8 @@ def searchName():
             }
         
         userDataArray.append(userData)
+
+    
     
     return jsonify(userDataArray)
     
