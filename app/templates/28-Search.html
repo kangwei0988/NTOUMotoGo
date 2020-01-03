@@ -211,6 +211,8 @@
     var string = [];
     var requestarray = [];
     function sendName() {
+      string = [];
+      requestarray = [];
       if (document.getElementById("user").value) {
         var myJson = { "_name": document.getElementById("user").value };
         $.ajax({
