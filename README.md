@@ -8,7 +8,7 @@
 
 測試文件:https://drive.google.com/file/d/1CMDINQCpjP5CLM4MYqlwKKzRxoAHxbc-/view?usp=sharing
 
-Server 網址:https://ntoumotogo.kangs.idv.tw/
+Server 網址: ̶h̶t̶t̶p̶s̶:̶/̶/̶n̶t̶o̶u̶m̶o̶t̶o̶g̶o̶.̶k̶a̶n̶g̶s̶.̶i̶d̶v̶.̶t̶w̶/̶
 
 使用者帳號密碼:駕駛與乘客可互換     1.帳號:qwer1 密碼:1          2.  帳號:demo 密碼:demo
 
